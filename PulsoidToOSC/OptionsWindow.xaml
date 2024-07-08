@@ -200,8 +200,8 @@
 
                             <ui:ToggleSwitch
 								IsOn="{Binding VRCAutoConfigCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-								OnContent="Use VRC OSC Querry auto configuration"
-								OffContent="Use VRC OSC Querry auto configuration"
+								OnContent="Use VRC OSC Query auto configuration"
+								OffContent="Use VRC OSC Query auto configuration"
 								Grid.Row="0"
 								Margin="4"
 							/>

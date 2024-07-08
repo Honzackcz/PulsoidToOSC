@@ -77,7 +77,7 @@ namespace PulsoidToOSC
 			MainViewModel.StartButtonContent = " ";
 			SetUI("Connecting to Pulsoid...", ColorYellow);
 			SetupOSC();
-			VRCOSC.Querry.SetupQuerry();
+			VRCOSC.Query.SetupQuerry();
 			_ = StartWebSocket();
 		}
 
@@ -88,7 +88,7 @@ namespace PulsoidToOSC
 			appSate = AppSates.stopping;
 			MainViewModel.StartButtonContent = " ";
 			SetUI("Closing connection to Pulsoid...", ColorYellow);
-			VRCOSC.Querry.StopQuerry();
+			VRCOSC.Query.StopQuerry();
 
 			if (SimpleWSClient.ClientState == WebSocketState.Open)
 			{

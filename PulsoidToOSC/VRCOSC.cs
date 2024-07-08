@@ -113,7 +113,7 @@ namespace PulsoidToOSC
 			}
 		}
 
-		internal static class Querry
+		internal static class Query
 		{
 			private static ServiceDiscovery? serviceDiscovery;
 			private static MulticastService? multicastService;
