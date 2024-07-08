@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SharpOSC\SharpOSC.csproj" />
+    <ProjectReference Include="..\SharpOSC\SharpOSC.csproj" />
   </ItemGroup>
 
 </Project>

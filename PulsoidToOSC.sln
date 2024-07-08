@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PulsoidToOSC", "PulsoidToOS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Položky řešení", "Položky řešení", "{9C1CB5FD-74CF-418D-9E97-7900DFACFDF1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpOSC", "..\SharpOSC\SharpOSC.csproj", "{19393B07-820D-4F3D-8351-F649C1B07037}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpOSC", "SharpOSC\SharpOSC.csproj", "{F0365098-6893-4753-98F8-3443A6B27454}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,14 @@ Global
 		{2212BE58-0486-4E08-B744-6D4A083051DC}.Release_Ubuntu|Any CPU.Build.0 = Release|Any CPU
 		{2212BE58-0486-4E08-B744-6D4A083051DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2212BE58-0486-4E08-B744-6D4A083051DC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{19393B07-820D-4F3D-8351-F649C1B07037}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
-		{19393B07-820D-4F3D-8351-F649C1B07037}.Debug_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
-		{19393B07-820D-4F3D-8351-F649C1B07037}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19393B07-820D-4F3D-8351-F649C1B07037}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19393B07-820D-4F3D-8351-F649C1B07037}.Release_Ubuntu|Any CPU.ActiveCfg = Release|Any CPU
-		{19393B07-820D-4F3D-8351-F649C1B07037}.Release_Ubuntu|Any CPU.Build.0 = Release|Any CPU
-		{19393B07-820D-4F3D-8351-F649C1B07037}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19393B07-820D-4F3D-8351-F649C1B07037}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0365098-6893-4753-98F8-3443A6B27454}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0365098-6893-4753-98F8-3443A6B27454}.Debug_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
+		{F0365098-6893-4753-98F8-3443A6B27454}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0365098-6893-4753-98F8-3443A6B27454}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0365098-6893-4753-98F8-3443A6B27454}.Release_Ubuntu|Any CPU.ActiveCfg = Release|Any CPU
+		{F0365098-6893-4753-98F8-3443A6B27454}.Release_Ubuntu|Any CPU.Build.0 = Release|Any CPU
+		{F0365098-6893-4753-98F8-3443A6B27454}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0365098-6893-4753-98F8-3443A6B27454}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
