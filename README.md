@@ -71,3 +71,9 @@ In case of VRChat auto configuration, the \<osc-path\> is defined as /avatar/par
 | \<osc-path\>/HeartBeatToggle  | Bool       | Reverses with each update    |
 
 Example of full path with parameter may looks like this: ***/avatar/parameter/HeartRateInt***
+
+## Used libraries
+
+[SharpOSC](https://github.com/ValdemarOrn/SharpOSC) is a small library designed to make interacting with Open Sound Control easy (OSC).
+
+[ModernWPF](https://github.com/Kinnara/ModernWpf) - Modern styles and controls for your WPF applications.
