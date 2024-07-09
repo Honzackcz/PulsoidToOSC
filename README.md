@@ -1,6 +1,10 @@
 PulsoidToOSC
 ============
 
+Simple, effective and universal application that streams heart rate data from Pulsoid to OSC.<br>
+Main window is designed to be easily used in VR with applications like OVR Toolkit as monitor that you can place on hand.<br>
+Includes easy to use VRChat integration with automated configuration thanks to OSC query let you send heart rate data to your avatar or even to chatbox with customized message.
+
 
 ## Pulsoid Connection
 
@@ -26,7 +30,7 @@ It will NOT start the application with system.
 
 ## OSC Options
 
-There can be setup manual OSC endpoint that can be any application able to receive OSC data like VRChat or Resonite.
+There can be set up manual OSC endpoint that can be any application able to receive OSC data like VRChat or Resonite.
 
 Endpoint needs specified IP, Port and Path where heart rate parameters will be send.
 
@@ -41,11 +45,11 @@ When enabled, all data will be send to VRChat clients running on localhost (the 
 In case when you want to run this app on different PC then VRChat that is also on the same LAN you can enable "Send to all VRC Clients on LAN".
 
 ### Chatbox messages
-This settings provides simple options to send heart rate also to VRChat chatbox, with customized messages.
+This settings provides simple options to send heart rate also to VRChat chatbox with customized messages.
 
 Messages containing \<bpm\> will automatically replace this key by heart rate value. If the message doesn't contain the key, heart rate will be added at the end of the message.<br>
 For example this message: ***Heartrate: \<bpm\> BPM***<br>
-will in VRChat chatbox looks like this: ***Heartrate: 123 BPM***<br>
+will in VRChat chatbox looks like this: ***Heartrate: 123 BPM***
 
 Messages are send to manually defined OSC endpoint and all auto configured VRChat clients.
 
