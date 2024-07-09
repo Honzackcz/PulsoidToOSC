@@ -1,78 +1,86 @@
-PulsoidToOSC
-============
+# PulsoidToOSC
 
-Simple, effective and universal application that streams heart rate data from Pulsoid to OSC.<br>
-Main window is designed to be easily used in VR with applications like OVR Toolkit as monitor that you can place on hand.<br>
-Includes easy to use VRChat integration with automated configuration thanks to OSC query let you send heart rate data to your avatar or even to chatbox with customized message.
+PulsoidToOSC is a simple, effective, and universal application that streams heart rate data from Pulsoid to OSC.<br>
+The main window is designed to be easily used in VR with applications like OVR Toolkit, allowing you to place it on your hand like a monitor.<br>
+Also includes easy-to-use VRChat integration with automated configuration through OSC query, letting you send heart rate data to your avatar or even to the chatbox with a customized message.
+
 
 
 ## Pulsoid Connection
 
-To connect this app to Pulsoid, you will need to obtain authorization token and enter it.
-1. click "Get Pulsoid token" button - this will open authorization page in your web browser
-2. login and confirm authorization on the page
-3. copy the token - now you can close the page
-4. paste the token to the input field and press "Set Pulsoid token" - green checkmark will appear if the token is valid
+To connect this app to Pulsoid, you will need to obtain an authorization token and enter it:
+1. Click the "Get Pulsoid token" button - this will open the authorization page in your web browser.
+2. Log in and confirm authorization on the page.
+3. Copy the token - you can now close the page.
+4. Paste the token into the input field and press "Set Pulsoid token" - a green checkmark will appear if the token is valid.
 
-In case the token is invalid, repeat the steps above again.
+If the token is invalid, repeat the steps above.
 
-Disclaimer - anyone who have access to the token can read realtime data of your heart rate from Pulsoid.
+**Disclaimer**: Anyone with access to the token can read real-time heart rate data from Pulsoid.
 
 
 
 ## Auto Start
 
-This will just start the connection to Pulsoid and OSC when the app is opened to save one click.
+This option starts the connection to Pulsoid and OSC when the app is opened, saving you one click.
 
-It will NOT start the application with system.
+It will NOT start the application with the system.
 
 
 
 ## OSC Options
 
-There can be set up manual OSC endpoint that can be any application able to receive OSC data like VRChat or Resonite.
+You can set up a manual OSC endpoint, which can be any application capable of receiving OSC data, such as VRChat or Resonite.
 
-Endpoint needs specified IP, Port and Path where heart rate parameters will be send.
+The endpoint requires a specified IP, Port, and Path where heart rate parameters will be sent.
 
 Default values are set to work with VRChat running on the same PC.
 
 
 
 ## VRChat
-### OSC Query auto configuration
-When enabled, all data will be send to VRChat clients running on localhost (the same PC where this app is running) automatically independently on OSC settings, so if you want to use this app only for VRChat you can also disable sending data to manual OSC endpoint.
 
-In case when you want to run this app on different PC then VRChat that is also on the same LAN you can enable "Send to all VRC Clients on LAN".
+### OSC Query Auto Configuration
 
-### Chatbox messages
-This settings provides simple options to send heart rate also to VRChat chatbox with customized messages.
+When enabled, all data will be sent to VRChat clients running on localhost (the same PC where this app is running) automatically, independent of the OSC settings. If you want to use this app only for VRChat, you can disable sending data to the manual OSC endpoint.
 
-Messages containing \<bpm\> will automatically replace this key by heart rate value. If the message doesn't contain the key, heart rate will be added at the end of the message.<br>
-For example this message: ***Heartrate: \<bpm\> BPM***<br>
-will in VRChat chatbox looks like this: ***Heartrate: 123 BPM***
+If you want to run this app on a different PC than VRChat but on the same LAN, you can enable "Send to all VRC Clients on LAN".
 
-Messages are send to manually defined OSC endpoint and all auto configured VRChat clients.
+
+### Chatbox Messages
+
+This setting provides simple options to send heart rate data to the VRChat chatbox with customized messages.
+
+Messages containing key `<bpm>` will automatically replace this key with the heart rate value. If the message doesn't contain the key, the heart rate will be added at the end of the message.<br>
+For example, this message `Heartrate: <bpm> BPM` will appear in the VRChat chatbox as: ***Heartrate: 123 BPM***
+
+Messages are sent to the manually defined OSC endpoint and all auto-configured VRChat clients.
 
 
 
 ## OSC Parameters
 
-**\<osc-path\>** is your defined path that you can set in options.<br>
-In case of VRChat auto configuration, the \<osc-path\> is defined as /avatar/parameter/ this ensure access to the parameters within avatars.
+Parameters are combined with your defined OSC path, which you can set in the OSC options.  
+In the case of VRChat auto-configuration, the OSC path is defined as `/avatar/parameter/`, ensuring access to the parameters within avatars.
 
-| Parameters                    | Value Type | Description                  |
-| ----------------------------- | ---------- | ---------------------------- |
-| \<osc-path\>/HeartRateInt     | Int        | Int [0, 255]                 |
-| \<osc-path\>/HeartRate3       | Int        | See HeartRateInt             |
-| \<osc-path\>/HeartRateFloat   | Float      | Float ([0, 255] -> [-1, 1])  |
-| \<osc-path\>/HeartRate        | Float      | See HeartRateFloat           |
-| \<osc-path\>/HeartRateFloat01 | Float      | Float ([0, 255] -> [0, 1])   |
-| \<osc-path\>/HeartRate2       | Float      | See HeartRateFloat01         |
-| \<osc-path\>/HeartBeatToggle  | Bool       | Reverses with each update    |
+An example of a full path combined with a parameter might look like this: `/avatar/parameter/HeartRateInt`
 
-Example of full path with parameter may looks like this: ***/avatar/parameter/HeartRateInt***
+| Parameter          | Value Type | Description                     |
+| ------------------ | ---------- | ------------------------------- |
+| `HeartRateInt`     | Int        | Integer [0, 255]                |
+| `HeartRate3`       | Int        | Same as HeartRateInt            |
+| `HeartRateFloat`   | Float      | Float ([0, 255] -> [-1, 1])     |
+| `HeartRate`        | Float      | Same as HeartRateFloat          |
+| `HeartRateFloat01` | Float      | Float ([0, 255] -> [0, 1])      |
+| `HeartRate2`       | Float      | Same as HeartRateFloat01        |
+| `HeartBeatToggle`  | Bool       | Toggles with each update        |
 
-## Used libraries
+These parameters are chosen to support most currently used systems. In practice, the only necessary parameters are `HeartRateInt` for data and the additional `HeartBeatToggle` for reliable detection of timeouts.
+
+*In future I may add more options to configure the parameters for more specific use-cases.*
+
+
+## Used Libraries
 
 [SharpOSC](https://github.com/ValdemarOrn/SharpOSC) is a small library designed to make interacting with Open Sound Control easy (OSC).
 
