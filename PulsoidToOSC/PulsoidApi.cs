@@ -45,6 +45,7 @@ namespace PulsoidToOSC
 		public static TokenValidities tokenValiditi = TokenValidities.unknown;
 		public static readonly bool responseModeWebPage = true;
 		public const string pulsoidWSURL = "wss://dev.pulsoid.net/api/v1/data/real_time?access_token=";
+		private const string client_ID = "";
 		private static readonly string redirectUri = "http://localhost:54269/pulsoidtokenredirect/";
 
 		public static void SetPulsoidToken(string? token)
@@ -60,7 +61,7 @@ namespace PulsoidToOSC
 		private static string PulsoidAuthorizeUrl()
 		{
 			string baseUrl = "https://pulsoid.net/oauth2/authorize";
-			string client_id = Encoding.UTF8.GetString(Convert.FromBase64String("ZGZhY2U5Y2EtMGZjYi00YjMxLTg4NzQtZGQ0YWRhZGJiYjA3"));
+			string client_id = Encoding.UTF8.GetString(Convert.FromBase64String(client_ID));
 			string redirect_uri = redirectUri;
 			string response_type = "token";
 			string scope = "data:heart_rate:read";
