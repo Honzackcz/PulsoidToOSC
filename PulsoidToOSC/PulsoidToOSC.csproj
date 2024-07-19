@@ -7,6 +7,8 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>False</UseWindowsForms>
     <Nullable>enable</Nullable>
+    <SignAssembly>False</SignAssembly>
+    <ApplicationIcon>PulsoidToOSC.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -22,6 +24,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="PulsoidToOSC.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Makaretu.Dns.Multicast" Version="0.27.0" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
   </ItemGroup>
@@ -29,5 +35,4 @@
   <ItemGroup>
     <ProjectReference Include="..\SharpOSC\SharpOSC.csproj" />
   </ItemGroup>
-
 </Project>

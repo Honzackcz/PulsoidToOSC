@@ -18,5 +18,8 @@ namespace PulsoidToOSC
 
 		[GeneratedRegex(@"VRChat-Client-([A-Za-z0-9]+)\.osc\.")]
 		public static partial Regex RegexVRC_ID();
+
+		[GeneratedRegex(@"[A-Za-z0-9]")]
+		public static partial Regex RegexTokenHidder();
 	}
 }

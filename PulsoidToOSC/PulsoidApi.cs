@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Collections.Specialized;
 using System.Web;
+using System.Net.Sockets;
 
 namespace PulsoidToOSC
 {
@@ -43,10 +44,10 @@ namespace PulsoidToOSC
 
 		public enum TokenValidities { invalid, unknown, valid };
 		public static TokenValidities tokenValiditi = TokenValidities.unknown;
-		public static readonly bool responseModeWebPage = true;
 		public const string pulsoidWSURL = "wss://dev.pulsoid.net/api/v1/data/real_time?access_token=";
 		private const string client_ID = "";
-		private static readonly string redirectUri = "http://localhost:54269/pulsoidtokenredirect/";
+		private static readonly int[] HTTPPorts = [54269, 60422, 63671];
+
 
 		public static void SetPulsoidToken(string? token)
 		{
@@ -58,8 +59,9 @@ namespace PulsoidToOSC
 			}
 		}
 
-		private static string PulsoidAuthorizeUrl()
+		private static string PulsoidAuthorizeUrl(string redirectUri = "")
 		{
+			bool responseModeWebPage = redirectUri == "";
 			string baseUrl = "https://pulsoid.net/oauth2/authorize";
 			string client_id = Encoding.UTF8.GetString(Convert.FromBase64String(client_ID));
 			string redirect_uri = redirectUri;
@@ -83,9 +85,24 @@ namespace PulsoidToOSC
 
 		public static void GetPulsoidToken()
 		{
+			string redirectUri = "";
+			/*
+			foreach (int port in HTTPPorts)
+			{
+				if (IsPortAvailable(port))
+				{
+					redirectUri = $"http://localhost:{port}/pulsoidtokenredirect/";
+
+					StartGETServer(redirectUri);
+
+					break;
+				}
+			}
+			*/
+
 			Process.Start(new ProcessStartInfo
 			{
-				FileName = PulsoidAuthorizeUrl(),
+				FileName = PulsoidAuthorizeUrl(redirectUri),
 				UseShellExecute = true
 			});
 		}
@@ -137,17 +154,20 @@ namespace PulsoidToOSC
 		private static HttpListener? _listenerHTTPServer;
 		private static bool HTTPServerIsRunning = false;
 
-		public static void StartGETServer()
+		public static void StartGETServer(string redirectUri)
 		{
 			if (!HTTPServerIsRunning && redirectUri != "")
 			{
 				HTTPServerIsRunning = true;
 				Debug.WriteLine("Starting server...");
-				Task.Run(StartHTTPServer);
+				Task.Run(async () =>
+				{
+					await StartHTTPServer(redirectUri);
+				});
 			}
 		}
 
-		private static async Task StartHTTPServer()
+		private static async Task StartHTTPServer(string redirectUri)
 		{
 			_listenerHTTPServer = new HttpListener();
 			_listenerHTTPServer.Prefixes.Add(redirectUri);
@@ -156,13 +176,13 @@ namespace PulsoidToOSC
 
 			while (HTTPServerIsRunning)
 			{
-				var context = await _listenerHTTPServer.GetContextAsync();
-				ProcessHTTPRequest(context);
+				ProcessHTTPRequest(await _listenerHTTPServer.GetContextAsync());
 			}
 		}
 
 		private static void ProcessHTTPRequest(HttpListenerContext context)
 		{
+			bool tokenReceived = false;
 			string responseString = "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <meta charset=\"UTF-8\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n    <title>Error</title>\r\n    <link rel=\"icon\" href=\"data:,\" />\r\n</head>\r\n<body>\r\n    <h1>Error</h1>\r\n</body>\r\n</html>";
 
 			if (context.Request.Url != null && context.Request.Url.ToString().Contains("/pulsoidtokenredirect/?"))
@@ -180,8 +200,10 @@ namespace PulsoidToOSC
 				if (MyRegex.RegexGUID().IsMatch(accessToken) && scope.Contains("data:heart_rate:read") && expiresIn > 0)
 				{
 					SetPulsoidToken(accessToken);
-					tokenValiditi = TokenValidities.valid;
+					MainProgram.MainViewModel.TokenText = ConfigData.PulsoidToken;
+					_ = ValidateToken();
 
+					tokenReceived = true;
 					responseString = "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <meta charset=\"UTF-8\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n    <title>Token obtained</title>\r\n    <link rel=\"icon\" href=\"data:,\" />\r\n</head>\r\n<body>\r\n    <h1>Token obtained - you can now close this page</h1>\r\n</body>\r\n</html>";
 				}
 			}
@@ -190,21 +212,44 @@ namespace PulsoidToOSC
 				responseString = "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <meta charset=\"UTF-8\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n    <title>Redirect</title>\r\n    <link rel=\"icon\" href=\"data:,\" />\r\n    <script>\r\n        document.addEventListener(\"DOMContentLoaded\", function() {\r\n            var currentUrl = window.location.href;\r\n            if (currentUrl.includes('#')) {\r\n                var newUrl = currentUrl.replace(/#/, '?');;\r\n                window.location.replace(newUrl);\r\n            }\r\n        });\r\n    </script>\r\n</head>\r\n<body>\r\n    <h1>Redirecting...</h1>\r\n</body>\r\n</html>";
 			}
 
-			var response = context.Response;
+			HttpListenerResponse response = context.Response;
 			byte[] buffer = Encoding.UTF8.GetBytes(responseString);
 
 			response.ContentLength64 = buffer.Length;
-			var output = response.OutputStream;
+			System.IO.Stream output = response.OutputStream;
 			output.Write(buffer, 0, buffer.Length);
 			output.Close();
 
 			Debug.WriteLine($"Received request: {context.Request.Url}");
+			if (tokenReceived) StopGETServer();
 		}
 
 		public static void StopGETServer()
 		{
 			HTTPServerIsRunning = false;
 			_listenerHTTPServer?.Stop();
+		}
+
+		public static bool IsPortAvailable(int port)
+		{
+			bool isAvailable = true;
+			TcpListener? tcpListener = null;
+
+			try
+			{
+				tcpListener = new TcpListener(IPAddress.Loopback, port);
+				tcpListener.Start();
+			}
+			catch (SocketException)
+			{
+				isAvailable = false;
+			}
+			finally
+			{
+				tcpListener?.Stop();
+			}
+
+			return isAvailable;
 		}
 	}
 }

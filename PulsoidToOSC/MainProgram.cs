@@ -40,8 +40,6 @@ namespace PulsoidToOSC
 			SetupOSC();
 			SetupWebSocketEvents();
 
-			if (!PulsoidApi.responseModeWebPage) PulsoidApi.StartGETServer();
-
 			if (ConfigData.AutoStart)
 			{
 				SetUI("Auto start...", ColorYellow);

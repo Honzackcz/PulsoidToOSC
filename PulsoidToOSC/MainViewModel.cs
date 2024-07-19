@@ -73,6 +73,11 @@ namespace PulsoidToOSC
 			get => _tokenText;
 			set { _tokenText = value; OnPropertyChanged(); }
 		}
+		public string TokenTextHidden
+		{
+			get => MyRegex.RegexTokenHidder().Replace(_tokenText, "●");
+		}
+
 		public bool TokenValidationIndicator
 		{
 			get => _tokenValidationIndicator;
@@ -223,6 +228,7 @@ namespace PulsoidToOSC
 			await Task.Delay(250);
 			SetTokenValidationIndicator(PulsoidApi.tokenValiditi);
 		}
+
 		private void ToggleAutoStart()
 		{
 			if (ConfigData.AutoStart == AutoStartCheckmark) return;

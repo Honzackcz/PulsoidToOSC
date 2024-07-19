@@ -5,70 +5,86 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:PulsoidToOSC"
 		mc:Ignorable="d"
-		Title="Pulsoid to OSC options" ResizeMode="NoResize" Height="340" Width="560"
+		Title="PulsoidToOSC options" ResizeMode="NoResize" Height="340" Width="560"
 		xmlns:ui="http://schemas.modernwpf.com/2019"
 		ui:WindowHelper.UseModernWindowStyle="True">
 
-    <Window.Resources>
-    </Window.Resources>
-    
+	<Window.Resources>
+	</Window.Resources>
+	
 	<Grid>
 		<ui:SimpleStackPanel>
-            <TabControl>
-                <TabItem Name="general" Header="General">
-                    <TabItem.Content>
-                        <Grid Margin="12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
+			<TabControl>
+				<TabItem Name="general" Header="General">
+					<TabItem.Content>
+						<Grid Margin="12">
+							<Grid.RowDefinitions>
+								<RowDefinition/>
+								<RowDefinition/>
+								<RowDefinition/>
+							</Grid.RowDefinitions>
 
-                            <Grid Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="140"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Button
+							<Grid Grid.Row="0">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="140"/>
+									<ColumnDefinition/>
+								</Grid.ColumnDefinitions>
+								<Button
 									Command="{Binding GetTokenCommand}"
 									Content="Get Pulsiod token"
 									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
+                                    ToolTip="Open Pulsoid authorization page in your web browser."
 								/>
-                                <TextBlock
+								<TextBlock
 									HorizontalAlignment="Left"
 									VerticalAlignment="Center"
 									Text="Open Pulsoid authorization page in web browser"
 									Grid.Column="1"
 									Margin="4"
 								/>
-                            </Grid>
+							</Grid>
 
-                            <Grid Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="140"/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="40"/>
-                                </Grid.ColumnDefinitions>
+							<Grid Grid.Row="1">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="140"/>
+									<ColumnDefinition/>
+									<ColumnDefinition Width="40"/>
+								</Grid.ColumnDefinitions>
                                 <Button 
 									Command="{Binding SetTokenCommand}"
 									Content="Set Pulsoid token"
 									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
+                                    ToolTip="Apply and verify token."
 								/>
                                 <TextBox
+                                    x:Name="TokenBox"
+									Visibility="Collapsed"
 									Text="{Binding TokenText, UpdateSourceTrigger=PropertyChanged}"
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
+                                    LostFocus="LostFocusToken"
+                                    ToolTip="Enter Pulsoid token, then submit it with the Set button."
+								/>
+                                <TextBox
+                                    x:Name="TokenHiddenBox"
+									Visibility="Visible"
+									Text="{Binding TokenTextHidden, Mode=OneWay}"
+									VerticalContentAlignment="Center"
+									Grid.Column="1"
+									Margin="4"
+                                    GotFocus="GotFocusToken"
+                                    ToolTip="Click to show token.&#x0a;&#x0a;Enter Pulsoid token, then submit it with the Set button."
 								/>
                                 <ui:ProgressRing
 									IsActive="{Binding TokenValidationIndicator}"
 									Grid.Column="2"
 								/>
-                                <Label
+								<Label
 									Visibility="{Binding TokenValidationValid}"
 									Grid.Column="2"
 									Content="&#xE10B;"
@@ -76,9 +92,10 @@
 									HorizontalAlignment="Center"
 									VerticalAlignment="Center"
 									FontSize="24"
-									Foreground="Green"                                    
+									Foreground="Green"
+                                    ToolTip="Token is valid."
 								/>
-                                <Label
+								<Label
 									Visibility="{Binding TokenValidationInvalid}"
 									Grid.Column="2"
 									Content="&#xE711;"
@@ -87,169 +104,180 @@
 									VerticalAlignment="Center"
 									FontSize="24"
 									Foreground="Red"
+                                    ToolTip="Token is invalid."
 								/>
-                            </Grid>
+							</Grid>
 
-                            <ui:ToggleSwitch
+							<ui:ToggleSwitch
 								IsOn="{Binding AutoStartCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 								OnContent="Auto Start"
 								OffContent="Auto Start"
 								Grid.Row="2"
 								Margin="4"
+                                ToolTip="When enabled, the connection to Pulsoid and OSC will start when the app is opened, saving you one click.&#x0a;&#x0a;It will NOT start the application with the system."
 							/>
-                        </Grid>
-                    </TabItem.Content>
-                </TabItem>
+						</Grid>
+					</TabItem.Content>
+				</TabItem>
 
-                <TabItem Name="osc" Header="OSC">
-                    <TabItem.Content>
-                        <Grid Margin="12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
+				<TabItem Name="osc" Header="OSC">
+					<TabItem.Content>
+						<Grid Margin="12">
+							<Grid.RowDefinitions>
+								<RowDefinition/>
+								<RowDefinition/>
+								<RowDefinition/>
+								<RowDefinition/>
+							</Grid.RowDefinitions>
 
-                            <ui:ToggleSwitch
+							<ui:ToggleSwitch
 								IsOn="{Binding OSCManualConfigCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 								OnContent="Send heart rate to manual OSC endpoint"
 								OffContent="Send heart rate to manual OSC endpoint"
 								Grid.Row="0"
 								Margin="4"
+                                ToolTip="When enebled, heart rate parameters will be sent to the following OSC configuration."
 							/>
 
-                            <Grid Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="120"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Button
+							<Grid Grid.Row="1">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="120"/>
+									<ColumnDefinition/>
+								</Grid.ColumnDefinitions>
+								<Button
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetOSCIPCommand}"
 									Content="Set OSC IP"
 									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
+                                    ToolTip="Apply IP."
 								/>
-                                <TextBox
+								<TextBox
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Text="{Binding OSCIPText, UpdateSourceTrigger=PropertyChanged}"
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
 								/>
-                            </Grid>
+							</Grid>
 
-                            <Grid Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="120"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Button 
+							<Grid Grid.Row="2">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="120"/>
+									<ColumnDefinition/>
+								</Grid.ColumnDefinitions>
+								<Button 
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetOSCPortCommand}"
 									Content="Set OSC Port"
 									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
+                                    ToolTip="Apply Port."
 								/>
-                                <TextBox
+								<TextBox
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Text="{Binding OSCPortText, UpdateSourceTrigger=PropertyChanged}"
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
 								/>
-                            </Grid>
+							</Grid>
 
-                            <Grid Grid.Row="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="120"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Button 
+							<Grid Grid.Row="3">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="120"/>
+									<ColumnDefinition/>
+								</Grid.ColumnDefinitions>
+								<Button 
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetOSCPathCommand}"
 									Content="Set OSC Path"
 									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
+                                    ToolTip="Apply Path."
 								/>
-                                <TextBox
+								<TextBox
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Text="{Binding OSCPathText, UpdateSourceTrigger=PropertyChanged}"
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
 								/>
-                            </Grid>
-                        </Grid>
-                    </TabItem.Content>
-                </TabItem>
+							</Grid>
+						</Grid>
+					</TabItem.Content>
+				</TabItem>
 
-                <TabItem Name="vrchat" Header="VRChat">
-                    <TabItem.Content>
-                        <Grid Margin="12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
+				<TabItem Name="vrchat" Header="VRChat">
+					<TabItem.Content>
+						<Grid Margin="12">
+							<Grid.RowDefinitions>
+								<RowDefinition/>
+								<RowDefinition/>
+								<RowDefinition/>
+								<RowDefinition/>
+							</Grid.RowDefinitions>
 
-                            <ui:ToggleSwitch
+							<ui:ToggleSwitch
 								IsOn="{Binding VRCAutoConfigCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 								OnContent="Use VRC OSC Query auto configuration"
 								OffContent="Use VRC OSC Query auto configuration"
 								Grid.Row="0"
 								Margin="4"
+                                ToolTip="When enabled, all data will be sent to VRChat clients running on localhost (the same PC where this app is running) automatically, independent of the OSC settings.&#x0a;&#x0a;If you want to use this app only for VRChat, you can disable sending data to the manual OSC endpoint."
 							/>
 
-                            <ui:ToggleSwitch
+							<ui:ToggleSwitch
 								IsEnabled="{Binding VRCAutoConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 								IsOn="{Binding VRCClinetsOnLANCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 								OnContent="Send to all VRC Clients on LAN (requires auto config)"
 								OffContent="Send to all VRC Clients on LAN (requires auto config)"
 								Grid.Row="1"
 								Margin="4"
+                                ToolTip="If you want to run this app on a different PC than VRChat but on the same LAN, you can enable this."
 							/>
 
-                            <ui:ToggleSwitch
+							<ui:ToggleSwitch
 								IsOn="{Binding VRCChatboxCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 								OnContent="Send heart rate to VRC chatbox"
 								OffContent="Send heart rate to VRC chatbox"
 								Grid.Row="2"
 								Margin="4"
+                                ToolTip="Messages are sent to all auto-configured VRChat clients and the manually defined OSC endpoint."
 							/>
 
-                            <Grid Grid.Row="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="140"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Button
+							<Grid Grid.Row="3">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="140"/>
+									<ColumnDefinition/>
+								</Grid.ColumnDefinitions>
+								<Button
 									IsEnabled="{Binding VRCChatboxCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetVRCChatboxMessageCommand}"
 									Content="Set VRC msg text"
 									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
+                                    ToolTip="Apply message."
 								/>
-                                <TextBox
+								<TextBox
 									IsEnabled="{Binding VRCChatboxCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Text="{Binding VRCChatboxMessageText, UpdateSourceTrigger=PropertyChanged}"
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
+                                    ToolTip="Messages containing key &lt;bpm&gt; will automatically replace this key with the heart rate value. If the message doesn't contain the key, the heart rate will be added at the end of the message.&#x0a;&#x0a;For example, this message 'Heartrate: &lt;bpm&gt; BPM' will appear in the VRChat chatbox as: 'Heartrate: 123 BPM'"
 								/>
-                            </Grid>
-                        </Grid>
-                    </TabItem.Content>
-                </TabItem>
-            </TabControl>
-        </ui:SimpleStackPanel>
-        
+							</Grid>
+						</Grid>
+					</TabItem.Content>
+				</TabItem>
+			</TabControl>
+		</ui:SimpleStackPanel>
+		
 		<Grid 
 			VerticalAlignment="Bottom"
 			HorizontalAlignment="Center">

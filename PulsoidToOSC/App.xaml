@@ -33,10 +33,7 @@
                     </ui:ThemeResources.ThemeDictionaries>
                 </ui:ThemeResources>
 
-
-
             </ResourceDictionary.MergedDictionaries>
-
         </ResourceDictionary>
     </Application.Resources>
 </Application>

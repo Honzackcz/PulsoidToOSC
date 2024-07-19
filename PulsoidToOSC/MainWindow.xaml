@@ -6,7 +6,7 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:PulsoidToOSC"
 		mc:Ignorable="d"
-		Title="Pulsoid to OSC" ResizeMode="CanMinimize" Height="200" Width="400"
+		Title="PulsoidToOSC" ResizeMode="CanMinimize" Height="200" Width="400"
 		xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:ThemeManager.IsThemeAware="True"
         ui:WindowHelper.UseModernWindowStyle="True">
