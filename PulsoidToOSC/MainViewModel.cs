@@ -83,17 +83,17 @@ namespace PulsoidToOSC
 		public bool TokenValidationIndicator
 		{
 			get => _tokenValidationIndicator;
-			set { _tokenValidationIndicator = value; OnPropertyChanged(); ToggleAutoStart(); }
+			set { _tokenValidationIndicator = value; OnPropertyChanged(); }
 		}
 		public string TokenValidationValid
 		{
 			get => _tokenValidationValid;
-			set { _tokenValidationValid = value; OnPropertyChanged(); ToggleAutoStart(); }
+			set { _tokenValidationValid = value; OnPropertyChanged(); }
 		}
 		public string TokenValidationInvalid
 		{
 			get => _tokenValidationInvalid;
-			set { _tokenValidationInvalid = value; OnPropertyChanged(); ToggleAutoStart(); }
+			set { _tokenValidationInvalid = value; OnPropertyChanged(); }
 		}
 		public bool AutoStartCheckmark
 		{

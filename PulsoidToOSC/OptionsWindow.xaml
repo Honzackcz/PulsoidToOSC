@@ -53,7 +53,7 @@
 									<ColumnDefinition Width="40"/>
 								</Grid.ColumnDefinitions>
 								<Button
-                                    x:Name="SetTokenButton"
+									x:Name="SetTokenButton"
 									Command="{Binding SetTokenCommand}"
 									Content="Set Pulsoid token"
 									HorizontalAlignment="Stretch"
@@ -153,7 +153,7 @@
 									<ColumnDefinition/>
 								</Grid.ColumnDefinitions>
 								<Button
-                                    Name="SetOSCIPButton"
+									Name="SetOSCIPButton"
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetOSCIPCommand}"
 									Content="Set OSC IP"
@@ -181,7 +181,7 @@
 									<ColumnDefinition/>
 								</Grid.ColumnDefinitions>
 								<Button
-                                    Name="SetOSCPortButton"
+									Name="SetOSCPortButton"
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetOSCPortCommand}"
 									Content="Set OSC Port"
@@ -209,7 +209,7 @@
 									<ColumnDefinition/>
 								</Grid.ColumnDefinitions>
 								<Button
-                                    Name="SetOSCPathButton"
+									Name="SetOSCPathButton"
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetOSCPathCommand}"
 									Content="Set OSC Path"
@@ -278,7 +278,7 @@
 									<ColumnDefinition/>
 								</Grid.ColumnDefinitions>
 								<Button
-                                    Name="SetVRCChatboxMessageButton"
+									Name="SetVRCChatboxMessageButton"
 									IsEnabled="{Binding VRCChatboxCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetVRCChatboxMessageCommand}"
 									Content="Set VRC msg text"
