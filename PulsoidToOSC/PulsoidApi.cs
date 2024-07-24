@@ -45,7 +45,7 @@ namespace PulsoidToOSC
 		public enum TokenValidities { invalid, unknown, valid };
 		public static TokenValidities tokenValiditi = TokenValidities.unknown;
 		public const string pulsoidWSURL = "wss://dev.pulsoid.net/api/v1/data/real_time?access_token=";
-		private const string client_ID = "";
+		private const string client_ID = "ZTQ5ZDVhMGMtZWM0My00MDUzLTgyYTgtMmM1YzkxMzE5ZTNh";
 		private static readonly int[] HTTPPorts = [54269, 60422, 63671];
 
 
