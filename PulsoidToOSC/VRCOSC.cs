@@ -57,6 +57,7 @@ namespace PulsoidToOSC
 			if (lastVRCChatboxMessageTime.AddSeconds(2) < DateTime.UtcNow)
 			{
 				string message = ConfigData.VRCChatboxMessage.Contains("<bpm>") ? ConfigData.VRCChatboxMessage.Replace("<bpm>", heartRate.ToString()) : ConfigData.VRCChatboxMessage + heartRate ;
+				message = ConvertSpecialCharacters(message);
 				oscSender.Send(new OscMessage("/chatbox/input", message, true, false));
 				lastVRCChatboxMessageTime = DateTime.UtcNow;
 			}
@@ -83,6 +84,22 @@ namespace PulsoidToOSC
 					MainProgram.disp.Invoke(() => ClearVRCChatbox(oscSender, false));
 				});
 			}
+		}
+
+		private static string ConvertSpecialCharacters(string input)
+		{
+			const int required_width = 64;
+
+			input = input.Replace("\\v", "\v");
+			input = input.Replace("/v", "\v");
+			input = input.Replace("\\n", "/n");
+
+			return Regex.Replace(input, "/n", match =>
+			{
+				var spaces = match.Index == 0 ? 0 : (match.Index - input.LastIndexOf("/n", match.Index, StringComparison.Ordinal)) % required_width;
+				var spaceCount = required_width - spaces;
+				return spaces < 0 || spaceCount < 0 ? string.Empty : new string(' ', spaceCount);
+			});
 		}
 
 		class VRCClient
