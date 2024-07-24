@@ -8,20 +8,20 @@
 		mc:Ignorable="d"
 		Title="PulsoidToOSC" ResizeMode="CanMinimize" Height="200" Width="400"
 		xmlns:ui="http://schemas.modernwpf.com/2019"
-        ui:ThemeManager.IsThemeAware="True"
-        ui:WindowHelper.UseModernWindowStyle="True">
+		ui:ThemeManager.IsThemeAware="True"
+		ui:WindowHelper.UseModernWindowStyle="True">
 
-    <Window.Resources>
-    </Window.Resources>
-    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        
-        <Grid Grid.Row="0">
-            <Button 
+	<Window.Resources>
+	</Window.Resources>
+	
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition/>
+		</Grid.RowDefinitions>
+		
+		<Grid Grid.Row="0">
+			<Button 
 				Command="{Binding OpenOptionsCommand}"
 				Content="Options"
 				HorizontalAlignment="Right"
@@ -30,12 +30,12 @@
 				Height="32"
 				Margin="4"
 			/>
-            <Grid
+			<Grid
 				Width="80"
 				Height="10"
 				Background="{Binding LiveIndicatorColor}"
 			/>
-            <Button
+			<Button
 				Command="{Binding StartCommand}"
 				Content="{Binding StartButtonContent}"
 				HorizontalAlignment="Left"
@@ -44,8 +44,8 @@
 				Height="32"
 				Margin="4"
 			/>
-        </Grid>
-        <Grid Grid.Row="1">
+		</Grid>
+		<Grid Grid.Row="1">
 			<TextBlock
 				Text="{Binding BPMText}"
 				HorizontalAlignment="Center"
@@ -54,8 +54,8 @@
 				FontSize="50"
 				Foreground="#00FF00"
 			/>
-            
-            <TextBlock
+			
+			<TextBlock
 				Text="{Binding MeasuredAtText}"
 				HorizontalAlignment="Center"
 				VerticalAlignment="Bottom"
@@ -63,7 +63,7 @@
 				Foreground="#00FF00"
 			/>
 
-            <TextBlock
+			<TextBlock
 				Text="{Binding ErrorText}"
 				VerticalAlignment="Center"
 				Foreground="{Binding ErrorTextColor}"
@@ -71,6 +71,6 @@
 				TextAlignment="Center"
 				Margin="0,0,0,18"
 			/>
-        </Grid>
-    </Grid>
+		</Grid>
+	</Grid>
 </Window>

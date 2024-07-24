@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 
 namespace PulsoidToOSC
@@ -71,11 +72,12 @@ namespace PulsoidToOSC
 		public string TokenText
 		{
 			get => _tokenText;
-			set { _tokenText = value; OnPropertyChanged(); }
+			set { _tokenText = value ?? string.Empty; OnPropertyChanged(); TokenTextHidden = "just to call OnPropertyChanged()"; }
 		}
 		public string TokenTextHidden
 		{
 			get => MyRegex.RegexTokenHidder().Replace(_tokenText, "●");
+			private set => OnPropertyChanged();
 		}
 
 		public bool TokenValidationIndicator
@@ -107,17 +109,17 @@ namespace PulsoidToOSC
 		public string OSCIPText
 		{
 			get => _oscIpText;
-			set { _oscIpText = value; 	OnPropertyChanged(); }
+			set { _oscIpText = value ?? string.Empty; OnPropertyChanged(); }
 		}
 		public string OSCPortText
 		{
 			get => _oscPortText;
-			set { _oscPortText = value; OnPropertyChanged(); }
+			set { _oscPortText = value ?? string.Empty; OnPropertyChanged(); }
 		}
 		public string OSCPathText
 		{
 			get => _oscPathText;
-			set { _oscPathText = value; OnPropertyChanged(); }
+			set { _oscPathText = value ?? string.Empty; OnPropertyChanged(); }
 		}
 
 		public bool VRCAutoConfigCheckmark
@@ -138,7 +140,7 @@ namespace PulsoidToOSC
 		public string VRCChatboxMessageText
 		{
 			get => _vrcChatboxMessageText;
-			set { _vrcChatboxMessageText = value; OnPropertyChanged(); }
+			set { _vrcChatboxMessageText = value ?? string.Empty; OnPropertyChanged(); }
 		}
 
 		//MainWindow Commands
@@ -206,7 +208,7 @@ namespace PulsoidToOSC
 			{
 				DataContext = this,
 				Owner = mainWindow,
-				WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner
+				WindowStartupLocation = WindowStartupLocation.CenterOwner
 			};
 			optionsWindow.Closing += OptionsWindowClosing;
 			optionsWindow.ShowDialog();
@@ -218,6 +220,8 @@ namespace PulsoidToOSC
 		}
 		private async void SetToken()
 		{
+			(optionsWindow?.FindName("SetTokenButton") as UIElement)?.Focus();
+			
 			SetTokenValidationIndicator(PulsoidApi.TokenValidities.unknown);
 			string previousToken = ConfigData.PulsoidToken;
 			PulsoidApi.SetPulsoidToken(TokenText);
@@ -225,7 +229,7 @@ namespace PulsoidToOSC
 			if (previousToken != ConfigData.PulsoidToken) restartToApplyOptions = true;
 
 			await PulsoidApi.ValidateToken();
-			await Task.Delay(250);
+			await Task.Delay(250); //just for user to see the validation happens in case it was too fast
 			SetTokenValidationIndicator(PulsoidApi.tokenValiditi);
 		}
 
@@ -244,6 +248,8 @@ namespace PulsoidToOSC
 		}
 		private void SetOSCIP()
 		{
+			(optionsWindow?.FindName("SetOSCIPButton") as UIElement)?.Focus();
+
 			IPAddress preiousIP = ConfigData.OSCIP;
 
 			if (OSCIPText == "localhost") OSCIPText = "127.0.0.1";
@@ -257,6 +263,8 @@ namespace PulsoidToOSC
 		}
 		private void SetOSCPort()
 		{
+			(optionsWindow?.FindName("SetOSCPortButton") as UIElement)?.Focus();
+
 			if (Int32.TryParse(OSCPortText, out int parsedPort) && parsedPort <= 65535 && parsedPort > 0 && parsedPort != ConfigData.OSCPort)
 			{
 				ConfigData.OSCPort = parsedPort;
@@ -267,6 +275,8 @@ namespace PulsoidToOSC
 		}
 		private void SetOSCPath()
 		{
+			(optionsWindow?.FindName("SetOSCPathButton") as UIElement)?.Focus();
+
 			if (!OSCPathText.StartsWith('/')) OSCPathText =  "/" + OSCPathText;
 			if (!OSCPathText.EndsWith('/')) OSCPathText += "/";
 			if (ConfigData.OSCPath == OSCPathText) return;
@@ -294,6 +304,8 @@ namespace PulsoidToOSC
 		}
 		private void SetVRCChatboxMessage()
 		{
+			(optionsWindow?.FindName("SetVRCChatboxMessageButton") as UIElement)?.Focus();
+
 			if (ConfigData.VRCChatboxMessage == VRCChatboxMessageText) return;
 			ConfigData.VRCChatboxMessage = VRCChatboxMessageText;
 			ConfigData.SaveConfig();

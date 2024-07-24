@@ -6,7 +6,7 @@
 		xmlns:local="clr-namespace:PulsoidToOSC"
 		mc:Ignorable="d"
 		Title="PulsoidToOSC options" ResizeMode="NoResize" Height="340" Width="560"
-		xmlns:ui="http://schemas.modernwpf.com/2019"
+		xmlns:ui="http://schemas.modernwpf.com/2019" d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
 		ui:WindowHelper.UseModernWindowStyle="True">
 
 	<Window.Resources>
@@ -35,7 +35,7 @@
 									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
-                                    ToolTip="Open Pulsoid authorization page in your web browser."
+									ToolTip="Open Pulsoid authorization page in your web browser."
 								/>
 								<TextBlock
 									HorizontalAlignment="Left"
@@ -52,35 +52,43 @@
 									<ColumnDefinition/>
 									<ColumnDefinition Width="40"/>
 								</Grid.ColumnDefinitions>
-                                <Button 
+								<Button
+                                    x:Name="SetTokenButton"
 									Command="{Binding SetTokenCommand}"
 									Content="Set Pulsoid token"
 									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
-                                    ToolTip="Apply and verify token."
+									ToolTip="Apply and verify token."
 								/>
-                                <TextBox
-                                    x:Name="TokenBox"
-									Visibility="Collapsed"
+								<TextBox
+									x:Name="TokenBox"
+									Visibility="Hidden"
 									Text="{Binding TokenText, UpdateSourceTrigger=PropertyChanged}"
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
-                                    LostFocus="LostFocusToken"
-                                    ToolTip="Enter Pulsoid token, then submit it with the Set button."
-								/>
-                                <TextBox
-                                    x:Name="TokenHiddenBox"
+									LostFocus="LostFocusToken"
+									ToolTip="Enter Pulsoid token, then submit it with the Set button."
+									MaxLength="36"
+									MaxLines="1"
+
+									>
+									<TextBox.InputBindings>
+										<KeyBinding Key="Enter" Command="{Binding SetTokenCommand}"/>
+									</TextBox.InputBindings>
+								</TextBox>
+								<TextBox
+									x:Name="TokenHiddenBox"
 									Visibility="Visible"
 									Text="{Binding TokenTextHidden, Mode=OneWay}"
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
-                                    GotFocus="GotFocusToken"
-                                    ToolTip="Click to show token.&#x0a;&#x0a;Enter Pulsoid token, then submit it with the Set button."
+									GotFocus="GotFocusToken"
+									ToolTip="Click to show token.&#x0a;&#x0a;Enter Pulsoid token, then submit it with the Set button."
 								/>
-                                <ui:ProgressRing
+								<ui:ProgressRing
 									IsActive="{Binding TokenValidationIndicator}"
 									Grid.Column="2"
 								/>
@@ -93,7 +101,7 @@
 									VerticalAlignment="Center"
 									FontSize="24"
 									Foreground="Green"
-                                    ToolTip="Token is valid."
+									ToolTip="Token is valid."
 								/>
 								<Label
 									Visibility="{Binding TokenValidationInvalid}"
@@ -104,7 +112,7 @@
 									VerticalAlignment="Center"
 									FontSize="24"
 									Foreground="Red"
-                                    ToolTip="Token is invalid."
+									ToolTip="Token is invalid."
 								/>
 							</Grid>
 
@@ -114,7 +122,7 @@
 								OffContent="Auto Start"
 								Grid.Row="2"
 								Margin="4"
-                                ToolTip="When enabled, the connection to Pulsoid and OSC will start when the app is opened, saving you one click.&#x0a;&#x0a;It will NOT start the application with the system."
+								ToolTip="When enabled, the connection to Pulsoid and OSC will start when the app is opened, saving you one click.&#x0a;&#x0a;It will NOT start the application with the system."
 							/>
 						</Grid>
 					</TabItem.Content>
@@ -136,7 +144,7 @@
 								OffContent="Send heart rate to manual OSC endpoint"
 								Grid.Row="0"
 								Margin="4"
-                                ToolTip="When enebled, heart rate parameters will be sent to the following OSC configuration."
+								ToolTip="When enebled, heart rate parameters will be sent to the following OSC configuration."
 							/>
 
 							<Grid Grid.Row="1">
@@ -145,13 +153,14 @@
 									<ColumnDefinition/>
 								</Grid.ColumnDefinitions>
 								<Button
+                                    Name="SetOSCIPButton"
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetOSCIPCommand}"
 									Content="Set OSC IP"
 									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
-                                    ToolTip="Apply IP."
+									ToolTip="Apply IP."
 								/>
 								<TextBox
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
@@ -159,7 +168,11 @@
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
-								/>
+								>
+									<TextBox.InputBindings>
+										<KeyBinding Key="Enter" Command="{Binding SetOSCIPCommand}"/>
+									</TextBox.InputBindings>
+								</TextBox>
 							</Grid>
 
 							<Grid Grid.Row="2">
@@ -167,14 +180,15 @@
 									<ColumnDefinition Width="120"/>
 									<ColumnDefinition/>
 								</Grid.ColumnDefinitions>
-								<Button 
+								<Button
+                                    Name="SetOSCPortButton"
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetOSCPortCommand}"
 									Content="Set OSC Port"
 									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
-                                    ToolTip="Apply Port."
+									ToolTip="Apply Port."
 								/>
 								<TextBox
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
@@ -182,7 +196,11 @@
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
-								/>
+								>
+									<TextBox.InputBindings>
+										<KeyBinding Key="Enter" Command="{Binding SetOSCPortCommand}"/>
+									</TextBox.InputBindings>
+								</TextBox>
 							</Grid>
 
 							<Grid Grid.Row="3">
@@ -190,14 +208,15 @@
 									<ColumnDefinition Width="120"/>
 									<ColumnDefinition/>
 								</Grid.ColumnDefinitions>
-								<Button 
+								<Button
+                                    Name="SetOSCPathButton"
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetOSCPathCommand}"
 									Content="Set OSC Path"
 									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
-                                    ToolTip="Apply Path."
+									ToolTip="Apply Path."
 								/>
 								<TextBox
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
@@ -205,7 +224,11 @@
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
-								/>
+								>
+									<TextBox.InputBindings>
+										<KeyBinding Key="Enter" Command="{Binding SetOSCPathCommand}"/>
+									</TextBox.InputBindings>
+								</TextBox>
 							</Grid>
 						</Grid>
 					</TabItem.Content>
@@ -227,7 +250,7 @@
 								OffContent="Use VRC OSC Query auto configuration"
 								Grid.Row="0"
 								Margin="4"
-                                ToolTip="When enabled, all data will be sent to VRChat clients running on localhost (the same PC where this app is running) automatically, independent of the OSC settings.&#x0a;&#x0a;If you want to use this app only for VRChat, you can disable sending data to the manual OSC endpoint."
+								ToolTip="When enabled, all data will be sent to VRChat clients running on localhost (the same PC where this app is running) automatically, independent of the OSC settings.&#x0a;&#x0a;If you want to use this app only for VRChat, you can disable sending data to the manual OSC endpoint."
 							/>
 
 							<ui:ToggleSwitch
@@ -237,7 +260,7 @@
 								OffContent="Send to all VRC Clients on LAN (requires auto config)"
 								Grid.Row="1"
 								Margin="4"
-                                ToolTip="If you want to run this app on a different PC than VRChat but on the same LAN, you can enable this."
+								ToolTip="If you want to run this app on a different PC than VRChat but on the same LAN, you can enable this."
 							/>
 
 							<ui:ToggleSwitch
@@ -246,7 +269,7 @@
 								OffContent="Send heart rate to VRC chatbox"
 								Grid.Row="2"
 								Margin="4"
-                                ToolTip="Messages are sent to all auto-configured VRChat clients and the manually defined OSC endpoint."
+								ToolTip="Messages are sent to all auto-configured VRChat clients and the manually defined OSC endpoint."
 							/>
 
 							<Grid Grid.Row="3">
@@ -255,13 +278,14 @@
 									<ColumnDefinition/>
 								</Grid.ColumnDefinitions>
 								<Button
+                                    Name="SetVRCChatboxMessageButton"
 									IsEnabled="{Binding VRCChatboxCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetVRCChatboxMessageCommand}"
 									Content="Set VRC msg text"
 									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
-                                    ToolTip="Apply message."
+									ToolTip="Apply message."
 								/>
 								<TextBox
 									IsEnabled="{Binding VRCChatboxCheckmark, UpdateSourceTrigger=PropertyChanged}"
@@ -269,8 +293,12 @@
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
-                                    ToolTip="Messages containing key &lt;bpm&gt; will automatically replace this key with the heart rate value. If the message doesn't contain the key, the heart rate will be added at the end of the message.&#x0a;&#x0a;For example, this message 'Heartrate: &lt;bpm&gt; BPM' will appear in the VRChat chatbox as: 'Heartrate: 123 BPM'"
-								/>
+									ToolTip="Messages containing key &lt;bpm&gt; will automatically replace this key with the heart rate value. If the message doesn't contain the key, the heart rate will be added at the end of the message.&#x0a;&#x0a;For example, this message 'Heartrate: &lt;bpm&gt; BPM' will appear in the VRChat chatbox as: 'Heartrate: 123 BPM'"
+								>
+								<TextBox.InputBindings>
+									<KeyBinding Key="Enter" Command="{Binding SetVRCChatboxMessageCommand}"/>
+								</TextBox.InputBindings>
+								</TextBox>
 							</Grid>
 						</Grid>
 					</TabItem.Content>

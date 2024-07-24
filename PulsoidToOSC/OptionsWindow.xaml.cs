@@ -15,14 +15,15 @@ namespace PulsoidToOSC
         private void GotFocusToken(object sender, RoutedEventArgs e)
         {
             TokenBox.Visibility = Visibility.Visible;
-            TokenHiddenBox.Visibility = Visibility.Collapsed;
+            TokenHiddenBox.Visibility = Visibility.Hidden;
 			MainProgram.MainViewModel.TokenText = ConfigData.PulsoidToken;
 			TokenBox.Focus();
+            TokenBox.CaretIndex = int.MaxValue;
         }
 
         private void LostFocusToken(object sender, RoutedEventArgs e)
         {
-			TokenBox.Visibility = Visibility.Collapsed;
+			TokenBox.Visibility = Visibility.Hidden;
 			TokenHiddenBox.Visibility = Visibility.Visible;
 		}
 	}
