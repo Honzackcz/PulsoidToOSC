@@ -54,6 +54,10 @@ This setting provides simple options to send heart rate data to the VRChat chatb
 Messages containing key `<bpm>` will automatically replace this key with the heart rate value. If the message doesn't contain the key, the heart rate will be added at the end of the message.<br>
 For example, this message `Heartrate: <bpm> BPM` will appear in the VRChat chatbox as: ***Heartrate: 123 BPM***
 
+Chatbox messages also support new line characters.<br>
+`\v` or `/v` will simply start new line.<br>
+`\n` or `/n` will start new line by filling the rest of the current line with spaces, thereby making the chatbox as wide as possible.
+
 Messages are sent to the manually defined OSC endpoint and all auto-configured VRChat clients.
 
 
