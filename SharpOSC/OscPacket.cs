@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SharpOSC
@@ -381,12 +382,26 @@ namespace SharpOSC
 
 		protected static byte[] setString(string value)
 		{
+			/*
 			int len = value.Length + (4 - value.Length % 4);
 			if (len <= value.Length) len = len + 4;
 
 			byte[] msg = new byte[len];
 
 			var bytes = Encoding.ASCII.GetBytes(value);
+			bytes.CopyTo(msg, 0);
+
+			return msg;
+			*/
+			// Original code (above) doesn't support UTF8 encoding for string messages
+
+			byte[] bytes = Encoding.UTF8.GetBytes(value);
+
+			int len = bytes.Length + (4 - bytes.Length % 4);
+			if (len <= bytes.Length) len = len + 4;
+
+			byte[] msg = new byte[len];
+
 			bytes.CopyTo(msg, 0);
 
 			return msg;
