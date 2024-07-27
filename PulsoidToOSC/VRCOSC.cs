@@ -11,6 +11,15 @@ namespace PulsoidToOSC
 	{
 		private const string _oscPath = "/avatar/parameters/";
 		private static readonly Dictionary<string, VRCClient> VRCClients = [];
+		private static readonly Dictionary<MainProgram.HeartRateTrends, string> HeartRateTrendStrings = new() 
+		{
+			{ MainProgram.HeartRateTrends.none, "" },
+			{ MainProgram.HeartRateTrends.stable, "▶" },
+			{ MainProgram.HeartRateTrends.upward, "↗" },
+			{ MainProgram.HeartRateTrends.downward, "↘" },
+			{ MainProgram.HeartRateTrends.strongUpward, "⏫" },
+			{ MainProgram.HeartRateTrends.strongDownward, "⏬"}
+		};
 
 		public static string OSCPath
 		{
@@ -54,9 +63,10 @@ namespace PulsoidToOSC
 
 		public static void SendVRCChatBox(UDPSender oscSender, int heartRate) // Not reliable due to VRC message rate limit - will not send in 2 sec cooldown
 		{
-			if (lastVRCChatboxMessageTime.AddSeconds(2) < DateTime.UtcNow)
+			if (lastVRCChatboxMessageTime.AddSeconds(1.9) < DateTime.UtcNow)
 			{
-				string message = ConfigData.VRCChatboxMessage.Contains("<bpm>") ? ConfigData.VRCChatboxMessage.Replace("<bpm>", heartRate.ToString()) : ConfigData.VRCChatboxMessage + heartRate ;
+				string message = ConfigData.VRCChatboxMessage.Contains("<bpm>") ? ConfigData.VRCChatboxMessage.Replace("<bpm>", heartRate.ToString()) : ConfigData.VRCChatboxMessage + heartRate;
+				message = message.Replace("<trend>", HeartRateTrendStrings[MainProgram.HeartRateTrend]);
 				message = ConvertSpecialCharacters(message);
 				oscSender.Send(new OscMessage("/chatbox/input", message, true, false));
 				lastVRCChatboxMessageTime = DateTime.UtcNow;

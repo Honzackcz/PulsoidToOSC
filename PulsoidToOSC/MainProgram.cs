@@ -17,6 +17,10 @@ namespace PulsoidToOSC
 		public static readonly Dispatcher disp = Dispatcher.CurrentDispatcher;
 		public static readonly MainViewModel MainViewModel = new();
 
+		public enum HeartRateTrends { none, stable, upward, downward, strongUpward, strongDownward };
+		public static HeartRateTrends HeartRateTrend { get; private set; } = HeartRateTrends.none;
+		private static readonly List<int> recentHeartRates = [];
+
 		public static UDPSender? OSCSender { get; private set; }
 		public static bool HBToggle { get; private set; } = false;
 		private static DateTime lastWSMessageTime = DateTime.MinValue;
@@ -53,7 +57,7 @@ namespace PulsoidToOSC
 		}
 
 		public static void StartPulsoidToOSC(bool reconnect = false)
-		{		
+		{
 			if (!reconnect) failedWSConnectionAttempts = 0;
 			delayedStartTaskCts.Cancel();
 
@@ -74,6 +78,8 @@ namespace PulsoidToOSC
 			appSate = AppSates.starting;
 			MainViewModel.StartButtonContent = " ";
 			SetUI("Connecting to Pulsoid...", ColorYellow);
+			HeartRateTrend = HeartRateTrends.none;
+			recentHeartRates.Clear();
 			SetupOSC();
 			VRCOSC.Query.SetupQuerry();
 			_ = StartWebSocket();
@@ -123,7 +129,7 @@ namespace PulsoidToOSC
 		private static async Task StartWebSocket()
 		{
 			await SimpleWSClient.OpenConnectionAsync(PulsoidApi.pulsoidWSURL + ConfigData.PulsoidToken);
-			
+
 			lastWSMessageTime = DateTime.MinValue;
 
 			await Task.Delay(1000);
@@ -213,6 +219,24 @@ namespace PulsoidToOSC
 
 			HBToggle = !HBToggle;
 
+			recentHeartRates.Add(heartRate);
+			if (recentHeartRates.Count > 5)
+			{
+				recentHeartRates.RemoveAt(0);
+				HeartRateTrend = CalcualteTrend(recentHeartRates) switch
+				{
+					> 1f => HeartRateTrends.strongUpward,
+					< -1f => HeartRateTrends.strongDownward,
+					> 0.5f => HeartRateTrends.upward,
+					< -0.5f => HeartRateTrends.downward,
+					_ => HeartRateTrends.stable
+				};
+			}
+			else
+			{
+				HeartRateTrend = HeartRateTrends.none;
+			}
+
 			VRCOSC.SendHeartRates(heartRate);
 
 			if (OSCSender == null || !ConfigData.OSCUseManualConfig) return;
@@ -228,6 +252,22 @@ namespace PulsoidToOSC
 			];
 
 			foreach (OscMessage message in oscMessages) if (message != null) OSCSender.Send(message);
+		}
+
+		private static float CalcualteTrend(List<int> values)
+		{
+			int n = values.Count;
+			int sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+
+			for (int i = 0; i < n; i++)
+			{
+				sumX += i;
+				sumY += values[i];
+				sumXY += i * values[i];
+				sumX2 += i * i;
+			}
+
+			return (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
 		}
 
 		private static void SetUI(string errorText = "", string indicatorColor = "#00000000", string bpmText = "", string measuredAtText = "")
