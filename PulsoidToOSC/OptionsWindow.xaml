@@ -168,6 +168,7 @@
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
+                                    ToolTip="OSC IP adress."
 								>
 									<TextBox.InputBindings>
 										<KeyBinding Key="Enter" Command="{Binding SetOSCIPCommand}"/>
@@ -196,6 +197,7 @@
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
+                                    ToolTip="OSC Port in range of 1 to 65535."
 								>
 									<TextBox.InputBindings>
 										<KeyBinding Key="Enter" Command="{Binding SetOSCPortCommand}"/>
@@ -224,6 +226,7 @@
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
+                                    ToolTip="OSC Path."
 								>
 									<TextBox.InputBindings>
 										<KeyBinding Key="Enter" Command="{Binding SetOSCPathCommand}"/>
@@ -292,8 +295,10 @@
 									Text="{Binding VRCChatboxMessageText, UpdateSourceTrigger=PropertyChanged}"
 									VerticalContentAlignment="Center"
 									Grid.Column="1"
+                                    Height="60"
+                                    TextWrapping="Wrap"
 									Margin="4"
-									ToolTip="Messages containing key &lt;bpm&gt; will automatically replace this key with the heart rate value. If the message doesn't contain the key, the heart rate will be added at the end of the message.&#x0a;&#x0a;For example, this message 'Heartrate: &lt;bpm&gt; BPM' will appear in the VRChat chatbox as: 'Heartrate: 123 BPM'"
+									ToolTip="&lt;bpm&gt; will be replaced with the heart rate value. If the message doesn't contain &lt;bpm&gt;, the heart rate will be added at the end of the message.&#x0a;&#x0a;&lt;trend&gt; will be replaced with an arrow indicating trend of how much the heart rate is changing."
 								>
 								<TextBox.InputBindings>
 									<KeyBinding Key="Enter" Command="{Binding SetVRCChatboxMessageCommand}"/>
