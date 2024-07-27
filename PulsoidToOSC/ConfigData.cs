@@ -18,7 +18,7 @@ namespace PulsoidToOSC
 		private static bool _vrcUseAutoConfig = false;
 		private static bool _vrcSendToAllClinetsOnLAN = false;
 		private static bool _vrcSendBPMToChatbox = false;
-		private static string _vrcChatboxMessage = "Heart rate:\\v<bpm> BPM";
+		private static string _vrcChatboxMessage = "Heart rate:\\v<bpm> BPM <trend>";
 
 		// General
 		public static string PulsoidToken
