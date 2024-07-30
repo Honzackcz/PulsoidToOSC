@@ -91,3 +91,5 @@ These parameters are chosen to support most currently used systems. In practice,
 [SharpOSC](https://github.com/ValdemarOrn/SharpOSC) is a small library designed to make interacting with Open Sound Control easy (OSC).
 
 [ModernWPF](https://github.com/Kinnara/ModernWpf) - Modern styles and controls for your WPF applications.
+
+[net-mdns](https://github.com/richardschneider/net-mdns) - A simple Multicast Domain Name Service.
