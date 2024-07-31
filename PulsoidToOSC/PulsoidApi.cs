@@ -13,48 +13,50 @@ namespace PulsoidToOSC
 {
 	internal static class PulsoidApi
 	{
-		public class JsonWSMessage
+		public class Json
 		{
-			[JsonPropertyName("measured_at")]
-			public long? MeasuredAt { get; set; }
+			public class WSMessage
+			{
+				[JsonPropertyName("measured_at")]
+				public long? MeasuredAt { get; set; }
 
-			[JsonPropertyName("data")]
-			public JsonWSMessage_Data? Data { get; set; }
+				[JsonPropertyName("data")]
+				public WSMessage_Data? Data { get; set; }
+			}
+			public class WSMessage_Data
+			{
+				[JsonPropertyName("heart_rate")]
+				public int? HeartRate { get; set; }
+			}
+			public class ValidateResponse
+			{
+				[JsonPropertyName("client_id")]
+				public string? ClientId { get; set; }
+
+				[JsonPropertyName("expires_in")]
+				public int? ExpiresIn { get; set; }
+
+				[JsonPropertyName("profile_id")]
+				public string? ProfileId { get; set; }
+
+				[JsonPropertyName("scopes")]
+				public List<string>? Scopes { get; set; }
+			}
 		}
-		public class JsonWSMessage_Data
-		{
-			[JsonPropertyName("heart_rate")]
-			public int? HeartRate { get; set; }
-		}
 
-		public class JsonValidateResponse
-		{
-			[JsonPropertyName("client_id")]
-			public string? ClientId { get; set; }
-
-			[JsonPropertyName("expires_in")]
-			public int? ExpiresIn { get; set; }
-
-			[JsonPropertyName("profile_id")]
-			public string? ProfileId { get; set; }
-
-			[JsonPropertyName("scopes")]
-			public List<string>? Scopes { get; set; }
-		}
-
-		public enum TokenValidities { invalid, unknown, valid };
-		public static TokenValidities tokenValiditi = TokenValidities.unknown;
-		public const string pulsoidWSURL = "wss://dev.pulsoid.net/api/v1/data/real_time?access_token=";
-		private const string client_ID = "ZTQ5ZDVhMGMtZWM0My00MDUzLTgyYTgtMmM1YzkxMzE5ZTNh";
-		private static readonly int[] HTTPPorts = [54269, 60422, 63671];
+		public enum TokenValidities { Invalid, Unknown, Valid };
+		public static TokenValidities TokenValiditi { get; set; } = TokenValidities.Unknown;
+		public const string PulsoidWSURL = "wss://dev.pulsoid.net/api/v1/data/real_time?access_token=";
+		private const string clientID = "ZTQ5ZDVhMGMtZWM0My00MDUzLTgyYTgtMmM1YzkxMzE5ZTNh";
+		private static readonly int[] httpPorts = [54269, 60422, 63671];
 
 
 		public static void SetPulsoidToken(string? token)
 		{
-			if (token != null && token != ConfigData.PulsoidToken && MyRegex.RegexGUID().IsMatch(token))
+			if (token != null && token != ConfigData.PulsoidToken && MyRegex.GUID().IsMatch(token))
 			{
 				ConfigData.PulsoidToken = token;
-				tokenValiditi = TokenValidities.unknown;
+				TokenValiditi = TokenValidities.Unknown;
 				ConfigData.SaveConfig();
 			}
 		}
@@ -63,7 +65,7 @@ namespace PulsoidToOSC
 		{
 			bool responseModeWebPage = redirectUri == "";
 			string baseUrl = "https://pulsoid.net/oauth2/authorize";
-			string client_id = Encoding.UTF8.GetString(Convert.FromBase64String(client_ID));
+			string client_id = Encoding.UTF8.GetString(Convert.FromBase64String(clientID));
 			string redirect_uri = redirectUri;
 			string response_type = "token";
 			string scope = "data:heart_rate:read";
@@ -109,9 +111,9 @@ namespace PulsoidToOSC
 
 		public static async Task ValidateToken()
 		{
-			if (!MyRegex.RegexGUID().IsMatch(ConfigData.PulsoidToken))
+			if (!MyRegex.GUID().IsMatch(ConfigData.PulsoidToken))
 			{
-				tokenValiditi = TokenValidities.invalid;
+				TokenValiditi = TokenValidities.Invalid;
 				return;
 			}
 
@@ -119,7 +121,7 @@ namespace PulsoidToOSC
 			{
 				string result = await ValidateTokenAsync(ConfigData.PulsoidToken);
 				
-				JsonValidateResponse? resultJson = JsonSerializer.Deserialize<JsonValidateResponse>(result);
+				Json.ValidateResponse? resultJson = JsonSerializer.Deserialize<Json.ValidateResponse>(result);
 
 				if (resultJson == null) return;
 				string client_id = resultJson.ClientId ?? "";
@@ -127,13 +129,13 @@ namespace PulsoidToOSC
 				string profile_id = resultJson.ProfileId ?? "";
 				List<string> scopes = resultJson.Scopes ?? [];
 
-				if (scopes.Contains("data:heart_rate:read") && expires_in > 0) tokenValiditi = TokenValidities.valid;
-				else tokenValiditi = TokenValidities.invalid;
+				if (scopes.Contains("data:heart_rate:read") && expires_in > 0) TokenValiditi = TokenValidities.Valid;
+				else TokenValiditi = TokenValidities.Invalid;
 			}
 			catch (Exception ex)
 			{
-				if (ex.Message.Contains(" 401 ")) tokenValiditi = TokenValidities.invalid;
-				else tokenValiditi = TokenValidities.unknown;
+				if (ex.Message.Contains(" 401 ")) TokenValiditi = TokenValidities.Invalid;
+				else TokenValiditi = TokenValidities.Unknown;
 			}
 		}
 
@@ -197,7 +199,7 @@ namespace PulsoidToOSC
 				string scope = queryParameters["scope"] ?? "";
 				string state = queryParameters["state"] ?? "";
 
-				if (MyRegex.RegexGUID().IsMatch(accessToken) && scope.Contains("data:heart_rate:read") && expiresIn > 0)
+				if (MyRegex.GUID().IsMatch(accessToken) && scope.Contains("data:heart_rate:read") && expiresIn > 0)
 				{
 					SetPulsoidToken(accessToken);
 					MainProgram.MainViewModel.TokenText = ConfigData.PulsoidToken;
