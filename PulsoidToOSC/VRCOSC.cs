@@ -9,22 +9,17 @@ namespace PulsoidToOSC
 {
 	internal static class VRCOSC
 	{
-		private const string _oscPath = "/avatar/parameters/";
+		public static string OSCPath { get; } = "/avatar/parameters/";
 		private static readonly Dictionary<string, VRCClient> VRCClients = [];
 		private static readonly Dictionary<MainProgram.HeartRateTrends, string> HeartRateTrendStrings = new() 
 		{
-			{ MainProgram.HeartRateTrends.none, "" },
-			{ MainProgram.HeartRateTrends.stable, "▶" },
-			{ MainProgram.HeartRateTrends.upward, "↗" },
-			{ MainProgram.HeartRateTrends.downward, "↘" },
-			{ MainProgram.HeartRateTrends.strongUpward, "⏫" },
-			{ MainProgram.HeartRateTrends.strongDownward, "⏬"}
+			{ MainProgram.HeartRateTrends.None, "" },
+			{ MainProgram.HeartRateTrends.Stable, "▶" },
+			{ MainProgram.HeartRateTrends.Upward, "↗" },
+			{ MainProgram.HeartRateTrends.Downward, "↘" },
+			{ MainProgram.HeartRateTrends.StrongUpward, "⏫" },
+			{ MainProgram.HeartRateTrends.StrongDownward, "⏬"}
 		};
-
-		public static string OSCPath
-		{
-			get => _oscPath;
-		}
 
 		private static DateTime lastVRCChatboxMessageTime = DateTime.MinValue;
 
@@ -32,16 +27,6 @@ namespace PulsoidToOSC
 		{
 			if (ConfigData.VRCUseAutoConfig && VRCClients.Count > 0)
 			{
-				List<OscMessage> oscMessages = [
-					new(OSCPath + "Heartrate", (heartRate / 127f) - 1f),		//Float ([0, 255] -> [-1, 1])
-					new(OSCPath + "HeartRateFloat", (heartRate / 127f) - 1f),	//Float ([0, 255] -> [-1, 1])
-					new(OSCPath + "Heartrate2", heartRate / 255f),				//Float ([0, 255] -> [0, 1]) 
-					new(OSCPath + "HeartRateFloat01", heartRate / 255f),		//Float ([0, 255] -> [0, 1]) 
-					new(OSCPath + "Heartrate3", heartRate),						//Int [0, 255]
-					new(OSCPath + "HeartRateInt", heartRate),					//Int [0, 255]
-					new(OSCPath + "HeartBeatToggle", MainProgram.HBToggle)		//Bool reverses with each update
-				];
-
 				foreach (VRCClient vrcClient in VRCClients.Values)
 				{
 					if (!(vrcClient.IsLocalHost || ConfigData.VRCSendToAllClinetsOnLAN) || vrcClient.OscSender == null) continue;
@@ -51,7 +36,11 @@ namespace PulsoidToOSC
 
 					if (vrcClient.IsOscSenderSameAsGlobal && OSCPath == ConfigData.OSCPath) continue; // check against sending same values twice to one endpoint
 
-					foreach (OscMessage message in oscMessages) if (message != null) vrcClient.OscSender.Send(message);
+					foreach (OSCParameter oscParameter in ConfigData.OSCParameters)
+					{
+						OscMessage? oscMessage = oscParameter.GetOscMessage(OSCPath, heartRate, MainProgram.HBToggle);
+						if (oscMessage != null) vrcClient.OscSender.Send(oscMessage);
+					}
 				}
 			}
 			else if (MainProgram.OSCSender != null && ConfigData.OSCUseManualConfig) // send chatbox message to manually set OSC endpoint when VRC auto config is disabled
@@ -91,7 +80,7 @@ namespace PulsoidToOSC
 				Task.Run(async () =>
 				{
 					await Task.Delay(delay + TimeSpan.FromMilliseconds(500));
-					MainProgram.disp.Invoke(() => ClearVRCChatbox(oscSender, false));
+					MainProgram.Disp.Invoke(() => ClearVRCChatbox(oscSender, false));
 				});
 			}
 		}
@@ -176,7 +165,7 @@ namespace PulsoidToOSC
 
 				string serviceInstanceName = e.ServiceInstanceName.ToString();
 
-				Match match = MyRegex.RegexVRC_ID_UDP().Match(serviceInstanceName);
+				Match match = MyRegex.VRC_ID_UDP().Match(serviceInstanceName);
 				string id = match.Groups[1].Value;
 
 				if (match.Success && id != string.Empty)
@@ -201,7 +190,7 @@ namespace PulsoidToOSC
 				var servers = e.Message.Answers.OfType<SRVRecord>();
 				foreach (var server in servers)
 				{
-					Match match = MyRegex.RegexVRC_ID().Match(server.Target.ToString());
+					Match match = MyRegex.VRC_ID().Match(server.Target.ToString());
 					string id = match.Groups[1].Value;
 
 					if (match.Success && id != string.Empty)
@@ -226,7 +215,7 @@ namespace PulsoidToOSC
 				{
 					string addressName = address.Name.ToString();
 
-					Match match = MyRegex.RegexVRC_ID().Match(addressName);
+					Match match = MyRegex.VRC_ID().Match(addressName);
 					string id = match.Groups[1].Value;
 
 					if (match.Success && id != string.Empty)
