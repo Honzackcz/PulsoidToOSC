@@ -5,123 +5,123 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:PulsoidToOSC"
 		mc:Ignorable="d"
-		Title="PulsoidToOSC options" ResizeMode="NoResize" Height="340" Width="560"
+		Title="PulsoidToOSC options" ResizeMode="CanResizeWithGrip" MinHeight="342" Height="342" MinWidth="560" Width="560"
 		xmlns:ui="http://schemas.modernwpf.com/2019" d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
 		ui:WindowHelper.UseModernWindowStyle="True">
-
+	
 	<Window.Resources>
 	</Window.Resources>
 	
 	<Grid>
-		<ui:SimpleStackPanel>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<Grid Grid.Row="0">
 			<TabControl>
 				<TabItem Name="general" Header="General">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
-								<RowDefinition/>
-								<RowDefinition/>
-								<RowDefinition/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
 							</Grid.RowDefinitions>
 
 							<Grid Grid.Row="0">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="140"/>
-									<ColumnDefinition/>
+									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
 								<Button
-									Command="{Binding GetTokenCommand}"
-									Content="Get Pulsiod token"
-									HorizontalAlignment="Stretch"
 									Grid.Column="0"
 									Margin="4"
+									HorizontalAlignment="Stretch"
+									Command="{Binding GetTokenCommand}"
+									Content="Get Pulsiod token"
 									ToolTip="Open Pulsoid authorization page in your web browser."
 								/>
 								<TextBlock
-									HorizontalAlignment="Left"
-									VerticalAlignment="Center"
-									Text="Open Pulsoid authorization page in web browser"
 									Grid.Column="1"
 									Margin="4"
+									VerticalAlignment="Center"
+									Text="Open Pulsoid authorization page in web browser"
 								/>
 							</Grid>
 
 							<Grid Grid.Row="1">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="140"/>
-									<ColumnDefinition/>
+									<ColumnDefinition Width="*"/>
 									<ColumnDefinition Width="40"/>
 								</Grid.ColumnDefinitions>
 								<Button
+									Grid.Column="0"
+									Margin="4"
+									HorizontalAlignment="Stretch"
 									x:Name="SetTokenButton"
 									Command="{Binding SetTokenCommand}"
 									Content="Set Pulsoid token"
-									HorizontalAlignment="Stretch"
-									Grid.Column="0"
-									Margin="4"
 									ToolTip="Apply and verify token."
 								/>
 								<TextBox
-									x:Name="TokenBox"
-									Visibility="Hidden"
-									Text="{Binding TokenText, UpdateSourceTrigger=PropertyChanged}"
-									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
+									x:Name="TokenBox"
+									Visibility="Hidden"
 									LostFocus="LostFocusToken"
-									ToolTip="Enter Pulsoid token, then submit it with the Set button."
+									Text="{Binding TokenText, UpdateSourceTrigger=PropertyChanged}"
 									MaxLength="36"
 									MaxLines="1"
-
+									ToolTip="Enter Pulsoid token, then submit it with the Set button."
 									>
 									<TextBox.InputBindings>
 										<KeyBinding Key="Enter" Command="{Binding SetTokenCommand}"/>
 									</TextBox.InputBindings>
 								</TextBox>
 								<TextBox
-									x:Name="TokenHiddenBox"
-									Visibility="Visible"
-									Text="{Binding TokenTextHidden, Mode=OneWay}"
-									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
+									x:Name="TokenHiddenBox"
+									Visibility="Visible"
 									GotFocus="GotFocusToken"
+									Text="{Binding TokenTextHidden, Mode=OneWay}"
 									ToolTip="Click to show token.&#x0a;&#x0a;Enter Pulsoid token, then submit it with the Set button."
 								/>
 								<ui:ProgressRing
-									IsActive="{Binding TokenValidationIndicator}"
 									Grid.Column="2"
+									IsActive="{Binding TokenValidationIndicator}"
 								/>
 								<Label
-									Visibility="{Binding TokenValidationValid}"
 									Grid.Column="2"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center"
+									Visibility="{Binding TokenValidationValid}"
 									Content="&#xE10B;"
 									FontFamily="Segoe MDL2 Assets"
-									HorizontalAlignment="Center"
-									VerticalAlignment="Center"
 									FontSize="24"
 									Foreground="Green"
-									ToolTip="Token is valid."
+									ToolTip="Token is valid"
 								/>
 								<Label
-									Visibility="{Binding TokenValidationInvalid}"
 									Grid.Column="2"
-									Content="&#xE711;"
-									FontFamily="Segoe MDL2 Assets"
 									HorizontalAlignment="Center"
 									VerticalAlignment="Center"
+									Visibility="{Binding TokenValidationInvalid}"
+									Content="&#xE711;"
+									FontFamily="Segoe MDL2 Assets"
 									FontSize="24"
 									Foreground="Red"
-									ToolTip="Token is invalid."
+									ToolTip="Token is invalid"
 								/>
 							</Grid>
 
 							<ui:ToggleSwitch
+								Grid.Row="2"
+								Margin="4"
 								IsOn="{Binding AutoStartCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 								OnContent="Auto Start"
 								OffContent="Auto Start"
-								Grid.Row="2"
-								Margin="4"
 								ToolTip="When enabled, the connection to Pulsoid and OSC will start when the app is opened, saving you one click.&#x0a;&#x0a;It will NOT start the application with the system."
 							/>
 						</Grid>
@@ -132,43 +132,42 @@
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
-								<RowDefinition/>
-								<RowDefinition/>
-								<RowDefinition/>
-								<RowDefinition/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
 							</Grid.RowDefinitions>
 
 							<ui:ToggleSwitch
+								Grid.Row="0"
+								Margin="4"
 								IsOn="{Binding OSCManualConfigCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 								OnContent="Send heart rate to manual OSC endpoint"
 								OffContent="Send heart rate to manual OSC endpoint"
-								Grid.Row="0"
-								Margin="4"
 								ToolTip="When enebled, heart rate parameters will be sent to the following OSC configuration."
 							/>
 
 							<Grid Grid.Row="1">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="120"/>
-									<ColumnDefinition/>
+									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
 								<Button
+									Grid.Column="0"
+									Margin="4"
+									HorizontalAlignment="Stretch"
 									Name="SetOSCIPButton"
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetOSCIPCommand}"
 									Content="Set OSC IP"
-									HorizontalAlignment="Stretch"
-									Grid.Column="0"
-									Margin="4"
-									ToolTip="Apply IP."
+									ToolTip="Apply IP"
 								/>
 								<TextBox
-									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
-									Text="{Binding OSCIPText, UpdateSourceTrigger=PropertyChanged}"
-									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
-                                    ToolTip="OSC IP adress."
+									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
+									Text="{Binding OSCIPText, UpdateSourceTrigger=PropertyChanged}"
+									ToolTip="OSC IP adress"
 								>
 									<TextBox.InputBindings>
 										<KeyBinding Key="Enter" Command="{Binding SetOSCIPCommand}"/>
@@ -179,25 +178,24 @@
 							<Grid Grid.Row="2">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="120"/>
-									<ColumnDefinition/>
+									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
 								<Button
+									Grid.Column="0"
+									Margin="4"
+									HorizontalAlignment="Stretch"
 									Name="SetOSCPortButton"
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetOSCPortCommand}"
 									Content="Set OSC Port"
-									HorizontalAlignment="Stretch"
-									Grid.Column="0"
-									Margin="4"
-									ToolTip="Apply Port."
+									ToolTip="Apply Port"
 								/>
 								<TextBox
-									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
-									Text="{Binding OSCPortText, UpdateSourceTrigger=PropertyChanged}"
-									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
-                                    ToolTip="OSC Port in range of 1 to 65535."
+									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
+									Text="{Binding OSCPortText, UpdateSourceTrigger=PropertyChanged}"
+									ToolTip="OSC Port in range of 1 to 65535"
 								>
 									<TextBox.InputBindings>
 										<KeyBinding Key="Enter" Command="{Binding SetOSCPortCommand}"/>
@@ -208,25 +206,24 @@
 							<Grid Grid.Row="3">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="120"/>
-									<ColumnDefinition/>
+									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
 								<Button
+									Grid.Column="0"
+									Margin="4"
+									HorizontalAlignment="Stretch"
 									Name="SetOSCPathButton"
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetOSCPathCommand}"
 									Content="Set OSC Path"
-									HorizontalAlignment="Stretch"
-									Grid.Column="0"
-									Margin="4"
-									ToolTip="Apply Path."
+									ToolTip="Apply Path"
 								/>
 								<TextBox
-									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
-									Text="{Binding OSCPathText, UpdateSourceTrigger=PropertyChanged}"
-									VerticalContentAlignment="Center"
 									Grid.Column="1"
 									Margin="4"
-                                    ToolTip="OSC Path."
+									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
+									Text="{Binding OSCPathText, UpdateSourceTrigger=PropertyChanged}"
+									ToolTip="OSC Path"
 								>
 									<TextBox.InputBindings>
 										<KeyBinding Key="Enter" Command="{Binding SetOSCPathCommand}"/>
@@ -241,63 +238,63 @@
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
-								<RowDefinition/>
-								<RowDefinition/>
-								<RowDefinition/>
-								<RowDefinition/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
 							</Grid.RowDefinitions>
 
 							<ui:ToggleSwitch
+								Grid.Row="0"
+								Margin="4"
 								IsOn="{Binding VRCAutoConfigCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 								OnContent="Use VRC OSC Query auto configuration"
 								OffContent="Use VRC OSC Query auto configuration"
-								Grid.Row="0"
-								Margin="4"
 								ToolTip="When enabled, all data will be sent to VRChat clients running on localhost (the same PC where this app is running) automatically, independent of the OSC settings.&#x0a;&#x0a;If you want to use this app only for VRChat, you can disable sending data to the manual OSC endpoint."
 							/>
 
 							<ui:ToggleSwitch
+								Grid.Row="1"
+								Margin="4"
 								IsEnabled="{Binding VRCAutoConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 								IsOn="{Binding VRCClinetsOnLANCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 								OnContent="Send to all VRC Clients on LAN (requires auto config)"
 								OffContent="Send to all VRC Clients on LAN (requires auto config)"
-								Grid.Row="1"
-								Margin="4"
 								ToolTip="If you want to run this app on a different PC than VRChat but on the same LAN, you can enable this."
 							/>
 
 							<ui:ToggleSwitch
+								Grid.Row="2"
+								Margin="4"
 								IsOn="{Binding VRCChatboxCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 								OnContent="Send heart rate to VRC chatbox"
 								OffContent="Send heart rate to VRC chatbox"
-								Grid.Row="2"
-								Margin="4"
 								ToolTip="Messages are sent to all auto-configured VRChat clients and the manually defined OSC endpoint."
 							/>
 
 							<Grid Grid.Row="3">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="140"/>
-									<ColumnDefinition/>
+									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
 								<Button
+									Grid.Column="0"
+									Margin="4"
 									Name="SetVRCChatboxMessageButton"
 									IsEnabled="{Binding VRCChatboxCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Command="{Binding SetVRCChatboxMessageCommand}"
 									Content="Set VRC msg text"
 									HorizontalAlignment="Stretch"
-									Grid.Column="0"
-									Margin="4"
+									VerticalAlignment="Top"
 									ToolTip="Apply message."
 								/>
 								<TextBox
+									Grid.Column="1"
+									Margin="4"
+									Height="Auto"
 									IsEnabled="{Binding VRCChatboxCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Text="{Binding VRCChatboxMessageText, UpdateSourceTrigger=PropertyChanged}"
-									VerticalContentAlignment="Center"
-									Grid.Column="1"
-                                    Height="60"
-                                    TextWrapping="Wrap"
-									Margin="4"
+									TextWrapping="Wrap"
 									ToolTip="&lt;bpm&gt; will be replaced with the heart rate value. If the message doesn't contain &lt;bpm&gt;, the heart rate will be added at the end of the message.&#x0a;&#x0a;&lt;trend&gt; will be replaced with an arrow indicating trend of how much the heart rate is changing."
 								>
 								<TextBox.InputBindings>
@@ -308,16 +305,126 @@
 						</Grid>
 					</TabItem.Content>
 				</TabItem>
+				<TabItem Name="parameters" Header="Parameters">
+					<TabItem.Content>
+						<Grid Margin="12">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							
+							<Grid Grid.Row="0" Margin="0, 0, 10, 0">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+								<TextBlock
+									Grid.Column="0"
+									Margin="4"
+									VerticalAlignment="Center"
+									Text="List of OSC parameters"
+								/>
+								<Button
+									Grid.Column="1"
+									Margin="4"
+									Command="{Binding ApplyParametersCommand}"
+									Content="Apply Parameters"
+									ToolTip="Apply and save all parameters"
+								/>
+								<Button
+									Grid.Column="2"
+									Margin="4"
+									VerticalAlignment="Stretch"
+									Command="{Binding AddNewParameterCommand}"
+									Content="&#xE710;"
+									FontFamily="Segoe MDL2 Assets"
+									ToolTip="Add new parameter"
+								/>
+							</Grid>
+
+							<ListView
+								Grid.Row="1"
+								Margin="-12, 0"
+								HorizontalContentAlignment="Stretch"
+								ItemsSource="{Binding Parameters}"
+								ScrollViewer.VerticalScrollBarVisibility="Visible"
+								ScrollViewer.CanContentScroll="False"
+								SelectionMode="Single"
+								SelectionChanged="ListView_SelectionChanged"
+							>
+								<ListView.ItemTemplate>
+									<DataTemplate>
+										<Grid>
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="130"/>
+												<ColumnDefinition Width="*"/>
+												<ColumnDefinition Width="50"/>
+											</Grid.ColumnDefinitions>
+											<ui:DropDownButton
+												Grid.Column="0"
+												Margin="4"
+												HorizontalAlignment="Stretch"
+												HorizontalContentAlignment="Left"
+												Content="{Binding TypeName, UpdateSourceTrigger=PropertyChanged}"
+												ToolTip="Select data type of the parameter"
+											>
+												<ui:DropDownButton.Flyout>
+													<ui:MenuFlyout Placement="BottomEdgeAlignedLeft">
+														<MenuItem
+															Command="{Binding SetItegerTypeCommand}"
+															Header="Integer"
+															ToolTip="Integer [0, 255]"
+														/>
+														<MenuItem
+															Command="{Binding SetFloat01TypeCommand}"
+															Header="Float [0, 1]"
+															ToolTip="Float ([0, 255] -> [0, 1])"
+														/>
+														<MenuItem
+															Command="{Binding SetFloatTypeCommand}"
+															Header="Float [-1, 1]"
+															ToolTip="Float ([0, 255] -> [-1, 1])"
+														/>
+														<MenuItem
+															Command="{Binding SetBoolToggleTypeCommand}"
+															Header="Bool Toggle"
+															ToolTip="Toggles with each update"
+														/>
+													</ui:MenuFlyout>
+												</ui:DropDownButton.Flyout>
+											</ui:DropDownButton>
+											<TextBox
+												Grid.Column="1"
+												Margin="4"
+												Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+												ToolTip="Parameter name"
+											/>
+											<Button
+												Grid.Column="2"
+												Margin="4"
+												VerticalAlignment="Stretch"
+												Command="{Binding DeleteParameterCommand}"
+												Content="&#xE711;"
+												FontFamily="Segoe MDL2 Assets"
+												ToolTip="Delete parameter"
+											/>
+										</Grid>
+									</DataTemplate>
+								</ListView.ItemTemplate>
+							</ListView>
+						</Grid>
+					</TabItem.Content>
+				</TabItem>
 			</TabControl>
-		</ui:SimpleStackPanel>
+		</Grid>
 		
-		<Grid 
-			VerticalAlignment="Bottom"
-			HorizontalAlignment="Center">
+		<Grid Grid.Row="1">
 			<Button
 				Command="{Binding OptionsDoneCommand}"
 				Content="Done"
-				Margin="12"
+				Margin="0,0,0,12"
+				HorizontalAlignment="Center"
 			/>
 		</Grid>
 	</Grid>

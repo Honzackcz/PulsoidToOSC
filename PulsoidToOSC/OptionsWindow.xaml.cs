@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace PulsoidToOSC
 {
@@ -25,6 +26,11 @@ namespace PulsoidToOSC
         {
 			TokenBox.Visibility = Visibility.Hidden;
 			TokenHiddenBox.Visibility = Visibility.Visible;
+		}
+
+		private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			((ListView)sender).SelectedIndex = -1;
 		}
 	}
 }

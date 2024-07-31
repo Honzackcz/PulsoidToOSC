@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -11,7 +12,7 @@ namespace PulsoidToOSC
 		//private readonly IAppService _appService;
 		private bool restartToApplyOptions = false;
 
-		public MainWindow? mainWindow;
+		public MainWindow? MainWindow { get; set; }
 		private string _bpmText = string.Empty;
 		private string _measuredAtText = string.Empty;
 		private string _startButtonContent = "Start";
@@ -19,7 +20,7 @@ namespace PulsoidToOSC
 		private string _errorTextColor = "#000000";
 		private string _liveIndicatorColor = "#00000000";
 
-		public OptionsWindow? optionsWindow;
+		public OptionsWindow? OptionsWindow { get; set; }
 		private string _tokenText = string.Empty;
 		private bool _tokenValidationIndicator = false;
 		private string _tokenValidationValid = "Hidden";
@@ -35,6 +36,78 @@ namespace PulsoidToOSC
 		private bool _vrcClinetsOnLANCheckmark = false;
 		private bool _vrcChatboxCheckmark = false;
 		private string _vrcChatboxMessageText = string.Empty;
+
+		public ObservableCollection<ParameterItem> Parameters { get; set; } = [];
+
+		public class ParameterItem : INotifyPropertyChanged
+		{
+			public MainViewModel? MainViewModel { get; set; }
+			private static readonly Dictionary<OSCParameter.Types, string> ParameterTypeNames = new()
+			{
+				{OSCParameter.Types.Integer, "Integer" },
+				{OSCParameter.Types.Float, "Float [-1, 1]" },
+				{OSCParameter.Types.Float01, "Float [0, 1]" },
+				{OSCParameter.Types.BoolToggle, "Bool Toggle" }
+			};
+
+			private OSCParameter.Types _type = OSCParameter.Types.Integer;
+			private string _name = string.Empty;
+
+			public OSCParameter.Types Type
+			{
+				get => _type;
+				set { _type = value; OnPropertyChanged(nameof(TypeName)); }
+			}
+
+			public string Name
+			{
+				get => _name; 
+				set { _name = value?.Replace("=", "").Replace(";", "") ?? string.Empty; OnPropertyChanged(); }
+			}
+			public string TypeName { get => ParameterTypeNames[_type]; }
+
+			public ICommand SetItegerTypeCommand { get; }
+			public ICommand SetFloatTypeCommand { get; }
+			public ICommand SetFloat01TypeCommand { get; }
+			public ICommand SetBoolToggleTypeCommand { get; }
+			public ICommand DeleteParameterCommand { get; }
+
+			public ParameterItem()
+			{
+				SetItegerTypeCommand = new RelayCommand(SetItegerType);
+				SetFloatTypeCommand = new RelayCommand(SetFloatType);
+				SetFloat01TypeCommand = new RelayCommand(SetFloat01Type);
+				SetBoolToggleTypeCommand = new RelayCommand(SetBoolToggleType);
+				DeleteParameterCommand = new RelayCommand(DeleteParameter);
+			}
+
+			private void SetItegerType()
+			{
+				Type = OSCParameter.Types.Integer;
+			}
+			private void SetFloatType()
+			{
+				Type = OSCParameter.Types.Float;
+			}
+			private void SetFloat01Type()
+			{
+				Type = OSCParameter.Types.Float01;
+			}
+			private void SetBoolToggleType() 
+			{
+				Type = OSCParameter.Types.BoolToggle;
+			}
+			private void DeleteParameter()
+			{
+				MainViewModel?.DeleteParameter(this);
+			}
+
+			public event PropertyChangedEventHandler? PropertyChanged;
+			protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+			{
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
 
 		//MainWindow
 		public string BPMText
@@ -72,12 +145,11 @@ namespace PulsoidToOSC
 		public string TokenText
 		{
 			get => _tokenText;
-			set { _tokenText = value ?? string.Empty; OnPropertyChanged(); TokenTextHidden = "just to call OnPropertyChanged()"; }
+			set { _tokenText = MyRegex.NotTokenSymbol().Replace(value ?? string.Empty, ""); OnPropertyChanged(); OnPropertyChanged(nameof(TokenTextHidden)); }
 		}
 		public string TokenTextHidden
 		{
-			get => MyRegex.RegexTokenHidder().Replace(_tokenText, "●");
-			private set => OnPropertyChanged();
+			get => MyRegex.TokenSymbolToHide().Replace(_tokenText, "●");
 		}
 
 		public bool TokenValidationIndicator
@@ -114,12 +186,12 @@ namespace PulsoidToOSC
 		public string OSCPortText
 		{
 			get => _oscPortText;
-			set { _oscPortText = value ?? string.Empty; OnPropertyChanged(); }
+			set { _oscPortText = MyRegex.NotNumber().Replace(value ?? string.Empty, ""); OnPropertyChanged(); }
 		}
 		public string OSCPathText
 		{
 			get => _oscPathText;
-			set { _oscPathText = value ?? string.Empty; OnPropertyChanged(); }
+			set { _oscPathText = value?.Replace("=", "") ?? string.Empty; OnPropertyChanged(); }
 		}
 
 		public bool VRCAutoConfigCheckmark
@@ -140,7 +212,7 @@ namespace PulsoidToOSC
 		public string VRCChatboxMessageText
 		{
 			get => _vrcChatboxMessageText;
-			set { _vrcChatboxMessageText = value ?? string.Empty; OnPropertyChanged(); }
+			set { _vrcChatboxMessageText = value?.Replace("=", "") ?? string.Empty; OnPropertyChanged(); }
 		}
 
 		//MainWindow Commands
@@ -156,6 +228,9 @@ namespace PulsoidToOSC
 		public ICommand SetOSCPathCommand { get; }
 
 		public ICommand SetVRCChatboxMessageCommand { get; }
+
+		public ICommand AddNewParameterCommand { get; }
+		public ICommand ApplyParametersCommand { get; }
 
 		public ICommand OptionsDoneCommand { get; }
 
@@ -173,6 +248,9 @@ namespace PulsoidToOSC
 
 			SetVRCChatboxMessageCommand = new RelayCommand(SetVRCChatboxMessage);
 
+			AddNewParameterCommand = new RelayCommand(AddNewParameter);
+			ApplyParametersCommand = new RelayCommand(ApplyParameters);
+
 			OptionsDoneCommand = new RelayCommand(OptionsDone);
 		}
 
@@ -183,13 +261,13 @@ namespace PulsoidToOSC
 		private void OpenOptions()
 		{
 			TokenText = ConfigData.PulsoidToken;
-			SetTokenValidationIndicator(PulsoidApi.tokenValiditi);
-			if (PulsoidApi.tokenValiditi == PulsoidApi.TokenValidities.unknown)
+			SetTokenValidationIndicator(PulsoidApi.TokenValiditi);
+			if (PulsoidApi.TokenValiditi == PulsoidApi.TokenValidities.Unknown)
 			{
 				Task.Run(async () =>
 				{
 					await PulsoidApi.ValidateToken();
-					SetTokenValidationIndicator(PulsoidApi.tokenValiditi);
+					SetTokenValidationIndicator(PulsoidApi.TokenValiditi);
 				});
 			}
 			AutoStartCheckmark = ConfigData.AutoStart;
@@ -204,14 +282,20 @@ namespace PulsoidToOSC
 			VRCChatboxCheckmark = ConfigData.VRCSendBPMToChatbox;
 			VRCChatboxMessageText = ConfigData.VRCChatboxMessage;
 
-			optionsWindow = new()
+			Parameters.Clear();
+			foreach (OSCParameter oscParameter in ConfigData.OSCParameters)
+			{
+				Parameters.Add(new() {MainViewModel = this, Name = oscParameter.Name, Type = oscParameter.Type});
+			}
+
+			OptionsWindow = new()
 			{
 				DataContext = this,
-				Owner = mainWindow,
+				Owner = MainWindow,
 				WindowStartupLocation = WindowStartupLocation.CenterOwner
 			};
-			optionsWindow.Closing += OptionsWindowClosing;
-			optionsWindow.ShowDialog();
+			OptionsWindow.Closing += OptionsWindowClosing;
+			OptionsWindow.ShowDialog();
 		}
 
 		private void GetToken()
@@ -220,9 +304,9 @@ namespace PulsoidToOSC
 		}
 		private async void SetToken()
 		{
-			(optionsWindow?.FindName("SetTokenButton") as UIElement)?.Focus();
+			(OptionsWindow?.FindName("SetTokenButton") as UIElement)?.Focus();
 			
-			SetTokenValidationIndicator(PulsoidApi.TokenValidities.unknown);
+			SetTokenValidationIndicator(PulsoidApi.TokenValidities.Unknown);
 			string previousToken = ConfigData.PulsoidToken;
 			PulsoidApi.SetPulsoidToken(TokenText);
 			TokenText = ConfigData.PulsoidToken;
@@ -230,7 +314,7 @@ namespace PulsoidToOSC
 
 			await PulsoidApi.ValidateToken();
 			await Task.Delay(250); //just for user to see the validation happens in case it was too fast
-			SetTokenValidationIndicator(PulsoidApi.tokenValiditi);
+			SetTokenValidationIndicator(PulsoidApi.TokenValiditi);
 		}
 
 		private void ToggleAutoStart()
@@ -248,12 +332,12 @@ namespace PulsoidToOSC
 		}
 		private void SetOSCIP()
 		{
-			(optionsWindow?.FindName("SetOSCIPButton") as UIElement)?.Focus();
+			(OptionsWindow?.FindName("SetOSCIPButton") as UIElement)?.Focus();
 
 			IPAddress preiousIP = ConfigData.OSCIP;
 
 			if (OSCIPText == "localhost") OSCIPText = "127.0.0.1";
-			if (MyRegex.RegexIP().IsMatch(OSCIPText) && IPAddress.TryParse(OSCIPText, out IPAddress? parsedIp) && parsedIp != ConfigData.OSCIP)
+			if (MyRegex.IP().IsMatch(OSCIPText) && IPAddress.TryParse(OSCIPText, out IPAddress? parsedIp) && parsedIp != ConfigData.OSCIP)
 			{ 
 				ConfigData.OSCIP = parsedIp;
 				ConfigData.SaveConfig();
@@ -263,7 +347,7 @@ namespace PulsoidToOSC
 		}
 		private void SetOSCPort()
 		{
-			(optionsWindow?.FindName("SetOSCPortButton") as UIElement)?.Focus();
+			(OptionsWindow?.FindName("SetOSCPortButton") as UIElement)?.Focus();
 
 			if (Int32.TryParse(OSCPortText, out int parsedPort) && parsedPort <= 65535 && parsedPort > 0 && parsedPort != ConfigData.OSCPort)
 			{
@@ -275,7 +359,7 @@ namespace PulsoidToOSC
 		}
 		private void SetOSCPath()
 		{
-			(optionsWindow?.FindName("SetOSCPathButton") as UIElement)?.Focus();
+			(OptionsWindow?.FindName("SetOSCPathButton") as UIElement)?.Focus();
 
 			if (!OSCPathText.StartsWith('/')) OSCPathText =  "/" + OSCPathText;
 			if (!OSCPathText.EndsWith('/')) OSCPathText += "/";
@@ -304,7 +388,7 @@ namespace PulsoidToOSC
 		}
 		private void SetVRCChatboxMessage()
 		{
-			(optionsWindow?.FindName("SetVRCChatboxMessageButton") as UIElement)?.Focus();
+			(OptionsWindow?.FindName("SetVRCChatboxMessageButton") as UIElement)?.Focus();
 
 			if (ConfigData.VRCChatboxMessage == VRCChatboxMessageText) return;
 			ConfigData.VRCChatboxMessage = VRCChatboxMessageText;
@@ -313,8 +397,8 @@ namespace PulsoidToOSC
 
 		private void OptionsDone()
 		{
-			if (optionsWindow == null) return;
-			optionsWindow.Close();
+			if (OptionsWindow == null) return;
+			OptionsWindow.Close();
 
 			if (restartToApplyOptions)
 			{
@@ -331,6 +415,29 @@ namespace PulsoidToOSC
 			}
 		}
 
+		private void DeleteParameter(ParameterItem parameterItem)
+		{
+			Parameters.Remove(parameterItem);
+		}
+
+		private void AddNewParameter()
+		{
+			Parameters.Add(new() { MainViewModel = this });
+		}
+
+		private void ApplyParameters()
+		{
+			List<OSCParameter> parameters = [];
+
+			foreach (ParameterItem parameterItem in Parameters)
+			{
+				parameters.Add(new() { Name = parameterItem.Name, Type = parameterItem.Type});
+			}
+
+			ConfigData.OSCParameters = parameters;
+			ConfigData.SaveConfig();
+		}
+
 		public event PropertyChangedEventHandler? PropertyChanged;
 		protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
 		{
@@ -345,19 +452,19 @@ namespace PulsoidToOSC
 				TokenValidationInvalid = "Hidden";
 				TokenValidationValid = "Hidden";
 			}
-			else if (valid == PulsoidApi.TokenValidities.unknown)
+			else if (valid == PulsoidApi.TokenValidities.Unknown)
 			{
 				TokenValidationIndicator = true;
 				TokenValidationInvalid = "Hidden";
 				TokenValidationValid = "Hidden";
 			}
-			else if (valid == PulsoidApi.TokenValidities.invalid)
+			else if (valid == PulsoidApi.TokenValidities.Invalid)
 			{
 				TokenValidationIndicator = false;
 				TokenValidationInvalid = "Visible";
 				TokenValidationValid = "Hidden";
 			}
-            else if (valid == PulsoidApi.TokenValidities.valid)
+            else if (valid == PulsoidApi.TokenValidities.Valid)
             {
 				TokenValidationIndicator = false;
 				TokenValidationInvalid = "Hidden";
