@@ -12,13 +12,13 @@ namespace PulsoidToOSC
 		private const string ColorYellow = "#FFFF00";
 		private const string ColorCyan = "#00FFFF";
 
-		private enum AppSates { stopped, starting, running, stopping };
+		private enum AppSates { Stopped, Starting, Running, Stopping };
 		private static AppSates appSate;
-		public static readonly Dispatcher disp = Dispatcher.CurrentDispatcher;
+		public static readonly Dispatcher Disp = Dispatcher.CurrentDispatcher;
 		public static readonly MainViewModel MainViewModel = new();
 
-		public enum HeartRateTrends { none, stable, upward, downward, strongUpward, strongDownward };
-		public static HeartRateTrends HeartRateTrend { get; private set; } = HeartRateTrends.none;
+		public enum HeartRateTrends { None, Stable, Upward, Downward, StrongUpward, StrongDownward };
+		public static HeartRateTrends HeartRateTrend { get; private set; } = HeartRateTrends.None;
 		private static readonly List<int> recentHeartRates = [];
 
 		public static UDPSender? OSCSender { get; private set; }
@@ -32,13 +32,13 @@ namespace PulsoidToOSC
 		{
 			ConfigData.LoadConfig();
 
-			if (!MyRegex.RegexGUID().IsMatch(ConfigData.PulsoidToken)) PulsoidApi.tokenValiditi = PulsoidApi.TokenValidities.invalid;
+			if (!MyRegex.GUID().IsMatch(ConfigData.PulsoidToken)) PulsoidApi.TokenValiditi = PulsoidApi.TokenValidities.Invalid;
 
 			MainWindow mainWindow = new()
 			{
 				DataContext = MainViewModel
 			};
-			MainViewModel.mainWindow = mainWindow;
+			MainViewModel.MainWindow = mainWindow;
 			mainWindow.Show();
 
 			SetupOSC();
@@ -51,7 +51,7 @@ namespace PulsoidToOSC
 				_ = Task.Run(async () =>
 				{
 					await Task.Delay(500, delayedStartTaskCts.Token);
-					if (appSate == AppSates.stopped) disp.Invoke(() => StartPulsoidToOSC());
+					if (appSate == AppSates.Stopped) Disp.Invoke(() => StartPulsoidToOSC());
 				}, delayedStartTaskCts.Token);
 			}
 		}
@@ -61,24 +61,24 @@ namespace PulsoidToOSC
 			if (!reconnect) failedWSConnectionAttempts = 0;
 			delayedStartTaskCts.Cancel();
 
-			if (appSate == AppSates.running)
+			if (appSate == AppSates.Running)
 			{
 				_ = StopPulsoidToOSC();
 				return;
 			}
 
-			if (appSate != AppSates.stopped) return;
+			if (appSate != AppSates.Stopped) return;
 
-			if (PulsoidApi.tokenValiditi == PulsoidApi.TokenValidities.invalid)
+			if (PulsoidApi.TokenValiditi == PulsoidApi.TokenValidities.Invalid)
 			{
 				SetUI("Invalid Pulsoid token!\nIn options setup valid token.", ColorRed);
 				return;
 			}
 
-			appSate = AppSates.starting;
+			appSate = AppSates.Starting;
 			MainViewModel.StartButtonContent = " ";
 			SetUI("Connecting to Pulsoid...", ColorYellow);
-			HeartRateTrend = HeartRateTrends.none;
+			HeartRateTrend = HeartRateTrends.None;
 			recentHeartRates.Clear();
 			SetupOSC();
 			VRCOSC.Query.SetupQuerry();
@@ -87,9 +87,9 @@ namespace PulsoidToOSC
 
 		public static async Task StopPulsoidToOSC()
 		{
-			if (appSate == AppSates.stopped || appSate == AppSates.stopping) return;
+			if (appSate == AppSates.Stopped || appSate == AppSates.Stopping) return;
 
-			appSate = AppSates.stopping;
+			appSate = AppSates.Stopping;
 			MainViewModel.StartButtonContent = " ";
 			SetUI("Closing connection to Pulsoid...", ColorYellow);
 			VRCOSC.Query.StopQuerry();
@@ -101,14 +101,14 @@ namespace PulsoidToOSC
 
 			SendHeartRates();
 
-			appSate = AppSates.stopped;
+			appSate = AppSates.Stopped;
 			MainViewModel.StartButtonContent = "Start";
 			SetUI();
 		}
 
 		public static async void RestartPulsoidToOSC()
 		{
-			if (appSate == AppSates.stopped || appSate == AppSates.stopping) return;
+			if (appSate == AppSates.Stopped || appSate == AppSates.Stopping) return;
 			await StopPulsoidToOSC();
 			StartPulsoidToOSC();
 		}
@@ -121,14 +121,14 @@ namespace PulsoidToOSC
 
 		private static void SetupWebSocketEvents()
 		{
-			SimpleWSClient.OnOpen += () => disp.Invoke(() => OnWSOpen());
-			SimpleWSClient.OnMessage += (message) => disp.Invoke(() => OnWSMessage(message));
-			SimpleWSClient.OnClose += (response) => disp.Invoke(() => OnWSClose(response));
+			SimpleWSClient.OnOpen += () => Disp.Invoke(() => OnWSOpen());
+			SimpleWSClient.OnMessage += (message) => Disp.Invoke(() => OnWSMessage(message));
+			SimpleWSClient.OnClose += (response) => Disp.Invoke(() => OnWSClose(response));
 		}
 
 		private static async Task StartWebSocket()
 		{
-			await SimpleWSClient.OpenConnectionAsync(PulsoidApi.pulsoidWSURL + ConfigData.PulsoidToken);
+			await SimpleWSClient.OpenConnectionAsync(PulsoidApi.PulsoidWSURL + ConfigData.PulsoidToken);
 
 			lastWSMessageTime = DateTime.MinValue;
 
@@ -148,10 +148,10 @@ namespace PulsoidToOSC
 
 		private static void OnWSOpen()
 		{
-			appSate = AppSates.running;
+			appSate = AppSates.Running;
 			MainViewModel.StartButtonContent = "Stop";
 
-			PulsoidApi.tokenValiditi = PulsoidApi.TokenValidities.valid;
+			PulsoidApi.TokenValiditi = PulsoidApi.TokenValidities.Valid;
 			failedWSConnectionAttempts = 0;
 
 			SetUI("Waiting for heart rate...", ColorYellow);
@@ -163,15 +163,15 @@ namespace PulsoidToOSC
 
 			if (response.HttpStatusCode == 400 || response.HttpStatusCode == 401 || response.HttpStatusCode == 403) //Invalid token
 			{
-				PulsoidApi.tokenValiditi = PulsoidApi.TokenValidities.invalid;
+				PulsoidApi.TokenValiditi = PulsoidApi.TokenValidities.Invalid;
 
 				SetUI("Invalid Pulsoid token!\nIn options setup valid token.", ColorRed);
 			}
-			else if (response.WebSocketCloseStatusCode > 1000 && (appSate == AppSates.stopping || appSate == AppSates.stopped) && SimpleWSClient.ClientState != WebSocketState.Open && SimpleWSClient.ClientState != WebSocketState.Connecting) //Connection lost
+			else if (response.WebSocketCloseStatusCode > 1000 && (appSate == AppSates.Stopping || appSate == AppSates.Stopped) && SimpleWSClient.ClientState != WebSocketState.Open && SimpleWSClient.ClientState != WebSocketState.Connecting) //Connection lost
 			{
 				SetUI("Error: Connection to Pulsoid!", ColorRed);
 
-				if (failedWSConnectionAttempts < 5 && PulsoidApi.tokenValiditi != PulsoidApi.TokenValidities.invalid)
+				if (failedWSConnectionAttempts < 5 && PulsoidApi.TokenValiditi != PulsoidApi.TokenValidities.Invalid)
 				{
 					SetUI($"Error: Connection to Pulsoid!\nRetrying connection... ({failedWSConnectionAttempts + 1})", ColorRed);
 
@@ -179,7 +179,7 @@ namespace PulsoidToOSC
 					Task.Run(async () =>
 					{
 						await Task.Delay(failedWSConnectionAttempts * 10000, delayedStartTaskCts.Token);
-						if (appSate == AppSates.stopped) disp.Invoke(() => StartPulsoidToOSC(true));
+						if (appSate == AppSates.Stopped) Disp.Invoke(() => StartPulsoidToOSC(true));
 					}, delayedStartTaskCts.Token);
 
 					failedWSConnectionAttempts++;
@@ -195,7 +195,7 @@ namespace PulsoidToOSC
 			long measuredAt = 0L;
 			int heartRate = 0;
 
-			PulsoidApi.JsonWSMessage? messageJson = JsonSerializer.Deserialize<PulsoidApi.JsonWSMessage>(message);
+			PulsoidApi.Json.WSMessage? messageJson = JsonSerializer.Deserialize<PulsoidApi.Json.WSMessage>(message);
 
 			if (messageJson != null)
 			{
@@ -225,33 +225,27 @@ namespace PulsoidToOSC
 				recentHeartRates.RemoveAt(0);
 				HeartRateTrend = CalcualteTrend(recentHeartRates) switch
 				{
-					> 1f => HeartRateTrends.strongUpward,
-					< -1f => HeartRateTrends.strongDownward,
-					> 0.5f => HeartRateTrends.upward,
-					< -0.5f => HeartRateTrends.downward,
-					_ => HeartRateTrends.stable
+					> 1f => HeartRateTrends.StrongUpward,
+					< -1f => HeartRateTrends.StrongDownward,
+					> 0.5f => HeartRateTrends.Upward,
+					< -0.5f => HeartRateTrends.Downward,
+					_ => HeartRateTrends.Stable
 				};
 			}
 			else
 			{
-				HeartRateTrend = HeartRateTrends.none;
+				HeartRateTrend = HeartRateTrends.None;
 			}
 
 			VRCOSC.SendHeartRates(heartRate);
 
 			if (OSCSender == null || !ConfigData.OSCUseManualConfig) return;
 
-			List<OscMessage> oscMessages = [
-				new(ConfigData.OSCPath + "Heartrate", (heartRate / 127f) - 1f),			//Float ([0, 255] -> [-1, 1])
-				new(ConfigData.OSCPath + "HeartRateFloat", (heartRate / 127f) - 1f),	//Float ([0, 255] -> [-1, 1])
-				new(ConfigData.OSCPath + "Heartrate2", heartRate / 255f),				//Float ([0, 255] -> [0, 1]) 
-				new(ConfigData.OSCPath + "HeartRateFloat01", heartRate / 255f),			//Float ([0, 255] -> [0, 1]) 
-				new(ConfigData.OSCPath + "Heartrate3", heartRate),						//Int [0, 255]
-				new(ConfigData.OSCPath + "HeartRateInt", heartRate),					//Int [0, 255]
-				new(ConfigData.OSCPath + "HeartBeatToggle", HBToggle)                   //Bool reverses with each update
-			];
-
-			foreach (OscMessage message in oscMessages) if (message != null) OSCSender.Send(message);
+			foreach (OSCParameter oscParameter in ConfigData.OSCParameters)
+			{
+				OscMessage? oscMessage = oscParameter.GetOscMessage(ConfigData.OSCPath, heartRate, HBToggle);
+				if (oscMessage != null) OSCSender.Send(oscMessage);
+			}
 		}
 
 		private static float CalcualteTrend(List<int> values)
