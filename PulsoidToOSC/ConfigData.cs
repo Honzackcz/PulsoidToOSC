@@ -20,6 +20,17 @@ namespace PulsoidToOSC
 		private static bool _vrcSendBPMToChatbox = false;
 		private static string _vrcChatboxMessage = "Heart rate:\\v<bpm> BPM <trend>";
 
+		// Parameters
+		public static List<OSCParameter> OSCParameters { get; set; } =
+		[
+			new(){Type = OSCParameter.Types.Integer, Name = "HeartRateInt"},
+			new(){Type = OSCParameter.Types.Integer, Name = "HeartRate3"},
+			new(){Type = OSCParameter.Types.Float, Name = "HeartRateFloat"},
+			new(){Type = OSCParameter.Types.Float, Name = "HeartRate"},
+			new(){Type = OSCParameter.Types.Float01, Name = "HeartRateFloat01"},
+			new(){Type = OSCParameter.Types.Float01, Name = "HeartRate2"},
+			new(){Type = OSCParameter.Types.BoolToggle, Name = "HeartBeatToggle"},
+		];
 		// General
 		public static string PulsoidToken
 		{
@@ -78,18 +89,23 @@ namespace PulsoidToOSC
 		{
 			using StreamWriter writer = new(filePath);
 			// General
-			writer.WriteLine($"pulsoidToken={PulsoidToken.ReplaceLineEndings("\\n")}");
+			writer.WriteLine($"pulsoidToken={PulsoidToken.ReplaceLineEndings("\\n").Replace("=", "")}");
 			writer.WriteLine($"autoStart={AutoStart}");
 			// OSC
 			writer.WriteLine($"oscUseManualConfig={OSCUseManualConfig}");
 			writer.WriteLine($"oscIP={OSCIP}");
 			writer.WriteLine($"oscPort={OSCPort}");
-			writer.WriteLine($"oscPath={OSCPath.ReplaceLineEndings("\\n")}");
+			writer.WriteLine($"oscPath={OSCPath.ReplaceLineEndings("\\n").Replace("=", "")}");
 			// VRChat
 			writer.WriteLine($"vrcUseAutoConfig={VRCUseAutoConfig}");
 			writer.WriteLine($"vrcSendToAllClinetsOnLAN={VRCSendToAllClinetsOnLAN}");
 			writer.WriteLine($"vrcSendBPMToChatbox={VRCSendBPMToChatbox}");
-			writer.WriteLine($"vrcChatboxMessage={VRCChatboxMessage.ReplaceLineEndings("\\n")}");
+			writer.WriteLine($"vrcChatboxMessage={VRCChatboxMessage.ReplaceLineEndings("\\n").Replace("=", "")}");
+			//Parameters
+			foreach (OSCParameter parameter in OSCParameters)
+			{
+				writer.WriteLine($"oscParameter={parameter.Type};{parameter.Name.ReplaceLineEndings("\\n").Replace("=", "").Replace(";", "")}");
+			}
 		}
 
 		public static void LoadConfig()
@@ -108,13 +124,15 @@ namespace PulsoidToOSC
 			string? vrcSendToAllClinetsOnLAN = null;
 			string? vrcSendBPMToChatbox = null;
 			string? vrcChatboxMessage = null;
+			// Parameters
+			List<OSCParameter> oscParameters = [];
 
 			using (StreamReader reader = new(filePath))
 			{
 				string? line;
 				while ((line = reader.ReadLine()) != null)
 				{
-					var parts = line.Split('=');
+					string[] parts = line.Split('=');
 
 					if (parts.Length == 2)
 					{
@@ -156,6 +174,15 @@ namespace PulsoidToOSC
 							case "vrcChatboxMessage":
 								vrcChatboxMessage = value;
 								break;
+							// Parameters
+							case "oscParameter":
+								string[] parameterParts = value.Split(";");
+								if (parameterParts.Length == 2 && parameterParts[1] != string.Empty && Enum.TryParse(parameterParts[0], true, out OSCParameter.Types type))
+								{
+									string name = parameterParts[1];
+									oscParameters.Add(new() { Name = name, Type = type });
+								}
+								break;
 
 							default:
 								break;
@@ -164,7 +191,7 @@ namespace PulsoidToOSC
 				}
 			}
 			// General
-			if (pulsoidToken != null && MyRegex.RegexGUID().IsMatch(pulsoidToken)) PulsoidToken = pulsoidToken;
+			if (pulsoidToken != null && MyRegex.GUID().IsMatch(pulsoidToken)) PulsoidToken = pulsoidToken;
 			if (bool.TryParse(autoStart, out bool parsedAutoStart)) AutoStart = parsedAutoStart;
 			// OSC
 			if (bool.TryParse(oscUseManualConfig, out bool parsedOSCUseManualConfig)) OSCUseManualConfig = parsedOSCUseManualConfig;
@@ -184,6 +211,7 @@ namespace PulsoidToOSC
 			{
 				VRCChatboxMessage = vrcChatboxMessage;
 			}
+			if (oscParameters.Count > 0) OSCParameters = oscParameters;
 		}
 	}
 }
