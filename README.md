@@ -71,7 +71,9 @@ In the case of VRChat auto-configuration, the OSC path is defined as `/avatar/pa
 
 An example of a full path combined with a parameter might look like this: `/avatar/parameter/HeartRateInt`
 
-| Parameter          | Value Type | Description                     |
+Default parameters are set up according to this table:
+
+| Parameter Name     | Value Type | Description                     |
 | ------------------ | ---------- | ------------------------------- |
 | `HeartRateInt`     | Int        | Integer [0, 255]                |
 | `HeartRate3`       | Int        | Same as HeartRateInt            |
@@ -83,7 +85,17 @@ An example of a full path combined with a parameter might look like this: `/avat
 
 These parameters are chosen to support most currently used systems. In practice, the only necessary parameters are `HeartRateInt` for data and the additional `HeartBeatToggle` for reliable detection of timeouts.
 
-*In future I may add more options to configure the parameters for more specific use-cases.*
+All parameters can be easily edited.
+
+Supported parameter types are:
+
+| Parameter Type  | Value Type | Description                     |
+| --------------- | ---------- | ------------------------------- |
+| Integer         | Int        | Integer [0, 255]                |
+| Float [-1, 1]   | Float      | Float ([0, 255] -> [-1, 1])     |
+| Float [0, 1]    | Float      | Float ([0, 255] -> [0, 1])      |
+| Bool Toggle     | Bool       | Toggles with each update        |
+
 
 
 ## Used Libraries
