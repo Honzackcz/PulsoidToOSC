@@ -6,7 +6,7 @@
 		xmlns:local="clr-namespace:PulsoidToOSC"
 		mc:Ignorable="d"
 		Title="PulsoidToOSC options" ResizeMode="CanResizeWithGrip" MinHeight="342" Height="342" MinWidth="560" Width="560"
-		xmlns:ui="http://schemas.modernwpf.com/2019" d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
+		xmlns:ui="http://schemas.modernwpf.com/2019" d:DataContext="{d:DesignInstance Type=local:OptionsViewModel}"
 		ui:WindowHelper.UseModernWindowStyle="True">
 	
 	<Window.Resources>
@@ -19,9 +19,9 @@
 		</Grid.RowDefinitions>
 		<Grid Grid.Row="0">
 			<TabControl>
-				<TabItem Name="general" Header="General">
-					<TabItem.Content>
-						<Grid Margin="12">
+                <TabItem Name="general" Header="General" DataContext="{Binding GeneralOptionsViewModel}">
+                    <TabItem.Content>
+                        <Grid Margin="12">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
@@ -128,7 +128,7 @@
 					</TabItem.Content>
 				</TabItem>
 
-				<TabItem Name="osc" Header="OSC">
+                <TabItem Name="osc" Header="OSC" DataContext="{Binding OscOptionsViewModel}">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
@@ -234,7 +234,7 @@
 					</TabItem.Content>
 				</TabItem>
 
-				<TabItem Name="vrchat" Header="VRChat">
+                <TabItem Name="vrchat" Header="VRChat" DataContext="{Binding VRChatOptionsViewModel}">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
@@ -305,7 +305,8 @@
 						</Grid>
 					</TabItem.Content>
 				</TabItem>
-				<TabItem Name="parameters" Header="Parameters">
+
+                <TabItem Name="parameters" Header="Parameters" DataContext="{Binding ParametersOptionsViewModel}">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>

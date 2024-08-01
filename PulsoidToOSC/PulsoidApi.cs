@@ -202,7 +202,7 @@ namespace PulsoidToOSC
 				if (MyRegex.GUID().IsMatch(accessToken) && scope.Contains("data:heart_rate:read") && expiresIn > 0)
 				{
 					SetPulsoidToken(accessToken);
-					MainProgram.MainViewModel.TokenText = ConfigData.PulsoidToken;
+					MainProgram.MainViewModel.OptionsViewModel.GeneralOptionsViewModel.TokenText = ConfigData.PulsoidToken;
 					_ = ValidateToken();
 
 					tokenReceived = true;

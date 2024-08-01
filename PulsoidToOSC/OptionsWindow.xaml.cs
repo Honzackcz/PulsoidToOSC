@@ -17,7 +17,7 @@ namespace PulsoidToOSC
         {
             TokenBox.Visibility = Visibility.Visible;
             TokenHiddenBox.Visibility = Visibility.Hidden;
-			MainProgram.MainViewModel.TokenText = ConfigData.PulsoidToken;
+			MainProgram.MainViewModel.OptionsViewModel.GeneralOptionsViewModel.TokenText = ConfigData.PulsoidToken;
 			TokenBox.Focus();
             TokenBox.CaretIndex = int.MaxValue;
         }
