@@ -93,10 +93,10 @@ namespace PulsoidToOSC
 			input = input.Replace("/v", "\v");
 			input = input.Replace("\\n", "/n");
 
-			return Regex.Replace(input, "/n", match =>
+			return MyRegex.LineEnd().Replace(input, match =>
 			{
-				var spaces = match.Index == 0 ? 0 : (match.Index - input.LastIndexOf("/n", match.Index, StringComparison.Ordinal)) % required_width;
-				var spaceCount = required_width - spaces;
+				int spaces = match.Index == 0 ? 0 : (match.Index - input.LastIndexOf("/n", match.Index, StringComparison.Ordinal)) % required_width;
+				int spaceCount = required_width - spaces;
 				return spaces < 0 || spaceCount < 0 ? string.Empty : new string(' ', spaceCount);
 			});
 		}
@@ -150,7 +150,7 @@ namespace PulsoidToOSC
 			{
 				if (serviceDiscovery == null) return;
 
-				foreach (var nic in e.NetworkInterfaces)
+				foreach (NetworkInterface nic in e.NetworkInterfaces)
 				{
 					Debug.WriteLine($"NIC '{nic.Name}'");
 				}
@@ -211,7 +211,7 @@ namespace PulsoidToOSC
 
 				// Is this an answer to host addresses?
 				var addresses = e.Message.Answers.OfType<AddressRecord>();
-				foreach (var address in addresses)
+				foreach (AddressRecord address in addresses)
 				{
 					string addressName = address.Name.ToString();
 
