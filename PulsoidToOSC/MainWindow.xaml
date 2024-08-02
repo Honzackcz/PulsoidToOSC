@@ -7,7 +7,7 @@
 		xmlns:local="clr-namespace:PulsoidToOSC"
 		mc:Ignorable="d"
 		Title="PulsoidToOSC" ResizeMode="CanMinimize" Height="200" Width="400"
-		xmlns:ui="http://schemas.modernwpf.com/2019"
+		xmlns:ui="http://schemas.modernwpf.com/2019" d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
 		ui:ThemeManager.IsThemeAware="True"
 		ui:WindowHelper.UseModernWindowStyle="True">
 
@@ -17,59 +17,89 @@
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
-			<RowDefinition/>
+			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 		
 		<Grid Grid.Row="0">
-			<Button 
-				Command="{Binding OpenOptionsCommand}"
-				Content="Options"
-				HorizontalAlignment="Right"
-				VerticalAlignment="Top"
+			<Button
+				Margin="4"
+				HorizontalAlignment="Left"
+				Command="{Binding StartCommand}"
+				Content="{Binding StartButtonContent}"
 				Width="80"
 				Height="32"
-				Margin="4"
 			/>
+			
 			<Grid
 				Width="80"
 				Height="10"
 				Background="{Binding LiveIndicatorColor}"
 			/>
-			<Button
-				Command="{Binding StartCommand}"
-				Content="{Binding StartButtonContent}"
-				HorizontalAlignment="Left"
-				VerticalAlignment="Top"
-				Width="80"
-				Height="32"
-				Margin="4"
-			/>
+			
+			<Grid
+				HorizontalAlignment="Right"
+			>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+
+				<Button
+					Grid.Column="0"
+					Margin="4"
+					Padding="0"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"
+					Command="{Binding OpenInfoCommand}"
+					Content="&#xE946;"
+					FontFamily="Segoe MDL2 Assets"
+					FontSize="18"
+					ToolTip="Informations"
+					Width="32"
+					Height="32"
+				/>
+				<Button
+					Grid.Column="1"
+					Margin="4"
+					Padding="0"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"
+					Command="{Binding OpenOptionsCommand}"
+					Content="&#xE713;"
+					FontFamily="Segoe MDL2 Assets"
+					FontSize="20"
+                    ToolTip="Options"
+					Width="32"
+					Height="32"
+				/>
+			</Grid>
 		</Grid>
+		
 		<Grid Grid.Row="1">
 			<TextBlock
-				Text="{Binding BPMText}"
+				Margin="0,8,0,0"
 				HorizontalAlignment="Center"
 				VerticalAlignment="Top"
-				Margin="0,8,0,0"
+				Text="{Binding BPMText}"
 				FontSize="50"
 				Foreground="#00FF00"
 			/>
 			
 			<TextBlock
-				Text="{Binding MeasuredAtText}"
+				Margin="0,0,0,24"
 				HorizontalAlignment="Center"
 				VerticalAlignment="Bottom"
-				Margin="0,0,0,24"
+				Text="{Binding MeasuredAtText}"
 				Foreground="#00FF00"
 			/>
 
 			<TextBlock
-				Text="{Binding ErrorText}"
+				Margin="0,0,0,18"
 				VerticalAlignment="Center"
+				Text="{Binding ErrorText}"
 				Foreground="{Binding ErrorTextColor}"
 				TextWrapping="Wrap"
 				TextAlignment="Center"
-				Margin="0,0,0,18"
 			/>
 		</Grid>
 	</Grid>

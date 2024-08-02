@@ -7,6 +7,8 @@ namespace PulsoidToOSC
 {
 	public static class MainProgram
 	{
+		public const string AppVersion = "v0.1.0b";
+
 		private const string ColorGreen = "#00FF00";
 		private const string ColorRed = "#FF0000";
 		private const string ColorYellow = "#FFFF00";

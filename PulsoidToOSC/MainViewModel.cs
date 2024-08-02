@@ -5,6 +5,7 @@ namespace PulsoidToOSC
 	public class MainViewModel : ViewModelBase
 	{
 		public OptionsViewModel OptionsViewModel { get; }
+		public InfoViewModel InfoViewModel { get; }
 		public MainWindow? MainWindow { get; set; }
 
 		private string _bpmText = string.Empty;
@@ -47,13 +48,16 @@ namespace PulsoidToOSC
 
 		public ICommand StartCommand { get; }
 		public ICommand OpenOptionsCommand { get; }
+		public ICommand OpenInfoCommand { get; }
 
 		public MainViewModel()
 		{
 			OptionsViewModel = new OptionsViewModel(this);
+			InfoViewModel = new InfoViewModel(this);
 
 			StartCommand = new RelayCommand(Start);
 			OpenOptionsCommand = new RelayCommand(OpenOptions);
+			OpenInfoCommand = new RelayCommand(OpenInfo);
 		}
 
 		private void Start()
@@ -63,7 +67,12 @@ namespace PulsoidToOSC
 
 		private void OpenOptions()
 		{
-			OptionsViewModel.OpenOptions();
+			OptionsViewModel.OpenOptionsWindow();
+		}
+
+		private void OpenInfo()
+		{
+			InfoViewModel.OpenInfoWindow();
 		}
 	}
 }

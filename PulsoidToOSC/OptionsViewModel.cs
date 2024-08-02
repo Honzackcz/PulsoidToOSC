@@ -30,7 +30,7 @@ namespace PulsoidToOSC
 			OptionsDoneCommand = new RelayCommand(OptionsDone);
 		}
 
-		public void OpenOptions()
+		public void OpenOptionsWindow()
 		{
 			GeneralOptionsViewModel.TokenText = ConfigData.PulsoidToken;
 			GeneralOptionsViewModel.SetTokenValidationIndicator(PulsoidApi.TokenValiditi);
@@ -74,12 +74,6 @@ namespace PulsoidToOSC
 		{
 			if (OptionsWindow == null) return;
 			OptionsWindow.Close();
-
-			if (RestartToApplyOptions)
-			{
-				RestartToApplyOptions = false;
-				MainProgram.RestartPulsoidToOSC();
-			}
 		}
 
 		public void OptionsWindowClosing(object? sender, CancelEventArgs e)

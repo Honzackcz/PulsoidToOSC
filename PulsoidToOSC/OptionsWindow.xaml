@@ -17,11 +17,12 @@
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
+		
 		<Grid Grid.Row="0">
 			<TabControl>
-                <TabItem Name="general" Header="General" DataContext="{Binding GeneralOptionsViewModel}">
-                    <TabItem.Content>
-                        <Grid Margin="12">
+				<TabItem Name="general" Header="General" DataContext="{Binding GeneralOptionsViewModel}">
+					<TabItem.Content>
+						<Grid Margin="12">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
@@ -128,7 +129,7 @@
 					</TabItem.Content>
 				</TabItem>
 
-                <TabItem Name="osc" Header="OSC" DataContext="{Binding OscOptionsViewModel}">
+				<TabItem Name="osc" Header="OSC" DataContext="{Binding OscOptionsViewModel}">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
@@ -234,7 +235,7 @@
 					</TabItem.Content>
 				</TabItem>
 
-                <TabItem Name="vrchat" Header="VRChat" DataContext="{Binding VRChatOptionsViewModel}">
+				<TabItem Name="vrchat" Header="VRChat" DataContext="{Binding VRChatOptionsViewModel}">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
@@ -306,7 +307,7 @@
 					</TabItem.Content>
 				</TabItem>
 
-                <TabItem Name="parameters" Header="Parameters" DataContext="{Binding ParametersOptionsViewModel}">
+				<TabItem Name="parameters" Header="Parameters" DataContext="{Binding ParametersOptionsViewModel}">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
