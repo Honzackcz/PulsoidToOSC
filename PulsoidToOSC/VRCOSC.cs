@@ -1,5 +1,4 @@
 ﻿using SharpOSC;
-using System.Diagnostics;
 using Makaretu.Dns;
 using System.Text.RegularExpressions;
 using System.Net.NetworkInformation;
@@ -104,10 +103,10 @@ namespace PulsoidToOSC
 		class VRCClient
 		{
 			public UDPSender? OscSender { get; private set; }
-			public IPAddress OscUDPIP = IPAddress.None;
-			public int OscUDPPort = 0;
-			public bool IsLocalHost = false;
-			public bool IsOscSenderSameAsGlobal = false;
+			public IPAddress OscUDPIP { get; set; } = IPAddress.None;
+			public int OscUDPPort { get; set; } = 0;
+			public bool IsLocalHost { get; set; } = false;
+			public bool IsOscSenderSameAsGlobal { get; private set; } = false;
 
 			public void SetupOSCSender()
 			{
@@ -150,11 +149,6 @@ namespace PulsoidToOSC
 			{
 				if (serviceDiscovery == null) return;
 
-				foreach (NetworkInterface nic in e.NetworkInterfaces)
-				{
-					Debug.WriteLine($"NIC '{nic.Name}'");
-				}
-
 				// Ask for OSC service instances
 				serviceDiscovery.QueryServiceInstances("_osc._udp"); // _oscjson._tcp.
 			}
@@ -170,10 +164,8 @@ namespace PulsoidToOSC
 
 				if (match.Success && id != string.Empty)
 				{
-					if (VRCClients.TryAdd(id, new()))
-					{
-						Debug.WriteLine($"added client with id: {id}");
-					}
+					VRCClients.TryAdd(id, new());
+
 					if (VRCClients[id].OscUDPPort == 0 || VRCClients[id].OscUDPIP == IPAddress.None)
 					{
 						// Ask for service instance details 
@@ -198,7 +190,6 @@ namespace PulsoidToOSC
 						if (VRCClients.TryGetValue(id, out _))
 						{
 							VRCClients[id].OscUDPPort = server.Port;
-							Debug.WriteLine($"added port {server.Port} to client with id: {id}");
 						}
 						if (VRCClients[id].OscUDPIP == IPAddress.None)
 						{
@@ -226,9 +217,6 @@ namespace PulsoidToOSC
 
 						VRCClients[id].OscUDPIP = isLocalIp ? IPAddress.Loopback : address.Address;
 						VRCClients[id].IsLocalHost = isLocalIp;
-
-						Debug.WriteLine($"added {(isLocalIp ? $"localhost ip {IPAddress.Loopback}" : $"ip {address.Address}")} to client with id: {id}");
-
 						VRCClients[id].SetupOSCSender();
 					}
 				}

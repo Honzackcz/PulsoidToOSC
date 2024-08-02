@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using System.Text;
 
 namespace PulsoidToOSC
@@ -106,7 +105,6 @@ namespace PulsoidToOSC
 				WebSocketCloseStatusCode = webSocketCloseStatusCode
 			};
 
-			Debug.WriteLine($"{response.HttpStatusCode }, {response.WebSocketCloseStatusCode }");
 			OnClose?.Invoke(response);
 		}
 	}
