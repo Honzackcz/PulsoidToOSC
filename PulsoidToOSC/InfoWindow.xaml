@@ -44,29 +44,29 @@
 				Text="Simple tool for streaming heart rate from Pulsoid to OSC, with extra support for VRChat."    
 			/>
 
-            <TextBlock
-				Grid.Row="3"
-				Margin="4"
-				HorizontalAlignment="Center"
-			>
-                Copyright © 2024 Honzackcz 
-                <Hyperlink
-					NavigateUri="https://github.com/Honzackcz/PulsoidToOSC/blob/master/LICENSE.txt"
-					Command="{Binding OpenLicenseCommand}"
-				>
-					<TextBlock Text="MIT License"/>
-				</Hyperlink>
-            </TextBlock>
-            
-            <TextBlock
+			<TextBlock
 				Grid.Row="2"
 				Margin="4"
 				HorizontalAlignment="Center"
 			>
-				Newer versions can be download on 
+				Copyright © 2024 Honzackcz 
 				<Hyperlink
-					NavigateUri="https://github.com/Honzackcz/PulsoidToOSC"
+					Command="{Binding OpenGitHubLicenseCommand}"
+					ToolTip="https://github.com/Honzackcz/PulsoidToOSC/blob/master/LICENSE.txt"
+				>
+					<TextBlock Text="MIT License"/>
+				</Hyperlink>
+			</TextBlock>
+			
+			<TextBlock
+				Grid.Row="3"
+				Margin="4"
+				HorizontalAlignment="Center"
+			>
+				<TextBlock Text="Project page on"/>
+				<Hyperlink
 					Command="{Binding OpenGitHubCommand}"
+					ToolTip="https://github.com/Honzackcz/PulsoidToOSC"
 				>
 					<TextBlock Text="GitHub"/>
 				</Hyperlink>
@@ -76,8 +76,19 @@
 				Grid.Row="4"
 				Margin="4"
 				HorizontalAlignment="Center"
-				Text="{Binding VersionText}"    
-			/>
+			>
+				<TextBlock Text="{Binding VersionText}"/>
+				<Hyperlink
+					Command="{Binding OpenGitHubReleasesCommand}"
+					Foreground="Red"
+					ToolTip="https://github.com/Honzackcz/PulsoidToOSC/releases/latest"
+				>
+					<TextBlock
+						Visibility="{Binding NewVersionIndicator}"
+						Text="New version is available!"
+					/>
+				</Hyperlink>
+			</TextBlock>
 		</Grid>
 
 		<Grid Grid.Row="1">

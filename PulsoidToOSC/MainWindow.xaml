@@ -44,20 +44,43 @@
 					<ColumnDefinition Width="Auto"/>
 				</Grid.ColumnDefinitions>
 
-				<Button
-					Grid.Column="0"
-					Margin="4"
-					Padding="0"
-					HorizontalContentAlignment="Center"
-					VerticalContentAlignment="Center"
-					Command="{Binding OpenInfoCommand}"
-					Content="&#xE946;"
-					FontFamily="Segoe MDL2 Assets"
-					FontSize="18"
-					ToolTip="Informations"
-					Width="32"
-					Height="32"
-				/>
+				<Grid Width="40" Height="40">
+					<Button
+						Grid.Column="0"
+						Margin="4"
+						Padding="-4"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						Command="{Binding OpenInfoCommand}"
+						ToolTip="Informations"
+						Width="32"
+						Height="32"
+					>
+						<Grid>
+							<TextBlock
+								Margin="1.25,1.25,0,0"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								Text="&#xE946;"
+								FontFamily="Segoe MDL2 Assets"
+								FontSize="20"
+							/>
+							<TextBlock
+								Margin="-4"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Top"
+								DataContext="{Binding InfoViewModel}"
+								Visibility="{Binding NewVersionIndicator}"
+								Text="&#xE7C8;"
+								FontFamily="Segoe MDL2 Assets"
+								FontSize="14"
+								Foreground="Red"
+							/>
+						</Grid>
+					</Button>
+
+				</Grid>
+
 				<Button
 					Grid.Column="1"
 					Margin="4"
@@ -68,7 +91,7 @@
 					Content="&#xE713;"
 					FontFamily="Segoe MDL2 Assets"
 					FontSize="20"
-                    ToolTip="Options"
+					ToolTip="Options"
 					Width="32"
 					Height="32"
 				/>

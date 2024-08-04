@@ -11,14 +11,25 @@ namespace PulsoidToOSC
 		public InfoWindow? InfoWindow { get; private set; }
 
 		private readonly string _versionText = "Version: ";
+		private bool _isNewVersionAvailable = false;
 
+		public bool IsNewVersionAvailable
+		{
+			get => _isNewVersionAvailable;
+			set { _isNewVersionAvailable = value; OnPropertyChanged(nameof(VersionText)); OnPropertyChanged(nameof(NewVersionIndicator)); }
+		}
 		public string VersionText
 		{
 			get => _versionText + MainProgram.AppVersion;
 		}
+		public string NewVersionIndicator
+		{
+			get => _isNewVersionAvailable ? "Visible" : "Collapsed";
+		}
 
 		public ICommand OpenGitHubCommand { get; }
-		public ICommand OpenLicenseCommand { get; }
+		public ICommand OpenGitHubReleasesCommand { get; }
+		public ICommand OpenGitHubLicenseCommand { get; }
 		public ICommand InfoOKCommand { get; }
 
 		public InfoViewModel(MainViewModel mainViewModel)
@@ -26,7 +37,8 @@ namespace PulsoidToOSC
 			_mainViewModel = mainViewModel;
 
 			OpenGitHubCommand = new RelayCommand(OpenGitHub);
-			OpenLicenseCommand = new RelayCommand(OpenLicense);
+			OpenGitHubReleasesCommand = new RelayCommand(OpenGitHubReleases);
+			OpenGitHubLicenseCommand = new RelayCommand(OpenGitHubLicense);
 			InfoOKCommand = new RelayCommand(InfoOK);
 		}
 
@@ -51,7 +63,16 @@ namespace PulsoidToOSC
 			});
 		}
 
-		private void OpenLicense()
+		private void OpenGitHubReleases()
+		{
+			Process.Start(new ProcessStartInfo
+			{
+				FileName = "https://github.com/Honzackcz/PulsoidToOSC/releases/latest",
+				UseShellExecute = true
+			});
+		}
+
+		private void OpenGitHubLicense()
 		{
 			Process.Start(new ProcessStartInfo
 			{

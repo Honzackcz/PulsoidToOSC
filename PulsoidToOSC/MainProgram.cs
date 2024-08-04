@@ -8,6 +8,8 @@ namespace PulsoidToOSC
 	public static class MainProgram
 	{
 		public const string AppVersion = "v0.1.0b";
+		public const string GitHubOwner = "Honzackcz";
+		public const string GitHubRepo = "PulsoidToOSC";
 
 		private const string ColorGreen = "#00FF00";
 		private const string ColorRed = "#FF0000";
@@ -56,6 +58,11 @@ namespace PulsoidToOSC
 					if (appSate == AppSates.Stopped) Disp.Invoke(() => StartPulsoidToOSC());
 				}, delayedStartTaskCts.Token);
 			}
+
+			_ = Task.Run(async () => 
+			{
+				MainViewModel.InfoViewModel.IsNewVersionAvailable = await GitHubApi.IsNewVersionAvailable(GitHubOwner, GitHubRepo, AppVersion) == GitHubApi.VersionStatus.NewIsAvailable;
+			});
 		}
 
 		public static void StartPulsoidToOSC(bool reconnect = false)
