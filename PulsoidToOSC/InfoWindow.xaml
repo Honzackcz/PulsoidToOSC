@@ -7,12 +7,16 @@
 		mc:Ignorable="d"
 		Title="PulsoidToOSC info" ResizeMode="NoResize" Height="280" Width="400"
 		xmlns:ui="http://schemas.modernwpf.com/2019" d:DataContext="{d:DesignInstance Type=local:InfoViewModel}"
-		ui:WindowHelper.UseModernWindowStyle="True">
+		ui:ThemeManager.IsThemeAware="True"
+		ui:WindowHelper.UseModernWindowStyle="True"
+        ui:TitleBar.IsIconVisible="True"
+        WindowStyle="None">
 
 	<Window.Resources>
-	</Window.Resources>
-	
-	<Grid>
+        <SolidColorBrush x:Key="WindowBorder" Color="{DynamicResource SystemAccentColor}"/>
+    </Window.Resources>
+
+    <Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="Auto"/>
