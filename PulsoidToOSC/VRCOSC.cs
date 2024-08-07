@@ -17,7 +17,7 @@ namespace PulsoidToOSC
 			{ MainProgram.HeartRateTrends.Upward, "↗" },
 			{ MainProgram.HeartRateTrends.Downward, "↘" },
 			{ MainProgram.HeartRateTrends.StrongUpward, "⏫" },
-			{ MainProgram.HeartRateTrends.StrongDownward, "⏬"}
+			{ MainProgram.HeartRateTrends.StrongDownward, "⏬" }
 		};
 
 		private static DateTime lastVRCChatboxMessageTime = DateTime.MinValue;
@@ -179,7 +179,7 @@ namespace PulsoidToOSC
 				if (multicastService == null) return;
 
 				// Is this an answer to a service instance details?
-				var servers = e.Message.Answers.OfType<SRVRecord>();
+				IEnumerable<SRVRecord> servers = e.Message.Answers.OfType<SRVRecord>();
 				foreach (var server in servers)
 				{
 					Match match = MyRegex.VRC_ID().Match(server.Target.ToString());
@@ -201,7 +201,7 @@ namespace PulsoidToOSC
 				}
 
 				// Is this an answer to host addresses?
-				var addresses = e.Message.Answers.OfType<AddressRecord>();
+				IEnumerable<AddressRecord> addresses = e.Message.Answers.OfType<AddressRecord>();
 				foreach (AddressRecord address in addresses)
 				{
 					string addressName = address.Name.ToString();

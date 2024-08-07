@@ -19,18 +19,18 @@ namespace PulsoidToOSC
 		private static bool _vrcSendToAllClinetsOnLAN = false;
 		private static bool _vrcSendBPMToChatbox = false;
 		private static string _vrcChatboxMessage = "Heart rate:\\v<bpm> BPM <trend>";
-
 		// Parameters
-		public static List<OSCParameter> OSCParameters { get; set; } =
+		private static List<OSCParameter> _oscParameters =
 		[
-			new(){Type = OSCParameter.Types.Integer, Name = "HeartRateInt"},
-			new(){Type = OSCParameter.Types.Integer, Name = "HeartRate3"},
-			new(){Type = OSCParameter.Types.Float, Name = "HeartRateFloat"},
-			new(){Type = OSCParameter.Types.Float, Name = "HeartRate"},
-			new(){Type = OSCParameter.Types.Float01, Name = "HeartRateFloat01"},
-			new(){Type = OSCParameter.Types.Float01, Name = "HeartRate2"},
-			new(){Type = OSCParameter.Types.BoolToggle, Name = "HeartBeatToggle"},
+			new() { Type = OSCParameter.Types.Integer, Name = "HeartRateInt" },
+			new() { Type = OSCParameter.Types.Integer, Name = "HeartRate3" },
+			new() { Type = OSCParameter.Types.Float, Name = "HeartRateFloat" },
+			new() { Type = OSCParameter.Types.Float, Name = "HeartRate" },
+			new() { Type = OSCParameter.Types.Float01, Name = "HeartRateFloat01" },
+			new() { Type = OSCParameter.Types.Float01, Name = "HeartRate2" },
+			new() { Type = OSCParameter.Types.BoolToggle, Name = "HeartBeatToggle" },
 		];
+
 		// General
 		public static string PulsoidToken
 		{
@@ -83,6 +83,12 @@ namespace PulsoidToOSC
 		{
 			get => _vrcChatboxMessage;
 			set => _vrcChatboxMessage = value;
+		}
+		// Parameters
+		public static List<OSCParameter> OSCParameters
+		{
+			get => _oscParameters;
+			set => _oscParameters = value;
 		}
 
 		public static void SaveConfig()
@@ -211,6 +217,7 @@ namespace PulsoidToOSC
 			{
 				VRCChatboxMessage = vrcChatboxMessage;
 			}
+			//Parameters
 			if (oscParameters.Count > 0) OSCParameters = oscParameters;
 		}
 	}
