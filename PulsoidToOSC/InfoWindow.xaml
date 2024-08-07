@@ -10,7 +10,8 @@
 		ui:ThemeManager.IsThemeAware="True"
 		ui:WindowHelper.UseModernWindowStyle="True"
         ui:TitleBar.IsIconVisible="True"
-        WindowStyle="None">
+        WindowStyle="None"
+        AllowsTransparency="True">
 
 	<Window.Resources>
         <SolidColorBrush x:Key="WindowBorder" Color="{DynamicResource SystemAccentColor}"/>

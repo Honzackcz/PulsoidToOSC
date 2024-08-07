@@ -9,7 +9,8 @@
 		xmlns:ui="http://schemas.modernwpf.com/2019" d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
 		ui:ThemeManager.IsThemeAware="True"
 		ui:WindowHelper.UseModernWindowStyle="True"
-        WindowStyle="None">
+        WindowStyle="None"
+        AllowsTransparency="True">
 
     <Window.Resources>
         <SolidColorBrush x:Key="WindowBorder" Color="{DynamicResource SystemAccentColor}"/>
