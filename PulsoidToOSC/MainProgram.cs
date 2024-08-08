@@ -7,7 +7,7 @@ namespace PulsoidToOSC
 {
 	public static class MainProgram
 	{
-		public const string AppVersion = "v0.1.0b";
+		public const string AppVersion = "v0.1.0";
 		public const string GitHubOwner = "Honzackcz";
 		public const string GitHubRepo = "PulsoidToOSC";
 
