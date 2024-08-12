@@ -2,11 +2,17 @@
 
 namespace PulsoidToOSC
 {
-	public class MainViewModel : ViewModelBase
+	internal class MainViewModel : ViewModelBase
 	{
+		private const string ColorGreen = "#00FF00";
+		private const string ColorRed = "#FF0000";
+		private const string ColorYellow = "#FFFF00";
+		private const string ColorCyan = "#00FFFF";
+		public enum Colors {None, Green, Red, Yellow, Cyan };
+
 		public OptionsViewModel OptionsViewModel { get; }
 		public InfoViewModel InfoViewModel { get; }
-		public MainWindow? MainWindow { get; set; }
+		public MainWindow? MainWindow { get; private set; }
 
 		private string _bpmText = string.Empty;
 		private string _measuredAtText = string.Empty;
@@ -60,6 +66,15 @@ namespace PulsoidToOSC
 			OpenInfoCommand = new RelayCommand(OpenInfo);
 		}
 
+		public void OpenMainWindow()
+		{
+			MainWindow = new()
+			{
+				DataContext = this
+			};
+			MainWindow.Show();
+		}
+
 		private void Start()
 		{
 			MainProgram.StartPulsoidToOSC();
@@ -73,6 +88,24 @@ namespace PulsoidToOSC
 		private void OpenInfo()
 		{
 			InfoViewModel.OpenInfoWindow();
+		}
+
+		public void SetUI(string errorText = "", Colors indicatorColor = Colors.None, string bpmText = "", string measuredAtText = "")
+		{
+			string hexColor = indicatorColor switch
+			{
+				Colors.Green => ColorGreen,
+				Colors.Red => ColorRed,
+				Colors.Yellow => ColorYellow,
+				Colors.Cyan => ColorCyan,
+				_ => "#00000000"
+			};
+
+			ErrorText = errorText;
+			ErrorTextColor = hexColor;
+			LiveIndicatorColor = hexColor;
+			BPMText = bpmText;
+			MeasuredAtText = measuredAtText;
 		}
 	}
 }
