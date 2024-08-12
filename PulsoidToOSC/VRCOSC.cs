@@ -10,14 +10,14 @@ namespace PulsoidToOSC
 	{
 		public static string OSCPath { get; } = "/avatar/parameters/";
 		private static readonly Dictionary<string, VRCClient> VRCClients = [];
-		private static readonly Dictionary<MainProgram.HeartRateTrends, string> HeartRateTrendStrings = new() 
+		private static readonly Dictionary<HeartRate.Trends, string> HeartRateTrendStrings = new() 
 		{
-			{ MainProgram.HeartRateTrends.None, "" },
-			{ MainProgram.HeartRateTrends.Stable, "▶" },
-			{ MainProgram.HeartRateTrends.Upward, "↗" },
-			{ MainProgram.HeartRateTrends.Downward, "↘" },
-			{ MainProgram.HeartRateTrends.StrongUpward, "⏫" },
-			{ MainProgram.HeartRateTrends.StrongDownward, "⏬" }
+			{ HeartRate.Trends.None, "" },
+			{ HeartRate.Trends.Stable, "▶" },
+			{ HeartRate.Trends.Upward, "↗" },
+			{ HeartRate.Trends.Downward, "↘" },
+			{ HeartRate.Trends.StrongUpward, "⏫" },
+			{ HeartRate.Trends.StrongDownward, "⏬" }
 		};
 
 		private static DateTime _lastVRCChatboxMessageTime = DateTime.MinValue;
@@ -37,7 +37,7 @@ namespace PulsoidToOSC
 
 					foreach (OSCParameter oscParameter in ConfigData.OSCParameters)
 					{
-						OscMessage? oscMessage = oscParameter.GetOscMessage(OSCPath, heartRate, MainProgram.HBToggle);
+						OscMessage? oscMessage = oscParameter.GetOscMessage(OSCPath, heartRate, HeartRate.HBToggle);
 						if (oscMessage != null) vrcClient.OscSender.Send(oscMessage);
 					}
 				}
@@ -54,7 +54,7 @@ namespace PulsoidToOSC
 			if (_lastVRCChatboxMessageTime.AddSeconds(1.9) < DateTime.UtcNow)
 			{
 				string message = ConfigData.VRCChatboxMessage.Contains("<bpm>") ? ConfigData.VRCChatboxMessage.Replace("<bpm>", heartRate.ToString()) : ConfigData.VRCChatboxMessage + heartRate;
-				message = message.Replace("<trend>", HeartRateTrendStrings[MainProgram.HeartRateTrend]);
+				message = message.Replace("<trend>", HeartRateTrendStrings[HeartRate.Trend]);
 				message = ConvertSpecialCharacters(message);
 				oscSender.Send(new OscMessage("/chatbox/input", message, true, false));
 				_lastVRCChatboxMessageTime = DateTime.UtcNow;

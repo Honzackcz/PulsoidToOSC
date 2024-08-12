@@ -14,13 +14,9 @@ namespace PulsoidToOSC
 		public static Dispatcher Disp { get; } = Dispatcher.CurrentDispatcher;
 		public static MainViewModel MainViewModel { get; } = new();
 		public static UDPSender? OSCSender { get; private set; }
-		public static bool HBToggle { get; private set; } = false;
-		public enum HeartRateTrends { None, Stable, Upward, Downward, StrongUpward, StrongDownward };
-		public static HeartRateTrends HeartRateTrend { get; private set; } = HeartRateTrends.None;
 
 		private enum AppSates { Stopped, Starting, Running, Stopping };
 		private static AppSates _appSate;
-		private static readonly List<int> _recentHeartRates = [];
 		private static DateTime _lastWSMessageTime = DateTime.MinValue;
 		private static bool _wsMessageTimeout = false;
 		private static int _failedWSConnectionAttempts = 0;
@@ -76,8 +72,7 @@ namespace PulsoidToOSC
 			_appSate = AppSates.Starting;
 			MainViewModel.StartButtonContent = " ";
 			MainViewModel.SetUI("Connecting to Pulsoid...", MainViewModel.Colors.Yellow);
-			HeartRateTrend = HeartRateTrends.None;
-			_recentHeartRates.Clear();
+			HeartRate.ResetTrends();
 			SetupOSC();
 			VRCOSC.Query.SetupQuerry();
 			_ = StartWebSocket();
@@ -97,7 +92,7 @@ namespace PulsoidToOSC
 				await SimpleWSClient.CloseConnectionAsync();
 			}
 
-			SendHeartRates();
+			HeartRate.Send();
 
 			_appSate = AppSates.Stopped;
 			MainViewModel.StartButtonContent = "Start";
@@ -136,7 +131,7 @@ namespace PulsoidToOSC
 				if (!_wsMessageTimeout && _lastWSMessageTime != DateTime.MinValue && _lastWSMessageTime.AddSeconds(10) < DateTime.UtcNow)
 				{
 					_wsMessageTimeout = true;
-					SendHeartRates();
+					HeartRate.Send();
 
 					MainViewModel.SetUI("Waiting for heart rate...", MainViewModel.Colors.Yellow);
 				}
@@ -176,7 +171,7 @@ namespace PulsoidToOSC
 					_delayedStartTaskCts = new();
 					Task.Run(async () =>
 					{
-						await Task.Delay(5000 * Convert.ToInt32(_failedWSConnectionAttempts > 0), _delayedStartTaskCts.Token);
+						await Task.Delay(_failedWSConnectionAttempts == 0 ? 0 : 5000, _delayedStartTaskCts.Token);
 						if (_appSate == AppSates.Stopped) Disp.Invoke(() => StartPulsoidToOSC(true));
 					}, _delayedStartTaskCts.Token);
 
@@ -205,61 +200,10 @@ namespace PulsoidToOSC
 				}
 			}
 
-			SendHeartRates(heartRate);
+			HeartRate.Send(heartRate);
 
-			if (heartRate > 0) MainViewModel.SetUI("", HBToggle ? MainViewModel.Colors.Cyan : MainViewModel.Colors.Green, $"BPM: {heartRate}", measuredAt > 0 ? "Measured at: " + DateTimeOffset.FromUnixTimeMilliseconds(measuredAt).LocalDateTime.ToLongTimeString() : "");
+			if (heartRate > 0) MainViewModel.SetUI("", HeartRate.HBToggle ? MainViewModel.Colors.Cyan : MainViewModel.Colors.Green, $"BPM: {heartRate}", measuredAt > 0 ? "Measured at: " + DateTimeOffset.FromUnixTimeMilliseconds(measuredAt).LocalDateTime.ToLongTimeString() : "");
 			else MainViewModel.SetUI("Error at obtaing heart rate data!", MainViewModel.Colors.Red);
-		}
-
-		private static void SendHeartRates(int heartRate = 0)
-		{
-			if (heartRate < 0) return;
-
-			HBToggle = !HBToggle;
-
-			_recentHeartRates.Add(heartRate);
-			if (_recentHeartRates.Count > 5)
-			{
-				_recentHeartRates.RemoveAt(0);
-				HeartRateTrend = CalcualteTrend(_recentHeartRates) switch
-				{
-					> 1f => HeartRateTrends.StrongUpward,
-					< -1f => HeartRateTrends.StrongDownward,
-					> 0.5f => HeartRateTrends.Upward,
-					< -0.5f => HeartRateTrends.Downward,
-					_ => HeartRateTrends.Stable
-				};
-			}
-			else
-			{
-				HeartRateTrend = HeartRateTrends.None;
-			}
-
-			VRCOSC.SendHeartRates(heartRate);
-
-			if (OSCSender == null || !ConfigData.OSCUseManualConfig) return;
-
-			foreach (OSCParameter oscParameter in ConfigData.OSCParameters)
-			{
-				OscMessage? oscMessage = oscParameter.GetOscMessage(ConfigData.OSCPath, heartRate, HBToggle);
-				if (oscMessage != null) OSCSender.Send(oscMessage);
-			}
-		}
-
-		private static float CalcualteTrend(List<int> values)
-		{
-			int n = values.Count;
-			int sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-
-			for (int i = 0; i < n; i++)
-			{
-				sumX += i;
-				sumY += values[i];
-				sumXY += i * values[i];
-				sumX2 += i * i;
-			}
-
-			return (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
 		}
 	}
 }
