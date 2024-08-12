@@ -5,18 +5,18 @@ using System.Diagnostics;
 
 namespace PulsoidToOSC
 {
-	public class InfoViewModel : ViewModelBase
+	internal class InfoViewModel : ViewModelBase
 	{
-		private readonly MainViewModel _mainViewModel;
 		public InfoWindow? InfoWindow { get; private set; }
 
+		private readonly MainViewModel _mainViewModel;
 		private readonly string _versionText = "Version: ";
 		private bool _isNewVersionAvailable = false;
 
 		public bool IsNewVersionAvailable
 		{
 			get => _isNewVersionAvailable;
-			set { _isNewVersionAvailable = value; OnPropertyChanged(nameof(VersionText)); OnPropertyChanged(nameof(NewVersionIndicator)); }
+			set { _isNewVersionAvailable = value; OnPropertyChanged(nameof(NewVersionIndicator)); }
 		}
 		public string VersionText
 		{

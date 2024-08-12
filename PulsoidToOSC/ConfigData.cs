@@ -5,7 +5,7 @@ namespace PulsoidToOSC
 {
 	internal static class ConfigData
 	{
-		private const string filePath = "config.txt";
+		private const string FilePath = "config.txt";
 		// General
 		private static string _pulsoidToken = "";
 		private static bool _autoStart = false;
@@ -93,7 +93,7 @@ namespace PulsoidToOSC
 
 		public static void SaveConfig()
 		{
-			using StreamWriter writer = new(filePath);
+			using StreamWriter writer = new(FilePath);
 			// General
 			writer.WriteLine($"pulsoidToken={PulsoidToken.ReplaceLineEndings("\\n").Replace("=", "")}");
 			writer.WriteLine($"autoStart={AutoStart}");
@@ -116,7 +116,7 @@ namespace PulsoidToOSC
 
 		public static void LoadConfig()
 		{
-			if (!File.Exists(filePath)) return;
+			if (!File.Exists(FilePath)) return;
 			// General
 			string? pulsoidToken = null;
 			string? autoStart = null;
@@ -133,7 +133,7 @@ namespace PulsoidToOSC
 			// Parameters
 			List<OSCParameter> oscParameters = [];
 
-			using (StreamReader reader = new(filePath))
+			using (StreamReader reader = new(FilePath))
 			{
 				string? line;
 				while ((line = reader.ReadLine()) != null)

@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace PulsoidToOSC
 {
-    public class OptionsViewModel : ViewModelBase
+    internal class OptionsViewModel : ViewModelBase
     {
 		private readonly MainViewModel _mainViewModel;
 		public OptionsWindow? OptionsWindow { get; private set; }
@@ -33,13 +33,13 @@ namespace PulsoidToOSC
 		public void OpenOptionsWindow()
 		{
 			GeneralOptionsViewModel.TokenText = ConfigData.PulsoidToken;
-			GeneralOptionsViewModel.SetTokenValidationIndicator(PulsoidApi.TokenValiditi);
-			if (PulsoidApi.TokenValiditi == PulsoidApi.TokenValidities.Unknown)
+			GeneralOptionsViewModel.TokenValidity = PulsoidApi.TokenValidity;
+			if (PulsoidApi.TokenValidity == PulsoidApi.TokenValidities.Unknown)
 			{
 				Task.Run(async () =>
 				{
 					await PulsoidApi.ValidateToken();
-					GeneralOptionsViewModel.SetTokenValidationIndicator(PulsoidApi.TokenValiditi);
+					GeneralOptionsViewModel.TokenValidity = PulsoidApi.TokenValidity;
 				});
 			}
 			GeneralOptionsViewModel.AutoStartCheckmark = ConfigData.AutoStart;
@@ -86,15 +86,13 @@ namespace PulsoidToOSC
 		}
 	}
 
-    public class GeneralOptionsViewModel : ViewModelBase
+    internal class GeneralOptionsViewModel : ViewModelBase
     {
 		private readonly OptionsViewModel _optionsViewModel;
 
 		private string _tokenText = string.Empty;
-		private bool _tokenValidationIndicator = false;
-		private string _tokenValidationValid = "Hidden";
-		private string _tokenValidationInvalid = "Hidden";
 		private bool _autoStartCheckmark = false;
+		private PulsoidApi.TokenValidities? _tokenValidity = null;
 
 		public string TokenText
 		{
@@ -106,21 +104,24 @@ namespace PulsoidToOSC
 			get => MyRegex.TokenSymbolToHide().Replace(_tokenText, "●");
 		}
 
+		public PulsoidApi.TokenValidities? TokenValidity
+		{
+			get => _tokenValidity;
+			set { _tokenValidity = value; OnPropertyChanged(nameof(TokenValidationIndicator)); OnPropertyChanged(nameof(TokenValidationValid)); OnPropertyChanged(nameof(TokenValidationInvalid)); }
+		}
 		public bool TokenValidationIndicator
 		{
-			get => _tokenValidationIndicator;
-			set { _tokenValidationIndicator = value; OnPropertyChanged(); }
+			get => _tokenValidity == PulsoidApi.TokenValidities.Unknown;
 		}
 		public string TokenValidationValid
 		{
-			get => _tokenValidationValid;
-			set { _tokenValidationValid = value; OnPropertyChanged(); }
+			get => _tokenValidity == PulsoidApi.TokenValidities.Valid ? "Visible" : "Hidden";
 		}
 		public string TokenValidationInvalid
 		{
-			get => _tokenValidationInvalid;
-			set { _tokenValidationInvalid = value; OnPropertyChanged(); }
+			get => _tokenValidity == PulsoidApi.TokenValidities.Invalid ? "Visible" : "Hidden";
 		}
+
 		public bool AutoStartCheckmark
 		{
 			get => _autoStartCheckmark;
@@ -147,7 +148,7 @@ namespace PulsoidToOSC
 		{
 			(_optionsViewModel?.OptionsWindow?.FindName("SetTokenButton") as UIElement)?.Focus();
 
-			SetTokenValidationIndicator(PulsoidApi.TokenValidities.Unknown);
+			TokenValidity = PulsoidApi.TokenValidities.Unknown;
 			string previousToken = ConfigData.PulsoidToken;
 			PulsoidApi.SetPulsoidToken(TokenText);
 			TokenText = ConfigData.PulsoidToken;
@@ -155,35 +156,7 @@ namespace PulsoidToOSC
 
 			await PulsoidApi.ValidateToken();
 			await Task.Delay(250); //just for user to see the validation happens in case it was too fast
-			SetTokenValidationIndicator(PulsoidApi.TokenValiditi);
-		}
-
-		internal void SetTokenValidationIndicator(PulsoidApi.TokenValidities? valid = null)
-		{
-			if (valid == null)
-			{
-				TokenValidationIndicator = false;
-				TokenValidationInvalid = "Hidden";
-				TokenValidationValid = "Hidden";
-			}
-			else if (valid == PulsoidApi.TokenValidities.Unknown)
-			{
-				TokenValidationIndicator = true;
-				TokenValidationInvalid = "Hidden";
-				TokenValidationValid = "Hidden";
-			}
-			else if (valid == PulsoidApi.TokenValidities.Invalid)
-			{
-				TokenValidationIndicator = false;
-				TokenValidationInvalid = "Visible";
-				TokenValidationValid = "Hidden";
-			}
-			else if (valid == PulsoidApi.TokenValidities.Valid)
-			{
-				TokenValidationIndicator = false;
-				TokenValidationInvalid = "Hidden";
-				TokenValidationValid = "Visible";
-			}
+			TokenValidity = PulsoidApi.TokenValidity;
 		}
 
 		private void ToggleAutoStart()
@@ -194,7 +167,7 @@ namespace PulsoidToOSC
 		}
 	}
 
-    public class OscOptionsViewModel : ViewModelBase
+    internal class OscOptionsViewModel : ViewModelBase
     {
 		private readonly OptionsViewModel _optionsViewModel;
 
@@ -282,7 +255,7 @@ namespace PulsoidToOSC
 		}
 	}
 
-	public class VRChatOptionsViewModel : ViewModelBase
+	internal class VRChatOptionsViewModel : ViewModelBase
     {
 		private readonly OptionsViewModel _optionsViewModel;
 
@@ -351,7 +324,7 @@ namespace PulsoidToOSC
 		}
 	}
 
-	public class ParametersOptionsViewModel : ViewModelBase
+	internal class ParametersOptionsViewModel : ViewModelBase
     {
 		private readonly OptionsViewModel _optionsViewModel;
 

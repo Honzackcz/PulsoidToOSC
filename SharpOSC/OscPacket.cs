@@ -398,7 +398,7 @@ namespace SharpOSC
 			byte[] bytes = Encoding.UTF8.GetBytes(value);
 
 			int len = bytes.Length + (4 - bytes.Length % 4);
-			if (len <= bytes.Length) len = len + 4;
+			if (len <= bytes.Length) len += 4;
 
 			byte[] msg = new byte[len];
 

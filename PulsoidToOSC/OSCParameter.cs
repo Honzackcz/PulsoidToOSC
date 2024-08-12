@@ -2,7 +2,7 @@
 
 namespace PulsoidToOSC
 {
-	public class OSCParameter
+	internal class OSCParameter
 	{
 		public enum Types { Integer, Float, Float01, BoolToggle }
 		public Types Type { get; set; } = Types.Integer;

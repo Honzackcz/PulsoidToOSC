@@ -20,7 +20,7 @@ namespace PulsoidToOSC
 			{ MainProgram.HeartRateTrends.StrongDownward, "⏬" }
 		};
 
-		private static DateTime lastVRCChatboxMessageTime = DateTime.MinValue;
+		private static DateTime _lastVRCChatboxMessageTime = DateTime.MinValue;
 
 		public static void SendHeartRates(int heartRate = 0)
 		{
@@ -51,26 +51,26 @@ namespace PulsoidToOSC
 
 		public static void SendVRCChatBox(UDPSender oscSender, int heartRate) // Not reliable due to VRC message rate limit - will not send in 2 sec cooldown
 		{
-			if (lastVRCChatboxMessageTime.AddSeconds(1.9) < DateTime.UtcNow)
+			if (_lastVRCChatboxMessageTime.AddSeconds(1.9) < DateTime.UtcNow)
 			{
 				string message = ConfigData.VRCChatboxMessage.Contains("<bpm>") ? ConfigData.VRCChatboxMessage.Replace("<bpm>", heartRate.ToString()) : ConfigData.VRCChatboxMessage + heartRate;
 				message = message.Replace("<trend>", HeartRateTrendStrings[MainProgram.HeartRateTrend]);
 				message = ConvertSpecialCharacters(message);
 				oscSender.Send(new OscMessage("/chatbox/input", message, true, false));
-				lastVRCChatboxMessageTime = DateTime.UtcNow;
+				_lastVRCChatboxMessageTime = DateTime.UtcNow;
 			}
 		}
 
 		public static void ClearVRCChatbox(UDPSender oscSender, bool tryAgainLater = true) // Not reliable due to VRC message rate limit - will retry after 2.5 sec cooldown
 		{
-			if (lastVRCChatboxMessageTime.Equals(DateTime.MinValue)) return;
+			if (_lastVRCChatboxMessageTime.Equals(DateTime.MinValue)) return;
 
-			DateTime nextVRCChatboxMessageTime = lastVRCChatboxMessageTime.AddSeconds(2);
+			DateTime nextVRCChatboxMessageTime = _lastVRCChatboxMessageTime.AddSeconds(2);
 
 			if (nextVRCChatboxMessageTime < DateTime.UtcNow)
 			{
 				oscSender.Send(new OscMessage("/chatbox/input", "", true, false));
-				lastVRCChatboxMessageTime = DateTime.MinValue;
+				_lastVRCChatboxMessageTime = DateTime.MinValue;
 			}
 			else if (tryAgainLater && nextVRCChatboxMessageTime > DateTime.UtcNow)
 			{
@@ -130,32 +130,32 @@ namespace PulsoidToOSC
 
 		internal static class Query
 		{
-			private static ServiceDiscovery? serviceDiscovery;
-			private static MulticastService? multicastService;
+			private static ServiceDiscovery? _serviceDiscovery;
+			private static MulticastService? _multicastService;
 
 			public static void SetupQuerry()
 			{
-				serviceDiscovery = new ServiceDiscovery();
-				multicastService = new MulticastService();
+				_serviceDiscovery = new ServiceDiscovery();
+				_multicastService = new MulticastService();
 
-				serviceDiscovery.ServiceInstanceDiscovered += (s, e) => OnServiceInstanceDiscovered(e);
-				multicastService.NetworkInterfaceDiscovered += (s, e) => OnNetworkInterfaceDiscovered(e);
-				multicastService.AnswerReceived += (s, e) => OnAnswerReceived(e);
+				_serviceDiscovery.ServiceInstanceDiscovered += (s, e) => OnServiceInstanceDiscovered(e);
+				_multicastService.NetworkInterfaceDiscovered += (s, e) => OnNetworkInterfaceDiscovered(e);
+				_multicastService.AnswerReceived += (s, e) => OnAnswerReceived(e);
 
-				multicastService.Start();
+				_multicastService.Start();
 			}
 
 			private static void OnNetworkInterfaceDiscovered(NetworkInterfaceEventArgs e)
 			{
-				if (serviceDiscovery == null) return;
+				if (_serviceDiscovery == null) return;
 
 				// Ask for OSC service instances
-				serviceDiscovery.QueryServiceInstances("_osc._udp"); // _oscjson._tcp.
+				_serviceDiscovery.QueryServiceInstances("_osc._udp"); // _oscjson._tcp.
 			}
 
 			private static void OnServiceInstanceDiscovered(ServiceInstanceDiscoveryEventArgs e)
 			{
-				if (multicastService == null) return;
+				if (_multicastService == null) return;
 
 				string serviceInstanceName = e.ServiceInstanceName.ToString();
 
@@ -169,14 +169,14 @@ namespace PulsoidToOSC
 					if (VRCClients[id].OscUDPPort == 0 || VRCClients[id].OscUDPIP == IPAddress.None)
 					{
 						// Ask for service instance details 
-						multicastService.SendQuery(e.ServiceInstanceName, type: DnsType.SRV);
+						_multicastService.SendQuery(e.ServiceInstanceName, type: DnsType.SRV);
 					}
 				}
 			}
 
 			private static void OnAnswerReceived(MessageEventArgs e)
 			{
-				if (multicastService == null) return;
+				if (_multicastService == null) return;
 
 				// Is this an answer to a service instance details?
 				IEnumerable<SRVRecord> servers = e.Message.Answers.OfType<SRVRecord>();
@@ -194,8 +194,8 @@ namespace PulsoidToOSC
 						if (VRCClients[id].OscUDPIP == IPAddress.None)
 						{
 							// Ask for the host IP addresses.
-							multicastService.SendQuery(server.Target, type: DnsType.A);
-							multicastService.SendQuery(server.Target, type: DnsType.AAAA);
+							_multicastService.SendQuery(server.Target, type: DnsType.A);
+							_multicastService.SendQuery(server.Target, type: DnsType.AAAA);
 						}
 					}
 				}
@@ -225,11 +225,11 @@ namespace PulsoidToOSC
 			public static void StopQuerry()
 			{
 				VRCClients.Clear();
-				serviceDiscovery?.Dispose();
-				multicastService?.Stop();
+				_serviceDiscovery?.Dispose();
+				_multicastService?.Dispose();
 
-				serviceDiscovery = null;
-				multicastService = null;
+				_serviceDiscovery = null;
+				_multicastService = null;
 			}
 
 			private static bool IsLocalhost(IPAddress ipAddress)

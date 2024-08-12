@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace PulsoidToOSC
 {
-	public class ViewModelBase : INotifyPropertyChanged
+	internal class ViewModelBase : INotifyPropertyChanged
 	{
 		public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -14,7 +14,7 @@ namespace PulsoidToOSC
 		}
 	}
 
-	public class RelayCommand(Action execute, Func<bool>? canExecute = null) : ICommand
+	internal class RelayCommand(Action execute, Func<bool>? canExecute = null) : ICommand
 	{
 		private readonly Action _execute = execute ?? throw new ArgumentNullException(nameof(execute));
 		private readonly Func<bool>? _canExecute = canExecute;

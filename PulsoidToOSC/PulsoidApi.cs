@@ -45,9 +45,9 @@ namespace PulsoidToOSC
 		}
 
 		public enum TokenValidities { Invalid, Unknown, Valid };
-		public static TokenValidities TokenValiditi { get; set; } = TokenValidities.Unknown;
+		public static TokenValidities TokenValidity { get; set; } = TokenValidities.Unknown;
 		public const string PulsoidWSURL = "wss://dev.pulsoid.net/api/v1/data/real_time?access_token=";
-		private const string clientID = "ZTQ5ZDVhMGMtZWM0My00MDUzLTgyYTgtMmM1YzkxMzE5ZTNh";
+		private const string _clientID = "ZTQ5ZDVhMGMtZWM0My00MDUzLTgyYTgtMmM1YzkxMzE5ZTNh";
 		private static readonly int[] httpPorts = [54269, 60422, 63671];
 
 
@@ -56,7 +56,7 @@ namespace PulsoidToOSC
 			if (token != null && token != ConfigData.PulsoidToken && MyRegex.GUID().IsMatch(token))
 			{
 				ConfigData.PulsoidToken = token;
-				TokenValiditi = TokenValidities.Unknown;
+				TokenValidity = TokenValidities.Unknown;
 				ConfigData.SaveConfig();
 			}
 		}
@@ -65,7 +65,7 @@ namespace PulsoidToOSC
 		{
 			bool responseModeWebPage = redirectUri == "";
 			string baseUrl = "https://pulsoid.net/oauth2/authorize";
-			string client_id = Encoding.UTF8.GetString(Convert.FromBase64String(clientID));
+			string client_id = Encoding.UTF8.GetString(Convert.FromBase64String(_clientID));
 			string redirect_uri = redirectUri;
 			string response_type = "token";
 			string scope = "data:heart_rate:read";
@@ -113,7 +113,7 @@ namespace PulsoidToOSC
 		{
 			if (!MyRegex.GUID().IsMatch(ConfigData.PulsoidToken))
 			{
-				TokenValiditi = TokenValidities.Invalid;
+				TokenValidity = TokenValidities.Invalid;
 				return;
 			}
 
@@ -129,13 +129,13 @@ namespace PulsoidToOSC
 				string profile_id = resultJson.ProfileId ?? "";
 				List<string> scopes = resultJson.Scopes ?? [];
 
-				if (scopes.Contains("data:heart_rate:read") && expires_in > 0) TokenValiditi = TokenValidities.Valid;
-				else TokenValiditi = TokenValidities.Invalid;
+				if (scopes.Contains("data:heart_rate:read") && expires_in > 0) TokenValidity = TokenValidities.Valid;
+				else TokenValidity = TokenValidities.Invalid;
 			}
 			catch (Exception ex)
 			{
-				if (ex.Message.Contains(" 401 ")) TokenValiditi = TokenValidities.Invalid;
-				else TokenValiditi = TokenValidities.Unknown;
+				if (ex.Message.Contains(" 401 ")) TokenValidity = TokenValidities.Invalid;
+				else TokenValidity = TokenValidities.Unknown;
 			}
 		}
 
@@ -153,14 +153,14 @@ namespace PulsoidToOSC
 
 
 		// Experimental code for automatic token entry
-		private static HttpListener? _listenerHTTPServer;
-		private static bool HTTPServerIsRunning = false;
+		private static HttpListener? _listenerHttpServer;
+		private static bool _httpServerIsRunning = false;
 
 		public static void StartGETServer(string redirectUri)
 		{
-			if (!HTTPServerIsRunning && redirectUri != "")
+			if (!_httpServerIsRunning && redirectUri != "")
 			{
-				HTTPServerIsRunning = true;
+				_httpServerIsRunning = true;
 				Debug.WriteLine("Starting server...");
 				Task.Run(async () =>
 				{
@@ -171,14 +171,14 @@ namespace PulsoidToOSC
 
 		private static async Task StartHTTPServer(string redirectUri)
 		{
-			_listenerHTTPServer = new HttpListener();
-			_listenerHTTPServer.Prefixes.Add(redirectUri);
-			_listenerHTTPServer.Start();
+			_listenerHttpServer = new HttpListener();
+			_listenerHttpServer.Prefixes.Add(redirectUri);
+			_listenerHttpServer.Start();
 			Debug.WriteLine("Server started. Listening on " + redirectUri);
 
-			while (HTTPServerIsRunning)
+			while (_httpServerIsRunning)
 			{
-				ProcessHTTPRequest(await _listenerHTTPServer.GetContextAsync());
+				ProcessHTTPRequest(await _listenerHttpServer.GetContextAsync());
 			}
 		}
 
@@ -228,8 +228,8 @@ namespace PulsoidToOSC
 
 		public static void StopGETServer()
 		{
-			HTTPServerIsRunning = false;
-			_listenerHTTPServer?.Stop();
+			_httpServerIsRunning = false;
+			_listenerHttpServer?.Stop();
 		}
 
 		public static bool IsPortAvailable(int port)

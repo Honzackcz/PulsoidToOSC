@@ -3,7 +3,7 @@ using System.Text;
 
 namespace PulsoidToOSC
 {
-    class SimpleWSClient
+    internal class SimpleWSClient
     {
 		public class Response
 		{
@@ -18,24 +18,24 @@ namespace PulsoidToOSC
 		public static event OnCloseEventHandler? OnClose;
 		public static event OnOpenEventHandler? OnOpen;
 
-		private static ClientWebSocket wsClient = new();
+		private static ClientWebSocket _wsClient = new();
 
 		public static WebSocketState ClientState 
 		{
-			get => wsClient.State;
+			get => _wsClient.State;
 		}
 
 		public static async Task OpenConnectionAsync(string Url)
 		{
-			if (wsClient.State == WebSocketState.Aborted || wsClient.State == WebSocketState.Closed || wsClient.State == WebSocketState.None)
+			if (_wsClient.State == WebSocketState.Aborted || _wsClient.State == WebSocketState.Closed || _wsClient.State == WebSocketState.None)
 			{
-				wsClient = new();
-				wsClient.Options.KeepAliveInterval = TimeSpan.FromSeconds(10);
-				wsClient.Options.CollectHttpResponseDetails = true;
+				_wsClient = new();
+				_wsClient.Options.KeepAliveInterval = TimeSpan.FromSeconds(10);
+				_wsClient.Options.CollectHttpResponseDetails = true;
 
 				try
 				{
-					await wsClient.ConnectAsync(new Uri(Url), CancellationToken.None);
+					await _wsClient.ConnectAsync(new Uri(Url), CancellationToken.None);
 					Opened();
 					_ = HandleMessagesAsync();
 				}
@@ -49,7 +49,7 @@ namespace PulsoidToOSC
 
 		public static async Task CloseConnectionAsync()
 		{
-			await wsClient.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+			await _wsClient.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
 		}
 
 		private static async Task HandleMessagesAsync()
@@ -57,11 +57,11 @@ namespace PulsoidToOSC
 			var buffer = new byte[1024 * 4];
 			WebSocketException? webSocketException = null;
 
-			while (wsClient.State == WebSocketState.Open)
+			while (_wsClient.State == WebSocketState.Open)
 			{
 				try
 				{
-					WebSocketReceiveResult result = await wsClient.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).ConfigureAwait(false);
+					WebSocketReceiveResult result = await _wsClient.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).ConfigureAwait(false);
 
 					if (result.MessageType == WebSocketMessageType.Text && result.EndOfMessage)
 					{
@@ -74,7 +74,7 @@ namespace PulsoidToOSC
 					webSocketException = ex;
 				}
 			}
-			if (wsClient.State != WebSocketState.Open)
+			if (_wsClient.State != WebSocketState.Open)
 			{
 				Closed(webSocketException);
 			}
@@ -82,7 +82,7 @@ namespace PulsoidToOSC
 
 		private static void Messaged(string message)
 		{
-			if (wsClient.State != WebSocketState.Open) return;
+			if (_wsClient.State != WebSocketState.Open) return;
 			OnMessage?.Invoke(message);
 		}
 
@@ -93,8 +93,8 @@ namespace PulsoidToOSC
 
 		private static void Closed(WebSocketException? ex = null)
 		{
-            int httpStatusCode = (int) wsClient.HttpStatusCode;
-			int webSocketCloseStatusCode = (int) (wsClient.CloseStatus ?? 
+            int httpStatusCode = (int) _wsClient.HttpStatusCode;
+			int webSocketCloseStatusCode = (int) (_wsClient.CloseStatus ?? 
 				((ex != null && ex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely) ?
 				WebSocketCloseStatus.EndpointUnavailable :
 				WebSocketCloseStatus.Empty));
