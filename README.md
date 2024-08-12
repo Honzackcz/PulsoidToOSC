@@ -1,4 +1,5 @@
 # PulsoidToOSC
+[![pulsoid](https://pulsoid.net/s/github-badge)](https://pulsoid.net/)
 
 PulsoidToOSC is a simple, effective, and universal application that streams heart rate data from Pulsoid to OSC.<br>
 The main window is designed to be easily used in VR with applications like OVR Toolkit, allowing you to place it on your hand like a monitor.<br>
