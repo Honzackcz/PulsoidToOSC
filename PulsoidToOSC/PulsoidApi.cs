@@ -88,8 +88,8 @@ namespace PulsoidToOSC
 		public static void GetPulsoidToken()
 		{
 			string redirectUri = "";
-			/*
-			foreach (int port in HTTPPorts)
+			
+			foreach (int port in httpPorts)
 			{
 				if (IsPortAvailable(port))
 				{
@@ -100,7 +100,6 @@ namespace PulsoidToOSC
 					break;
 				}
 			}
-			*/
 
 			Process.Start(new ProcessStartInfo
 			{
