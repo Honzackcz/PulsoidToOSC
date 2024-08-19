@@ -12,8 +12,8 @@ Also includes easy-to-use VRChat integration with automated configuration throug
 To connect this app to Pulsoid, you will need to obtain an authorization token and enter it:
 1. Click the "Get Pulsoid token" button - this will open the authorization page in your web browser.
 2. Log in and confirm authorization on the page.
-3. Copy the token - you can now close the page.
-4. Paste the token into the input field and press "Set Pulsoid token" - a green checkmark will appear if the token is valid.
+3. Token will be automatically entered in the app and you can close the page when it says so.
+4. Green checkmark will indicate valid token.
 
 If the token is invalid, repeat the steps above.
 
