@@ -13,9 +13,9 @@
     <PackageIcon>PulsoidToOSC-128.png</PackageIcon>
     <PackageProjectUrl>https://github.com/Honzackcz/PulsoidToOSC</PackageProjectUrl>
     <Title>PulsoidToOSC</Title>
-    <AssemblyVersion>0.1.1</AssemblyVersion>
-    <FileVersion>0.1.1</FileVersion>
-    <Version>0.1.1</Version>
+    <AssemblyVersion>0.1.2</AssemblyVersion>
+    <FileVersion>0.1.2</FileVersion>
+    <Version>0.1.2</Version>
     <Copyright>Copyright (c) 2024 Honzackcz</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
