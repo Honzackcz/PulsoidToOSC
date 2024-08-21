@@ -64,10 +64,11 @@ Chatbox messages also support new line characters.<br>
 Messages are sent to the manually defined OSC endpoint and all auto-configured VRChat clients.
 
 
-### Display on avatar
+### Display and sound on avatar
 
 Ready to use prefab of simple display for VRChat avatar with easy installation with VRCFury.<br>
 Requires just one int (8 bits) of synced avatar parameters. The display have just one static mesh of one Quad (2 triangles) and one material slot.<br>
+The package also includes Heart Beat Audio addon prefab. Heart beat sound tempo is synced with heart rate value and sounds are randomized, so they will not sound too repetitive.<br>
 Download: [Heart Rate Display unitypackage](https://github.com/Honzackcz/PulsoidToOSC/raw/master/external-tools/VRChat/HeartRateDisplay.unitypackage)<br>
 This display use edited version of RED_SIM's [Simple Counter Shader](https://www.patreon.com/posts/simple-counter-62864361).
 
