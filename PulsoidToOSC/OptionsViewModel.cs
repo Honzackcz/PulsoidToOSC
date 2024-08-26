@@ -78,6 +78,8 @@ namespace PulsoidToOSC
 
 		public void OptionsWindowClosing(object? sender, CancelEventArgs e)
 		{
+			PulsoidApi.StopGETServer();
+
 			if (RestartToApplyOptions)
 			{
 				RestartToApplyOptions = false;
