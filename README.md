@@ -98,14 +98,14 @@ All parameters can be easily edited.
 
 Supported parameter types are:
 
-| Parameter Type   | Value Type | Description                                                                              |
-| ---------------- | ---------- | ---------------------------------------------------------------------------------------- |
-| Integer          | Int        | Heart rate - Integer [0, 255]                                                            |
-| Float [-1, 1]    | Float      | Heart rate - Float ([0, 255] -> [-1, 1])                                                 |
-| Float [0, 1]     | Float      | Heart rate - Float ([0, 255] -> [0, 1])                                                  |
-| Bool Toggle      | Bool       | Toggles with each update                                                                 |
-| Trend [-1, 1]    | Float      | Trend of heart rate change - Float [-1, 1] (-1 = decreasing; 0 = stable; 1 = increasing) |
-| Trend [0, 1]     | Float      | Trend of heart rate change - Float [0, 1] (0 = decreasing; 0.5 = stable; 1 = increasing) |
+| Parameter Type   | Value Type | Description                                                                                 |
+| ---------------- | ---------- | ------------------------------------------------------------------------------------------- |
+| Integer          | Int        | Heart rate - Integer [0, 255]                                                               |
+| Float [-1, 1]    | Float      | Heart rate - Float ([0, 255] -> [-1, 1])                                                    |
+| Float [0, 1]     | Float      | Heart rate - Float ([0, 255] -> [0, 1])                                                     |
+| Bool Toggle      | Bool       | Toggles with each update                                                                    |
+| Trend [-1, 1]    | Float      | Trend of heart rate change - Float [-1, 1] <br> -1 = decreasing; 0 = stable; 1 = increasing |
+| Trend [0, 1]     | Float      | Trend of heart rate change - Float [0, 1] <br> 0 = decreasing; 0.5 = stable; 1 = increasing |
 
 
 
