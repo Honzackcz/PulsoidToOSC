@@ -75,22 +75,22 @@ This display use edited version of RED_SIM's [Simple Counter Shader](https://www
 
 ## OSC Parameters
 
-Parameters are combined with your defined OSC path, which you can set in the OSC options.  
+Parameters are combined with your defined OSC path, which you can set in the OSC options.
 In the case of VRChat auto-configuration, the OSC path is defined as `/avatar/parameter/`, ensuring access to the parameters within avatars.
 
 An example of a full path combined with a parameter might look like this: `/avatar/parameter/HeartRateInt`
 
 Default parameters are set up according to this table:
 
-| Parameter Name     | Value Type | Description                     |
-| ------------------ | ---------- | ------------------------------- |
-| `HeartRateInt`     | Int        | Integer [0, 255]                |
-| `HeartRate3`       | Int        | Same as HeartRateInt            |
-| `HeartRateFloat`   | Float      | Float ([0, 255] -> [-1, 1])     |
-| `HeartRate`        | Float      | Same as HeartRateFloat          |
-| `HeartRateFloat01` | Float      | Float ([0, 255] -> [0, 1])      |
-| `HeartRate2`       | Float      | Same as HeartRateFloat01        |
-| `HeartBeatToggle`  | Bool       | Toggles with each update        |
+| Parameter Name     | Value Type | Description                              |
+| ------------------ | ---------- | ---------------------------------------- |
+| `HeartRateInt`     | Int        | Heart rate - Integer [0, 255]            |
+| `HeartRate3`       | Int        | Same as HeartRateInt                     |
+| `HeartRateFloat`   | Float      | Heart rate - Float ([0, 255] -> [-1, 1]) |
+| `HeartRate`        | Float      | Same as HeartRateFloat                   |
+| `HeartRateFloat01` | Float      | Heart rate - Float ([0, 255] -> [0, 1])  |
+| `HeartRate2`       | Float      | Same as HeartRateFloat01                 |
+| `HeartBeatToggle`  | Bool       | Toggles with each update                 |
 
 These parameters are chosen to support most currently used systems. In practice, the only necessary parameters are `HeartRateInt` for data and the additional `HeartBeatToggle` for reliable detection of timeouts.
 
@@ -98,12 +98,14 @@ All parameters can be easily edited.
 
 Supported parameter types are:
 
-| Parameter Type  | Value Type | Description                     |
-| --------------- | ---------- | ------------------------------- |
-| Integer         | Int        | Integer [0, 255]                |
-| Float [-1, 1]   | Float      | Float ([0, 255] -> [-1, 1])     |
-| Float [0, 1]    | Float      | Float ([0, 255] -> [0, 1])      |
-| Bool Toggle     | Bool       | Toggles with each update        |
+| Parameter Type   | Value Type | Description                                                                              |
+| ---------------- | ---------- | ---------------------------------------------------------------------------------------- |
+| Integer          | Int        | Heart rate - Integer [0, 255]                                                            |
+| Float [-1, 1]    | Float      | Heart rate - Float ([0, 255] -> [-1, 1])                                                 |
+| Float [0, 1]     | Float      | Heart rate - Float ([0, 255] -> [0, 1])                                                  |
+| Bool Toggle      | Bool       | Toggles with each update                                                                 |
+| Trend [-1, 1]    | Float      | Trend of heart rate change - Float [-1, 1] (-1 = decreasing; 0 = stable; 1 = increasing) |
+| Trend [0, 1]     | Float      | Trend of heart rate change - Float [0, 1] (0 = decreasing; 0.5 = stable; 1 = increasing) |
 
 
 

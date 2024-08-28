@@ -15,6 +15,7 @@ namespace PulsoidToOSC
 		public GeneralOptionsViewModel GeneralOptionsViewModel { get; }
         public OscOptionsViewModel OscOptionsViewModel { get; }
         public VRChatOptionsViewModel VRChatOptionsViewModel { get; }
+		public HeartrateOptionsViewModel HeartrateOptionsViewModel { get; }
         public ParametersOptionsViewModel ParametersOptionsViewModel { get; }
 
 		public ICommand OptionsDoneCommand { get; }
@@ -25,6 +26,7 @@ namespace PulsoidToOSC
 			GeneralOptionsViewModel = new GeneralOptionsViewModel(this);
 			OscOptionsViewModel = new OscOptionsViewModel(this);
 			VRChatOptionsViewModel = new VRChatOptionsViewModel(this);
+			HeartrateOptionsViewModel = new HeartrateOptionsViewModel(this);
 			ParametersOptionsViewModel = new ParametersOptionsViewModel(this);
 
 			OptionsDoneCommand = new RelayCommand(OptionsDone);
@@ -53,6 +55,9 @@ namespace PulsoidToOSC
 			VRChatOptionsViewModel.VRCClinetsOnLANCheckmark = ConfigData.VRCSendToAllClinetsOnLAN;
 			VRChatOptionsViewModel.VRCChatboxCheckmark = ConfigData.VRCSendBPMToChatbox;
 			VRChatOptionsViewModel.VRCChatboxMessageText = ConfigData.VRCChatboxMessage;
+
+			HeartrateOptionsViewModel.HrTrendMaxText = ConfigData.HrTrendMax.ToString();
+			HeartrateOptionsViewModel.HrTrendMinText = ConfigData.HrTrendMin.ToString();
 
 			ParametersOptionsViewModel.Parameters.Clear();
 			foreach (OSCParameter oscParameter in ConfigData.OSCParameters)
@@ -326,6 +331,58 @@ namespace PulsoidToOSC
 		}
 	}
 
+	internal class HeartrateOptionsViewModel : ViewModelBase
+	{
+		private readonly OptionsViewModel _optionsViewModel;
+
+		private string _hrTrendMaxText = string.Empty;
+		private string _hrTrendMinText = string.Empty;
+
+		public string HrTrendMaxText
+		{
+			get => _hrTrendMaxText;
+			set { _hrTrendMaxText = MyRegex.NotNumber().Replace(value ?? string.Empty, ""); OnPropertyChanged(); }
+		}
+		public string HrTrendMinText
+		{
+			get => _hrTrendMinText;
+			set { _hrTrendMinText = MyRegex.NotNumber().Replace(value ?? string.Empty, ""); OnPropertyChanged(); }
+		}
+
+		public ICommand SetHrTrendCommand { get; }
+
+		public HeartrateOptionsViewModel(OptionsViewModel optionsViewModel)
+		{
+			_optionsViewModel = optionsViewModel;
+
+			SetHrTrendCommand = new RelayCommand(SetHrTrend);
+		}
+
+		private void SetHrTrend()
+		{
+			(_optionsViewModel?.OptionsWindow?.FindName("SetHrTrendButton") as UIElement)?.Focus();
+
+			bool saveConfig = false;
+
+			if (Int32.TryParse(HrTrendMaxText, out int parsedHrTrendMax) && parsedHrTrendMax <= 65535 && parsedHrTrendMax > 0 && parsedHrTrendMax != ConfigData.HrTrendMax)
+			{
+				ConfigData.HrTrendMax = parsedHrTrendMax;
+				saveConfig = true;
+			}
+
+			if (Int32.TryParse(HrTrendMinText, out int parsedHrTrendMin) && parsedHrTrendMin <= 65535 && parsedHrTrendMin > 0 && parsedHrTrendMin != ConfigData.HrTrendMin)
+			{
+				ConfigData.HrTrendMin = parsedHrTrendMin;
+				saveConfig = true;
+			}
+
+			if (saveConfig) ConfigData.SaveConfig();
+
+			HrTrendMaxText = ConfigData.HrTrendMax.ToString();
+			HrTrendMinText = ConfigData.HrTrendMin.ToString();
+		}
+	}
+
 	internal class ParametersOptionsViewModel : ViewModelBase
     {
 		private readonly OptionsViewModel _optionsViewModel;
@@ -340,7 +397,9 @@ namespace PulsoidToOSC
 				{OSCParameter.Types.Integer, "Integer" },
 				{OSCParameter.Types.Float, "Float [-1, 1]" },
 				{OSCParameter.Types.Float01, "Float [0, 1]" },
-				{OSCParameter.Types.BoolToggle, "Bool Toggle" }
+				{OSCParameter.Types.BoolToggle, "Bool Toggle" },
+				{OSCParameter.Types.TrendF, "Trend [-1, 1]" },
+				{OSCParameter.Types.TrendF01, "Trend [0, 1]" }
 			};
 
 			private OSCParameter.Types _type = OSCParameter.Types.Integer;
@@ -363,6 +422,8 @@ namespace PulsoidToOSC
 			public ICommand SetFloatTypeCommand { get; }
 			public ICommand SetFloat01TypeCommand { get; }
 			public ICommand SetBoolToggleTypeCommand { get; }
+			public ICommand SetTrendFTypeCommand { get; }
+			public ICommand SetTrendF01TypeCommand { get; }
 			public ICommand DeleteParameterCommand { get; }
 
 			public ParameterItem()
@@ -371,6 +432,8 @@ namespace PulsoidToOSC
 				SetFloatTypeCommand = new RelayCommand(SetFloatType);
 				SetFloat01TypeCommand = new RelayCommand(SetFloat01Type);
 				SetBoolToggleTypeCommand = new RelayCommand(SetBoolToggleType);
+				SetTrendFTypeCommand = new RelayCommand(SetTrendFType);
+				SetTrendF01TypeCommand = new RelayCommand(SetTrendF01Type);
 				DeleteParameterCommand = new RelayCommand(DeleteParameter);
 			}
 
@@ -392,6 +455,16 @@ namespace PulsoidToOSC
 			private void SetBoolToggleType()
 			{
 				Type = OSCParameter.Types.BoolToggle;
+			}
+
+			private void SetTrendFType()
+			{
+				Type = OSCParameter.Types.TrendF;
+			}
+
+			private void SetTrendF01Type()
+			{
+				Type = OSCParameter.Types.TrendF01;
 			}
 
 			private void DeleteParameter()

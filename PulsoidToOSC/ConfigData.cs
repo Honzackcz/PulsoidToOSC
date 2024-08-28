@@ -19,6 +19,9 @@ namespace PulsoidToOSC
 		private static bool _vrcSendToAllClinetsOnLAN = false;
 		private static bool _vrcSendBPMToChatbox = false;
 		private static string _vrcChatboxMessage = "Heart rate:\\v<bpm> BPM <trend>";
+		// Heart rate
+		private static float _hrTrendMax = 2f;
+		private static float _hrTrendMin = 2f;
 		// Parameters
 		private static List<OSCParameter> _oscParameters =
 		[
@@ -84,6 +87,17 @@ namespace PulsoidToOSC
 			get => _vrcChatboxMessage;
 			set => _vrcChatboxMessage = value;
 		}
+		// Heart rate
+		public static float HrTrendMax
+		{
+			get => _hrTrendMax;
+			set => _hrTrendMax = value;
+		}
+		public static float HrTrendMin
+		{
+			get => _hrTrendMin;
+			set => _hrTrendMin = value;
+		}
 		// Parameters
 		public static List<OSCParameter> OSCParameters
 		{
@@ -107,7 +121,10 @@ namespace PulsoidToOSC
 			writer.WriteLine($"vrcSendToAllClinetsOnLAN={VRCSendToAllClinetsOnLAN}");
 			writer.WriteLine($"vrcSendBPMToChatbox={VRCSendBPMToChatbox}");
 			writer.WriteLine($"vrcChatboxMessage={VRCChatboxMessage.ReplaceLineEndings("\\n").Replace("=", "")}");
-			//Parameters
+			// Heart rate
+			writer.WriteLine($"hrTrendMax={HrTrendMax}");
+			writer.WriteLine($"hrTrendMin={HrTrendMin}");
+			// Parameters
 			foreach (OSCParameter parameter in OSCParameters)
 			{
 				writer.WriteLine($"oscParameter={parameter.Type};{parameter.Name.ReplaceLineEndings("\\n").Replace("=", "").Replace(";", "")}");
@@ -130,6 +147,9 @@ namespace PulsoidToOSC
 			string? vrcSendToAllClinetsOnLAN = null;
 			string? vrcSendBPMToChatbox = null;
 			string? vrcChatboxMessage = null;
+			// Heart rate
+			string? hrTrendMax = null;
+			string? hrTrendMin = null;
 			// Parameters
 			List<OSCParameter> oscParameters = [];
 
@@ -180,6 +200,13 @@ namespace PulsoidToOSC
 							case "vrcChatboxMessage":
 								vrcChatboxMessage = value;
 								break;
+							// Heart rate
+							case "hrTrendMax":
+								hrTrendMax = value;
+								break;
+							case "hrTrendMin":
+								hrTrendMin = value;
+								break;
 							// Parameters
 							case "oscParameter":
 								string[] parameterParts = value.Split(";");
@@ -217,7 +244,10 @@ namespace PulsoidToOSC
 			{
 				VRCChatboxMessage = vrcChatboxMessage;
 			}
-			//Parameters
+			// Heart rate
+			if (float.TryParse(hrTrendMax, out float parsedHrTrendMax) && parsedHrTrendMax <= 65535 && parsedHrTrendMax > 0) HrTrendMax = parsedHrTrendMax;
+			if (float.TryParse(hrTrendMin, out float parsedHrTrendMin) && parsedHrTrendMin <= 65535 && parsedHrTrendMin > 0) HrTrendMin = parsedHrTrendMin;
+			// Parameters
 			if (oscParameters.Count > 0) OSCParameters = oscParameters;
 		}
 	}

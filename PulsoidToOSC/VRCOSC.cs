@@ -22,7 +22,7 @@ namespace PulsoidToOSC
 
 		private static DateTime _lastVRCChatboxMessageTime = DateTime.MinValue;
 
-		public static void SendHeartRates(int heartRate = 0)
+		public static void SendHeartRates(int heartRate, bool hbToggle, float trendF)
 		{
 			if (ConfigData.VRCUseAutoConfig && VRCClients.Count > 0)
 			{
@@ -37,7 +37,7 @@ namespace PulsoidToOSC
 
 					foreach (OSCParameter oscParameter in ConfigData.OSCParameters)
 					{
-						OscMessage? oscMessage = oscParameter.GetOscMessage(OSCPath, heartRate, HeartRate.HBToggle);
+						OscMessage? oscMessage = oscParameter.GetOscMessage(OSCPath, heartRate, hbToggle, trendF);
 						if (oscMessage != null) vrcClient.OscSender.Send(oscMessage);
 					}
 				}

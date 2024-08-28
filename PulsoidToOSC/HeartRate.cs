@@ -7,6 +7,7 @@ namespace PulsoidToOSC
 		public static bool HBToggle { get; private set; } = false;
 		public enum Trends { None, Stable, Upward, Downward, StrongUpward, StrongDownward };
 		public static Trends Trend { get; private set; } = Trends.None;
+		public static float TrendF { get; private set; } = 0;
 
 		private static readonly List<int> _recentHeartRates = [];
 
@@ -20,33 +21,36 @@ namespace PulsoidToOSC
 			if (_recentHeartRates.Count > 5)
 			{
 				_recentHeartRates.RemoveAt(0);
-				Trend = CalcualteTrend(_recentHeartRates) switch
+				TrendF = Math.Clamp(Remap(CalcualteTrend(_recentHeartRates), -ConfigData.HrTrendMin, ConfigData.HrTrendMax, -1f, 1f), -1f, 1f);
+				Trend = TrendF switch
 				{
-					> 1f => Trends.StrongUpward,
-					< -1f => Trends.StrongDownward,
-					> 0.5f => Trends.Upward,
-					< -0.5f => Trends.Downward,
+					> 0.5f => Trends.StrongUpward,
+					< -0.5f => Trends.StrongDownward,
+					> 0.25f => Trends.Upward,
+					< -0.25f => Trends.Downward,
 					_ => Trends.Stable
 				};
 			}
 			else
 			{
+				TrendF = 0;
 				Trend = Trends.None;
 			}
-
-			VRCOSC.SendHeartRates(heartRate);
+			
+			VRCOSC.SendHeartRates(heartRate, HBToggle, TrendF);
 
 			if (MainProgram.OSCSender == null || !ConfigData.OSCUseManualConfig) return;
 
 			foreach (OSCParameter oscParameter in ConfigData.OSCParameters)
 			{
-				OscMessage? oscMessage = oscParameter.GetOscMessage(ConfigData.OSCPath, heartRate, HBToggle);
+				OscMessage? oscMessage = oscParameter.GetOscMessage(ConfigData.OSCPath, heartRate, HBToggle, TrendF);
 				if (oscMessage != null) MainProgram.OSCSender.Send(oscMessage);
 			}
 		}
 
 		public static void ResetTrends()
 		{
+			TrendF = 0;
 			Trend = Trends.None;
 			_recentHeartRates.Clear();
 		}
@@ -64,7 +68,12 @@ namespace PulsoidToOSC
 				sumX2 += i * i;
 			}
 
-			return (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+			return (float) (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+		}
+
+		private static float Remap(float source, float sourceFrom, float sourceTo, float targetFrom, float targetTo)
+		{
+			return targetFrom + (source - sourceFrom) * (targetTo - targetFrom) / (sourceTo - sourceFrom);
 		}
 	}
 }
