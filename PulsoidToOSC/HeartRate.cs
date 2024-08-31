@@ -71,7 +71,7 @@ namespace PulsoidToOSC
 			return (float) (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
 		}
 
-		private static float Remap(float source, float sourceFrom, float sourceTo, float targetFrom, float targetTo)
+		public static float Remap(float source, float sourceFrom, float sourceTo, float targetFrom, float targetTo)
 		{
 			return targetFrom + (source - sourceFrom) * (targetTo - targetFrom) / (sourceTo - sourceFrom);
 		}
