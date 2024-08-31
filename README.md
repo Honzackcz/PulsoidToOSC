@@ -5,7 +5,7 @@ PulsoidToOSC is a simple, effective, and universal application that streams hear
 The main window is designed to be easily used in VR with applications like OVR Toolkit, allowing you to place it on your hand like a monitor.<br>
 Also includes easy-to-use VRChat integration with automated configuration through OSC query, letting you send heart rate data to your avatar or even to the chatbox with a customized message.
 
-
+Requires [.NET 8.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.8-windows-x64-installer?cid=getdotnetcore)
 
 ## Pulsoid Connection
 
