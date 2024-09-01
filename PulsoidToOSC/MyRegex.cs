@@ -30,5 +30,11 @@ namespace PulsoidToOSC
 
 		[GeneratedRegex(@"/n")]
 		public static partial Regex LineEnd();
+
+		[GeneratedRegex(@"^#([A-Fa-f0-9]{6})$")]
+		public static partial Regex RGBHexCode();
+
+		[GeneratedRegex(@"[^A-Fa-f0-9]")]
+		public static partial Regex NotHexCodeSymbol();
 	}
 }

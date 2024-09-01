@@ -53,7 +53,7 @@ namespace PulsoidToOSC
 		private static readonly int[] HttpPorts = [54269, 60422, 63671];
 		private static HttpListener? _listenerHttpServer;
 		private static bool _httpServerIsRunning = false;
-		private static string _httpServerUri = "";
+		private static string _httpServerUri = string.Empty;
 
 
 		public static void SetPulsoidToken(string? token)
@@ -68,7 +68,7 @@ namespace PulsoidToOSC
 
 		private static string PulsoidAuthorizeUrl(string redirectUri = "")
 		{
-			bool responseModeWebPage = redirectUri == "";
+			bool responseModeWebPage = redirectUri == string.Empty;
 			string baseUrl = "https://pulsoid.net/oauth2/authorize";
 			string client_id = Encoding.UTF8.GetString(Convert.FromBase64String(ClientID));
 			string redirect_uri = redirectUri;
@@ -80,11 +80,11 @@ namespace PulsoidToOSC
 			string completeGetRequest =
 				baseUrl
 				+ "?client_id="		+ client_id
-				+ "&redirect_uri="	+ (responseModeWebPage ? "" : redirect_uri)
+				+ "&redirect_uri="	+ (responseModeWebPage ? string.Empty : redirect_uri)
 				+ "&response_type="	+ response_type
 				+ "&scope="			+ scope
 				+ "&state="			+ state
-				+ (responseModeWebPage ? "&response_mode=" + response_mode : "")
+				+ (responseModeWebPage ? "&response_mode=" + response_mode : string.Empty)
 			;
 
 			return completeGetRequest;
@@ -92,7 +92,7 @@ namespace PulsoidToOSC
 
 		public static void GetPulsoidToken()
 		{
-			string redirectUri = "";
+			string redirectUri = string.Empty;
 
 			if (_httpServerIsRunning)
 			{
@@ -135,9 +135,9 @@ namespace PulsoidToOSC
 				Json.ValidateResponse? resultJson = JsonSerializer.Deserialize<Json.ValidateResponse>(result);
 
 				if (resultJson == null) return;
-				string client_id = resultJson.ClientId ?? "";
+				string client_id = resultJson.ClientId ?? string.Empty;
 				int expires_in = resultJson.ExpiresIn ?? 0;
-				string profile_id = resultJson.ProfileId ?? "";
+				string profile_id = resultJson.ProfileId ?? string.Empty;
 				List<string> scopes = resultJson.Scopes ?? [];
 
 				if (scopes.Contains("data:heart_rate:read") && expires_in > 0) TokenValidity = TokenValidities.Valid;
@@ -164,7 +164,7 @@ namespace PulsoidToOSC
 
 		private static void StartGETServer(string redirectUri)
 		{
-			if (!_httpServerIsRunning && redirectUri != "")
+			if (!_httpServerIsRunning && redirectUri != string.Empty)
 			{
 				_httpServerIsRunning = true;
 				_httpServerUri = redirectUri;
@@ -178,7 +178,7 @@ namespace PulsoidToOSC
 		public static void StopGETServer()
 		{
 			_httpServerIsRunning = false;
-			_httpServerUri = "";
+			_httpServerUri = string.Empty;
 			_listenerHttpServer?.Stop();
 			_listenerHttpServer?.Close();
 			_listenerHttpServer = null;
@@ -207,22 +207,22 @@ namespace PulsoidToOSC
 				if (queryString.StartsWith('?')) queryString = queryString[1..];
 				NameValueCollection queryParameters = HttpUtility.ParseQueryString(queryString);
 
-				string token = queryParameters["token"] ?? "";
-				string accessToken = queryParameters["access_token"] ?? "";
+				string token = queryParameters["token"] ?? string.Empty;
+				string accessToken = queryParameters["access_token"] ?? string.Empty;
 				if (!Int32.TryParse(queryParameters["expires_in"], out int expiresIn)) expiresIn = 0;
-				string scope = queryParameters["scope"] ?? "";
-				string state = queryParameters["state"] ?? "";
+				string scope = queryParameters["scope"] ?? string.Empty;
+				string state = queryParameters["state"] ?? string.Empty;
 
 				if (MyRegex.GUID().IsMatch(accessToken) && scope.Contains("data:heart_rate:read") && expiresIn > 0)
 				{
 					SetPulsoidToken(accessToken);
-					MainProgram.MainViewModel.OptionsViewModel.GeneralOptionsViewModel.TokenText = ConfigData.PulsoidToken;
-					MainProgram.MainViewModel.OptionsViewModel.GeneralOptionsViewModel.TokenValidity = TokenValidity;
+					MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenText = ConfigData.PulsoidToken;
+					MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenValidity = TokenValidity;
 
 					Task.Run(async () =>
 					{
 						await ValidateToken();
-						MainProgram.MainViewModel.OptionsViewModel.GeneralOptionsViewModel.TokenValidity = TokenValidity;
+						MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenValidity = TokenValidity;
 					});
 
 					tokenReceived = true;
@@ -287,11 +287,11 @@ namespace PulsoidToOSC
 
 			private static string ReadResource(string resourceName)
 			{
-				string result = "";
+				string result = string.Empty;
 
 				using (Stream? stream = Assembly.GetManifestResourceStream(resourceName))
 				{
-					if (stream == null) return "";
+					if (stream == null) return string.Empty;
 
 					using (StreamReader reader = new(stream))
 					{

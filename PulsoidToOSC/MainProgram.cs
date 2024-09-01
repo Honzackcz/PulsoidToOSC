@@ -35,7 +35,7 @@ namespace PulsoidToOSC
 
 			if (ConfigData.AutoStart)
 			{
-				MainViewModel.SetUI("Auto start...", MainViewModel.Colors.Yellow);
+				MainViewModel.SetWarning("Auto start...");
 
 				_ = Task.Run(async () =>
 				{
@@ -65,13 +65,13 @@ namespace PulsoidToOSC
 
 			if (PulsoidApi.TokenValidity == PulsoidApi.TokenValidities.Invalid)
 			{
-				MainViewModel.SetUI("Invalid Pulsoid token!\nIn options setup valid token.", MainViewModel.Colors.Red);
+				MainViewModel.SetError("Invalid Pulsoid token!\nIn options setup valid token.");
 				return;
 			}
 
 			_appSate = AppSates.Starting;
-			MainViewModel.StartButtonContent = " ";
-			MainViewModel.SetUI("Connecting to Pulsoid...", MainViewModel.Colors.Yellow);
+			MainViewModel.StartButton = MainViewModel.StartButtonType.Disabled;
+			MainViewModel.SetWarning("Connecting to Pulsoid...");
 			HeartRate.ResetTrends();
 			SetupOSC();
 			VRCOSC.Query.SetupQuerry();
@@ -83,8 +83,8 @@ namespace PulsoidToOSC
 			if (_appSate == AppSates.Stopped || _appSate == AppSates.Stopping) return;
 
 			_appSate = AppSates.Stopping;
-			MainViewModel.StartButtonContent = " ";
-			MainViewModel.SetUI("Closing connection to Pulsoid...", MainViewModel.Colors.Yellow);
+			MainViewModel.StartButton = MainViewModel.StartButtonType.Disabled;
+			MainViewModel.SetWarning("Closing connection to Pulsoid...");
 			VRCOSC.Query.StopQuerry();
 
 			if (SimpleWSClient.ClientState == WebSocketState.Open)
@@ -95,8 +95,8 @@ namespace PulsoidToOSC
 			HeartRate.Send();
 
 			_appSate = AppSates.Stopped;
-			MainViewModel.StartButtonContent = "Start";
-			MainViewModel.SetUI();
+			MainViewModel.StartButton = MainViewModel.StartButtonType.Start;
+			MainViewModel.ClearUI();
 		}
 
 		public static async void RestartPulsoidToOSC()
@@ -133,7 +133,7 @@ namespace PulsoidToOSC
 					_wsMessageTimeout = true;
 					HeartRate.Send();
 
-					MainViewModel.SetUI("Waiting for heart rate...", MainViewModel.Colors.Yellow);
+					MainViewModel.SetWarning("Waiting for heart rate...");
 				}
 				await Task.Delay(100);
 			}
@@ -142,12 +142,12 @@ namespace PulsoidToOSC
 		private static void OnWSOpen()
 		{
 			_appSate = AppSates.Running;
-			MainViewModel.StartButtonContent = "Stop";
+			MainViewModel.StartButton = MainViewModel.StartButtonType.Stop;
 
 			PulsoidApi.TokenValidity = PulsoidApi.TokenValidities.Valid;
 			_failedWSConnectionAttempts = 0;
 
-			MainViewModel.SetUI("Waiting for heart rate...", MainViewModel.Colors.Yellow);
+			MainViewModel.SetWarning("Waiting for heart rate...");
 		}
 
 		private static void OnWSClose(SimpleWSClient.Response response)
@@ -158,15 +158,15 @@ namespace PulsoidToOSC
 			{
 				PulsoidApi.TokenValidity = PulsoidApi.TokenValidities.Invalid;
 
-				MainViewModel.SetUI("Invalid Pulsoid token!\nIn options setup valid token.", MainViewModel.Colors.Red);
+				MainViewModel.SetError("Invalid Pulsoid token!\nIn options setup valid token.");
 			}
 			else if (response.WebSocketCloseStatusCode > 1000 && (_appSate == AppSates.Stopping || _appSate == AppSates.Stopped) && SimpleWSClient.ClientState != WebSocketState.Open && SimpleWSClient.ClientState != WebSocketState.Connecting) //Connection lost
 			{
-				MainViewModel.SetUI("Error: Connection to Pulsoid!", MainViewModel.Colors.Red);
+				MainViewModel.SetError("Error: Connection to Pulsoid!");
 
 				if (_failedWSConnectionAttempts <= 20 && PulsoidApi.TokenValidity != PulsoidApi.TokenValidities.Invalid)
 				{
-					MainViewModel.SetUI($"Error: Connection to Pulsoid!\nRetrying connection... ({_failedWSConnectionAttempts + 1})", MainViewModel.Colors.Red);
+					MainViewModel.SetError($"Error: Connection to Pulsoid!\nRetrying connection... ({_failedWSConnectionAttempts + 1})");
 
 					_delayedStartTaskCts = new();
 					Task.Run(async () =>
@@ -202,8 +202,8 @@ namespace PulsoidToOSC
 
 			HeartRate.Send(heartRate);
 
-			if (heartRate > 0) MainViewModel.SetUI("", HeartRate.HBToggle ? MainViewModel.Colors.Cyan : MainViewModel.Colors.Green, $"BPM: {heartRate}", measuredAt > 0 ? "Measured at: " + DateTimeOffset.FromUnixTimeMilliseconds(measuredAt).LocalDateTime.ToLongTimeString() : "");
-			else MainViewModel.SetUI("Error at obtaing heart rate data!", MainViewModel.Colors.Red);
+			if (heartRate > 0) MainViewModel.SetRunning($"BPM: {heartRate}", measuredAt > 0 ? "Measured at: " + DateTimeOffset.FromUnixTimeMilliseconds(measuredAt).LocalDateTime.ToLongTimeString() : string.Empty);
+			else MainViewModel.SetError("Error at obtaing heart rate data!");
 		}
 	}
 }

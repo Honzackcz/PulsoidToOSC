@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Windows.Media;
+using System.IO;
 using System.Net;
 
 namespace PulsoidToOSC
@@ -7,7 +8,7 @@ namespace PulsoidToOSC
 	{
 		private const string FilePath = "config.txt";
 		// General
-		private static string _pulsoidToken = "";
+		private static string _pulsoidToken = string.Empty;
 		private static bool _autoStart = false;
 		// OSC
 		private static bool _oscUseManualConfig = true;
@@ -24,6 +25,10 @@ namespace PulsoidToOSC
 		private static int _hrFloatMax = 255;
 		private static float _hrTrendMin = 2f;
 		private static float _hrTrendMax = 2f;
+		// UI
+		private static string _uiColorError = "#FF0000";
+		private static string _uiColorWarning = "#FFFF00";
+		private static string _uiColorRunning = "#00FF00";
 		// Parameters
 		private static List<OSCParameter> _oscParameters =
 		[
@@ -110,7 +115,22 @@ namespace PulsoidToOSC
 			get => _hrTrendMax;
 			set => _hrTrendMax = value;
 		}
-
+		// UI
+		public static string UIColorError
+		{
+			get => _uiColorError;
+			set => _uiColorError = value;
+		}
+		public static string UIColorWarning
+		{
+			get => _uiColorWarning;
+			set => _uiColorWarning = value;
+		}
+		public static string UIColorRunning
+		{
+			get => _uiColorRunning;
+			set => _uiColorRunning = value;
+		}
 		// Parameters
 		public static List<OSCParameter> OSCParameters
 		{
@@ -122,27 +142,31 @@ namespace PulsoidToOSC
 		{
 			using StreamWriter writer = new(FilePath);
 			// General
-			writer.WriteLine($"pulsoidToken={PulsoidToken.ReplaceLineEndings("\\n").Replace("=", "")}");
+			writer.WriteLine($"pulsoidToken={PulsoidToken.ReplaceLineEndings("\\n").Replace("=", string.Empty)}");
 			writer.WriteLine($"autoStart={AutoStart}");
 			// OSC
 			writer.WriteLine($"oscUseManualConfig={OSCUseManualConfig}");
 			writer.WriteLine($"oscIP={OSCIP}");
 			writer.WriteLine($"oscPort={OSCPort}");
-			writer.WriteLine($"oscPath={OSCPath.ReplaceLineEndings("\\n").Replace("=", "")}");
+			writer.WriteLine($"oscPath={OSCPath.ReplaceLineEndings("\\n").Replace("=", string.Empty)}");
 			// VRChat
 			writer.WriteLine($"vrcUseAutoConfig={VRCUseAutoConfig}");
 			writer.WriteLine($"vrcSendToAllClinetsOnLAN={VRCSendToAllClinetsOnLAN}");
 			writer.WriteLine($"vrcSendBPMToChatbox={VRCSendBPMToChatbox}");
-			writer.WriteLine($"vrcChatboxMessage={VRCChatboxMessage.ReplaceLineEndings("\\n").Replace("=", "")}");
+			writer.WriteLine($"vrcChatboxMessage={VRCChatboxMessage.ReplaceLineEndings("\\n").Replace("=", string.Empty)}");
 			// Heart rate
 			writer.WriteLine($"hrFloatMin={HrFloatMin}");
 			writer.WriteLine($"hrFloatMax={HrFloatMax}");
 			writer.WriteLine($"hrTrendMin={HrTrendMin}");
 			writer.WriteLine($"hrTrendMax={HrTrendMax}");
+			// UI
+			writer.WriteLine($"uiColorError={UIColorError}");
+			writer.WriteLine($"uiColorWarning={UIColorWarning}");
+			writer.WriteLine($"uiColorRunning={UIColorRunning}");
 			// Parameters
 			foreach (OSCParameter parameter in OSCParameters)
 			{
-				writer.WriteLine($"oscParameter={parameter.Type};{parameter.Name.ReplaceLineEndings("\\n").Replace("=", "").Replace(";", "")}");
+				writer.WriteLine($"oscParameter={parameter.Type};{parameter.Name.ReplaceLineEndings("\\n").Replace("=", string.Empty).Replace(";", string.Empty)}");
 			}
 		}
 
@@ -167,6 +191,10 @@ namespace PulsoidToOSC
 			string? hrFloatMax = null;
 			string? hrTrendMin = null;
 			string? hrTrendMax = null;
+			// UI
+			string? uiColorError = null;
+			string? uiColorWarning = null;
+			string? uiColorRunning = null;
 			// Parameters
 			List<OSCParameter> oscParameters = [];
 
@@ -230,6 +258,16 @@ namespace PulsoidToOSC
 							case "hrTrendMax":
 								hrTrendMax = value;
 								break;
+							// UI
+							case "uiColorError":
+								uiColorError = value;
+								break;
+							case "uiColorWarning":
+								uiColorWarning = value;
+								break;
+							case "uiColorRunning":
+								uiColorRunning = value;
+								break;
 							// Parameters
 							case "oscParameter":
 								string[] parameterParts = value.Split(";");
@@ -263,15 +301,16 @@ namespace PulsoidToOSC
 			if (bool.TryParse(vrcUseAutoConfig, out bool parsedVRCUseAutoConfig)) VRCUseAutoConfig = parsedVRCUseAutoConfig;
 			if (bool.TryParse(vrcSendToAllClinetsOnLAN, out bool parsedVRCSendToAllClinetsOnLAN)) VRCSendToAllClinetsOnLAN = parsedVRCSendToAllClinetsOnLAN;
 			if (bool.TryParse(vrcSendBPMToChatbox, out bool parsedVRCSendBPMToChatbox)) VRCSendBPMToChatbox = parsedVRCSendBPMToChatbox;
-			if (vrcChatboxMessage != null)
-			{
-				VRCChatboxMessage = vrcChatboxMessage;
-			}
+			if (vrcChatboxMessage != null) VRCChatboxMessage = vrcChatboxMessage;
 			// Heart rate
 			if (int.TryParse(hrFloatMin, out int parsedHrFloatMin) && parsedHrFloatMin <= 255 && parsedHrFloatMin >= 0) HrFloatMin = parsedHrFloatMin;
 			if (int.TryParse(hrFloatMax, out int parsedHrFloatMax) && parsedHrFloatMax <= 255 && parsedHrFloatMax >= 0) HrFloatMax = parsedHrFloatMax;
 			if (float.TryParse(hrTrendMin, out float parsedHrTrendMin) && parsedHrTrendMin <= 65535 && parsedHrTrendMin > 0) HrTrendMin = parsedHrTrendMin;
 			if (float.TryParse(hrTrendMax, out float parsedHrTrendMax) && parsedHrTrendMax <= 65535 && parsedHrTrendMax > 0) HrTrendMax = parsedHrTrendMax;
+			// UI
+			if (uiColorError != null && MyRegex.RGBHexCode().IsMatch(uiColorError)) UIColorError = uiColorError;
+			if (uiColorWarning != null && MyRegex.RGBHexCode().IsMatch(uiColorWarning)) UIColorWarning = uiColorWarning;
+			if (uiColorRunning != null && MyRegex.RGBHexCode().IsMatch(uiColorRunning)) UIColorRunning = uiColorRunning;
 			// Parameters
 			if (oscParameters.Count > 0) OSCParameters = oscParameters;
 		}

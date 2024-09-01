@@ -27,14 +27,19 @@
 				HorizontalAlignment="Left"
 				Command="{Binding StartCommand}"
 				Content="{Binding StartButtonContent}"
+				IsEnabled="{Binding StartButtonEnabled}"
 				Width="80"
 				Height="32"
 			/>
 			
-			<Grid
-				Width="80"
-				Height="10"
-				Background="{Binding LiveIndicatorColor}"
+			<TextBlock
+				Margin="0,8,0,0"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Text="{Binding IndicatorText}"
+				FontFamily="Segoe MDL2 Assets"
+				FontSize="30"
+				Foreground="{Binding TextColor}"
 			/>
 			
 			<Grid
@@ -79,7 +84,6 @@
 							/>
 						</Grid>
 					</Button>
-
 				</Grid>
 
 				<Button
@@ -106,7 +110,7 @@
 				VerticalAlignment="Top"
 				Text="{Binding BPMText}"
 				FontSize="50"
-				Foreground="#00FF00"
+				Foreground="{Binding TextColor}"
 			/>
 			
 			<TextBlock
@@ -114,14 +118,14 @@
 				HorizontalAlignment="Center"
 				VerticalAlignment="Bottom"
 				Text="{Binding MeasuredAtText}"
-				Foreground="#00FF00"
+				Foreground="{Binding TextColor}"
 			/>
 
 			<TextBlock
 				Margin="0,0,0,18"
 				VerticalAlignment="Center"
-				Text="{Binding ErrorText}"
-				Foreground="{Binding ErrorTextColor}"
+				Text="{Binding InfoText}"
+				Foreground="{Binding TextColor}"
 				TextWrapping="Wrap"
 				TextAlignment="Center"
 			/>

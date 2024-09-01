@@ -23,7 +23,7 @@
 		
 		<Grid Grid.Row="0">
 			<TabControl>
-				<TabItem Name="general" Header="General" DataContext="{Binding GeneralOptionsViewModel}">
+                <TabItem Name="general" Header="General" DataContext="{Binding OptionsGeneralViewModel}">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
@@ -132,12 +132,10 @@
 					</TabItem.Content>
 				</TabItem>
 
-				<TabItem Name="osc" Header="OSC" DataContext="{Binding OscOptionsViewModel}">
+				<TabItem Name="osc" Header="OSC" DataContext="{Binding OptionsOscViewModel}">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto"/>
-								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
 							</Grid.RowDefinitions>
@@ -150,95 +148,110 @@
 								OffContent="Send heart rate to manual OSC endpoint"
 								ToolTip="When enebled, heart rate parameters will be sent to the following OSC configuration."
 							/>
-
+							
 							<Grid Grid.Row="1">
 								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="120"/>
+									<ColumnDefinition Width="100"/>
 									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
 								<Button
 									Grid.Column="0"
 									Margin="4"
 									HorizontalAlignment="Stretch"
-									Name="SetOSCIPButton"
+									Name="SetOSCButton"
 									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
-									Command="{Binding SetOSCIPCommand}"
-									Content="Set OSC IP"
-									ToolTip="Apply IP"
+									Command="{Binding SetOSCCommand}"
+									Content="Set OSC"
+									ToolTip="Apply OSC"
 								/>
-								<TextBox
-									Grid.Column="1"
-									Margin="4"
-									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
-									Text="{Binding OSCIPText, UpdateSourceTrigger=PropertyChanged}"
-									ToolTip="OSC IP adress"
-								>
-									<TextBox.InputBindings>
-										<KeyBinding Key="Enter" Command="{Binding SetOSCIPCommand}"/>
-									</TextBox.InputBindings>
-								</TextBox>
-							</Grid>
+								<Grid Grid.Column="1">
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto"/>
+										<RowDefinition Height="Auto"/>
+										<RowDefinition Height="Auto"/>
+									</Grid.RowDefinitions>
 
-							<Grid Grid.Row="2">
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="120"/>
-									<ColumnDefinition Width="*"/>
-								</Grid.ColumnDefinitions>
-								<Button
-									Grid.Column="0"
-									Margin="4"
-									HorizontalAlignment="Stretch"
-									Name="SetOSCPortButton"
-									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
-									Command="{Binding SetOSCPortCommand}"
-									Content="Set OSC Port"
-									ToolTip="Apply Port"
-								/>
-								<TextBox
-									Grid.Column="1"
-									Margin="4"
-									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
-									Text="{Binding OSCPortText, UpdateSourceTrigger=PropertyChanged}"
-									ToolTip="OSC Port in range of 1 to 65535"
-								>
-									<TextBox.InputBindings>
-										<KeyBinding Key="Enter" Command="{Binding SetOSCPortCommand}"/>
-									</TextBox.InputBindings>
-								</TextBox>
-							</Grid>
+									<Grid Grid.Row="0">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="80"/>
+											<ColumnDefinition Width="*"/>
+										</Grid.ColumnDefinitions>
+										<TextBlock
+											Grid.Column="0"
+											Margin="4"
+											VerticalAlignment="Center"
+											HorizontalAlignment="Right"
+											Text="OSC IP:"
+										/>
+										<TextBox
+											Grid.Column="1"
+											Margin="4"
+											IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
+											Text="{Binding OSCIPText, UpdateSourceTrigger=PropertyChanged}"
+											ToolTip="OSC IP adress"
+										>
+											<TextBox.InputBindings>
+												<KeyBinding Key="Enter" Command="{Binding SetOSCCommand}"/>
+											</TextBox.InputBindings>
+										</TextBox>
+									</Grid>
 
-							<Grid Grid.Row="3">
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="120"/>
-									<ColumnDefinition Width="*"/>
-								</Grid.ColumnDefinitions>
-								<Button
-									Grid.Column="0"
-									Margin="4"
-									HorizontalAlignment="Stretch"
-									Name="SetOSCPathButton"
-									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
-									Command="{Binding SetOSCPathCommand}"
-									Content="Set OSC Path"
-									ToolTip="Apply Path"
-								/>
-								<TextBox
-									Grid.Column="1"
-									Margin="4"
-									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
-									Text="{Binding OSCPathText, UpdateSourceTrigger=PropertyChanged}"
-									ToolTip="OSC Path"
-								>
-									<TextBox.InputBindings>
-										<KeyBinding Key="Enter" Command="{Binding SetOSCPathCommand}"/>
-									</TextBox.InputBindings>
-								</TextBox>
+									<Grid Grid.Row="1">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="80"/>
+											<ColumnDefinition Width="*"/>
+										</Grid.ColumnDefinitions>
+										<TextBlock
+											Grid.Column="0"
+											Margin="4"
+											VerticalAlignment="Center"
+											HorizontalAlignment="Right"
+											Text="OSC Port:"
+										/>
+										<TextBox
+											Grid.Column="1"
+											Margin="4"
+											IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
+											Text="{Binding OSCPortText, UpdateSourceTrigger=PropertyChanged}"
+											ToolTip="OSC Port in range of 1 to 65535"
+										>
+											<TextBox.InputBindings>
+												<KeyBinding Key="Enter" Command="{Binding SetOSCCommand}"/>
+											</TextBox.InputBindings>
+										</TextBox>
+									</Grid>
+									
+									<Grid Grid.Row="2">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="80"/>
+											<ColumnDefinition Width="*"/>
+										</Grid.ColumnDefinitions>
+										<TextBlock
+											Grid.Column="0"
+											Margin="4"
+											VerticalAlignment="Center"
+											HorizontalAlignment="Right"
+											Text="OSC Path:"
+										/>
+										<TextBox
+											Grid.Column="1"
+											Margin="4"
+											IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
+											Text="{Binding OSCPathText, UpdateSourceTrigger=PropertyChanged}"
+											ToolTip="OSC Path"
+										>
+											<TextBox.InputBindings>
+												<KeyBinding Key="Enter" Command="{Binding SetOSCCommand}"/>
+											</TextBox.InputBindings>
+										</TextBox>
+									</Grid>
+								</Grid>
 							</Grid>
 						</Grid>
 					</TabItem.Content>
 				</TabItem>
 
-				<TabItem Name="vrchat" Header="VRChat" DataContext="{Binding VRChatOptionsViewModel}">
+				<TabItem Name="vrchat" Header="VRChat" DataContext="{Binding OptionsVRChatViewModel}">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
@@ -310,7 +323,7 @@
 					</TabItem.Content>
 				</TabItem>
 
-				<TabItem Name="heartrate" Header="Heart rate" DataContext="{Binding HeartrateOptionsViewModel}">
+				<TabItem Name="heartrate" Header="Heart rate" DataContext="{Binding OptionsHeartrateViewModel}">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
@@ -431,7 +444,7 @@
 					</TabItem.Content>
 				</TabItem>
 
-				<TabItem Name="parameters" Header="Parameters" DataContext="{Binding ParametersOptionsViewModel}">
+				<TabItem Name="parameters" Header="Parameters" DataContext="{Binding OptionsParametersViewModel}">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
@@ -554,6 +567,128 @@
 									</DataTemplate>
 								</ListView.ItemTemplate>
 							</ListView>
+						</Grid>
+					</TabItem.Content>
+				</TabItem>
+
+				<TabItem Name="ui" Header="UI" DataContext="{Binding OptionsUIViewModel}">
+					<TabItem.Content>
+						<Grid Margin="12">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+
+							<Grid Grid.Row="0">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="120"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Button
+									Grid.Column="0"
+									Margin="4"
+									HorizontalAlignment="Stretch"
+									Name="SetColorsButton"
+									Command="{Binding SetColorsCommand}"
+									Content="Set Colors"
+									ToolTip="Apply colors"
+								/>
+								<Grid Grid.Column="1">
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto"/>
+										<RowDefinition Height="Auto"/>
+										<RowDefinition Height="Auto"/>
+									</Grid.RowDefinitions>
+
+									<Grid Grid.Row="0">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="120"/>
+											<ColumnDefinition Width="120"/>
+											<ColumnDefinition Width="40"/>
+										</Grid.ColumnDefinitions>
+										<TextBlock
+											Grid.Column="0"
+											Margin="4"
+											VerticalAlignment="Center"
+											HorizontalAlignment="Right"
+											Text="Error color:"
+										/>
+										<TextBox
+											Grid.Column="1"
+											Margin="4"
+											Text="{Binding ColorErrorText, UpdateSourceTrigger=PropertyChanged}"
+											ToolTip="Error color hex code"
+										>
+											<TextBox.InputBindings>
+												<KeyBinding Key="Enter" Command="{Binding SetColorsCommand}"/>
+											</TextBox.InputBindings>
+										</TextBox>
+										<Grid 
+											Grid.Column="2"
+											Margin="6"
+											Background="{Binding ColorErrorIndicator}"
+										/>
+									</Grid>
+									<Grid Grid.Row="1">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="120"/>
+											<ColumnDefinition Width="120"/>
+											<ColumnDefinition Width="40"/>
+										</Grid.ColumnDefinitions>
+										<TextBlock
+											Grid.Column="0"
+											Margin="4"
+											VerticalAlignment="Center"
+											HorizontalAlignment="Right"
+											Text="Warning color:"
+										/>
+										<TextBox
+											Grid.Column="1"
+											Margin="4"
+											Text="{Binding ColorWarningText, UpdateSourceTrigger=PropertyChanged}"
+											ToolTip="Warning color hex code"
+										>
+											<TextBox.InputBindings>
+												<KeyBinding Key="Enter" Command="{Binding SetColorsCommand}"/>
+											</TextBox.InputBindings>
+										</TextBox>
+										<Grid 
+											Grid.Column="2"
+											Margin="6"
+											Background="{Binding ColorWarningIndicator}"
+										/>
+									</Grid>
+									<Grid Grid.Row="2">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="120"/>
+											<ColumnDefinition Width="120"/>
+											<ColumnDefinition Width="40"/>
+										</Grid.ColumnDefinitions>
+										<TextBlock
+											Grid.Column="0"
+											Margin="4"
+											VerticalAlignment="Center"
+											HorizontalAlignment="Right"
+											Text="Running color:"
+										/>
+										<TextBox
+											Grid.Column="1"
+											Margin="4"
+											Text="{Binding ColorRunningText, UpdateSourceTrigger=PropertyChanged}"
+											ToolTip="Running color hex code"
+										>
+											<TextBox.InputBindings>
+												<KeyBinding Key="Enter" Command="{Binding SetColorsCommand}"/>
+											</TextBox.InputBindings>
+										</TextBox>
+										<Grid 
+											Grid.Column="2"
+											Margin="6"
+											Background="{Binding ColorRunningIndicator}"
+										/>
+									</Grid>
+								</Grid>
+							</Grid>
 						</Grid>
 					</TabItem.Content>
 				</TabItem>

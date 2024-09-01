@@ -12,7 +12,7 @@ namespace PulsoidToOSC
 		private static readonly Dictionary<string, VRCClient> VRCClients = [];
 		private static readonly Dictionary<HeartRate.Trends, string> HeartRateTrendStrings = new() 
 		{
-			{ HeartRate.Trends.None, "" },
+			{ HeartRate.Trends.None, string.Empty },
 			{ HeartRate.Trends.Stable, "▶" },
 			{ HeartRate.Trends.Upward, "↗" },
 			{ HeartRate.Trends.Downward, "↘" },
@@ -69,7 +69,7 @@ namespace PulsoidToOSC
 
 			if (nextVRCChatboxMessageTime < DateTime.UtcNow)
 			{
-				oscSender.Send(new OscMessage("/chatbox/input", "", true, false));
+				oscSender.Send(new OscMessage("/chatbox/input", string.Empty, true, false));
 				_lastVRCChatboxMessageTime = DateTime.MinValue;
 			}
 			else if (tryAgainLater && nextVRCChatboxMessageTime > DateTime.UtcNow)
