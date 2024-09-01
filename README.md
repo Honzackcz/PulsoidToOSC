@@ -9,7 +9,7 @@ Requires [.NET 8.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/
 
 ## Pulsoid Connection
 
-To connect this app to Pulsoid, you will need to obtain an authorization token and enter it:
+To connect this app to Pulsoid, you will need to obtain an authorization token:
 1. Click the "Get Pulsoid token" button - this will open the authorization page in your web browser.
 2. Log in and confirm authorization on the page.
 3. Token will be automatically entered in the app and you can close the page when it says so.
@@ -109,6 +109,13 @@ Supported parameter types are:
 | Trend [-1, 1]    | Float      | Trend of heart rate change - Float [-1, 1] <br> -1 = decreasing; 0 = stable; 1 = increasing |
 | Trend [0, 1]     | Float      | Trend of heart rate change - Float [0, 1] <br> 0 = decreasing; 0.5 = stable; 1 = increasing |
 
+
+### Parameter adjustments
+In Heart rate options is possible to adjust float parameters.
+
+Heart rate float can have adjusted range of heart rate values for systems that tries to improve accuracy by reducing minimal and maximal value of heart rate. By default the float uses full range of 0 - 255 because 8 bit float [-1, 1] should be able to handle all the possible values.
+
+Trend float minimal and maximal values affect sensitivity to how fast heart rate is changing. Higher values will make the trend indication less sensitive.
 
 
 ## Used Libraries
