@@ -33,7 +33,7 @@ namespace PulsoidToOSC
 			SetupOSC();
 			SetupWebSocketEvents();
 
-			if (ConfigData.AutoStart)
+			if (ConfigData.AutoStart && PulsoidApi.TokenValidity != PulsoidApi.TokenValidities.Invalid)
 			{
 				MainViewModel.SetWarning("Auto start...");
 

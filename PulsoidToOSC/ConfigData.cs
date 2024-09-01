@@ -9,7 +9,7 @@ namespace PulsoidToOSC
 		private const string FilePath = "config.txt";
 		// General
 		private static string _pulsoidToken = string.Empty;
-		private static bool _autoStart = false;
+		private static bool _autoStart = true;
 		// OSC
 		private static bool _oscUseManualConfig = true;
 		private static IPAddress _oscIP = IPAddress.Parse("127.0.0.1");
@@ -270,7 +270,7 @@ namespace PulsoidToOSC
 								break;
 							// Parameters
 							case "oscParameter":
-								string[] parameterParts = value.Split(";");
+								string[] parameterParts = value.Split(';');
 								if (parameterParts.Length == 2 && parameterParts[1] != string.Empty && Enum.TryParse(parameterParts[0], true, out OSCParameter.Types type))
 								{
 									string name = parameterParts[1];
