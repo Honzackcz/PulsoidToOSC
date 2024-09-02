@@ -80,7 +80,7 @@ In the case of VRChat auto-configuration, the OSC path is defined as `/avatar/pa
 
 An example of a full path combined with a parameter might look like this: `/avatar/parameter/HeartRateInt`
 
-Default parameters are set up according to this table:
+### Default parameters are set up according to this table:
 
 | Parameter Name     | Value Type | Description                              |
 | ------------------ | ---------- | ---------------------------------------- |
@@ -90,22 +90,24 @@ Default parameters are set up according to this table:
 | `HeartRate`        | Float      | Same as HeartRateFloat                   |
 | `HeartRateFloat01` | Float      | Heart rate - Float ([0, 255] -> [0, 1])  |
 | `HeartRate2`       | Float      | Same as HeartRateFloat01                 |
-| `HeartBeatToggle`  | Bool       | Toggles with each update                 |
+| `HeartBeatToggle`  | Bool       | Toggles with each OSC update             |
 
 These parameters are chosen to support most currently used systems. In practice, the only necessary parameters are `HeartRateInt` for data and the additional `HeartBeatToggle` for reliable detection of timeouts.
 
+In case you want to use selees824's display [【VRCFury|MA 対応】HeartRate OSC](https://booth.pm/en/items/5531594) you will need to add parameters `HR Float [0, 1]` named `hr_percent` and `Bool Active` named `hr_connected` then set maximal range of heart rate float to 200.
+
 All parameters can be easily edited.
 
-Supported parameter types are:
 
+### Supported parameter types are:
 
 | Parameter Type   | Value Type | Description                                                                                 |
 | ---------------- | ---------- | ------------------------------------------------------------------------------------------- |
-| Integer          | Int        | Heart rate - Integer [0, 255]                                                               |
-| Float [-1, 1]    | Float      | Heart rate - Float ([0, 255] -> [-1, 1])                                                    |
-| Float [0, 1]     | Float      | Heart rate - Float ([0, 255] -> [0, 1])                                                     |
-| Bool Toggle      | Bool       | Toggles with each update                                                                    |
-| Bool Active      | Bool       | Is true when app is working                                                                 |
+| HR Integer       | Int        | Heart rate - Integer [0, 255]                                                               |
+| HR Float [-1, 1] | Float      | Heart rate - Float ([0, 255] -> [-1, 1])                                                    |
+| HR Float [0, 1]  | Float      | Heart rate - Float ([0, 255] -> [0, 1])                                                     |
+| Bool Toggle      | Bool       | Toggles with each OSC update                                                                |
+| Bool Active      | Bool       | True when app is working                                                                    |
 | Trend [-1, 1]    | Float      | Trend of heart rate change - Float [-1, 1] <br> -1 = decreasing; 0 = stable; 1 = increasing |
 | Trend [0, 1]     | Float      | Trend of heart rate change - Float [0, 1] <br> 0 = decreasing; 0.5 = stable; 1 = increasing |
 
