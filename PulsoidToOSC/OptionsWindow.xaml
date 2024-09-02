@@ -628,11 +628,19 @@
 												<KeyBinding Key="Enter" Command="{Binding SetColorsCommand}"/>
 											</TextBox.InputBindings>
 										</TextBox>
-										<Grid 
+										<Grid
 											Grid.Column="2"
 											Margin="6"
 											Background="{Binding ColorErrorIndicator}"
-										/>
+										>
+											<Button
+												Padding="13"
+												VerticalAlignment="Stretch"
+												HorizontalContentAlignment="Stretch"
+												Command="{Binding OpenColorPickerErrorCommand}"
+												Background="#00000000"
+											/>
+										</Grid>
 									</Grid>
 									<Grid Grid.Row="1">
 										<Grid.ColumnDefinitions>
@@ -661,7 +669,15 @@
 											Grid.Column="2"
 											Margin="6"
 											Background="{Binding ColorWarningIndicator}"
-										/>
+										>
+											<Button
+												Padding="13"
+												VerticalAlignment="Stretch"
+												HorizontalContentAlignment="Stretch"
+												Command="{Binding OpenColorPickerWarningCommand}"
+												Background="#00000000"
+											/>
+										</Grid>
 									</Grid>
 									<Grid Grid.Row="2">
 										<Grid.ColumnDefinitions>
@@ -686,11 +702,19 @@
 												<KeyBinding Key="Enter" Command="{Binding SetColorsCommand}"/>
 											</TextBox.InputBindings>
 										</TextBox>
-										<Grid 
+										<Grid
 											Grid.Column="2"
 											Margin="6"
 											Background="{Binding ColorRunningIndicator}"
-										/>
+										>
+											<Button
+												Padding="13"
+												VerticalAlignment="Stretch"
+												HorizontalContentAlignment="Stretch"
+												Command="{Binding OpenColorPickerRunningCommand}"
+												Background="#00000000"
+											/>
+										</Grid>
 									</Grid>
 								</Grid>
 							</Grid>
@@ -702,11 +726,11 @@
 		
 		<Grid Grid.Row="1">
 			<Button
-				Command="{Binding OptionsDoneCommand}"
-				Content="Close"
 				Margin="0,0,0,12"
 				HorizontalAlignment="Center"
-				ToolTip="Close options window - unsaved changes will be lost!"
+				Command="{Binding OptionsDoneCommand}"
+				Content="Done"
+				ToolTip="Close options window and apply changes"
 			/>
 		</Grid>
 	</Grid>

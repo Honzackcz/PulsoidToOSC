@@ -1,11 +1,16 @@
 ﻿using System.Windows.Input;
 using System.Windows;
+using System.Windows.Media;
 
 namespace PulsoidToOSC
 {
 	internal class OptionsUIViewModel : ViewModelBase
 	{
 		private readonly OptionsViewModel _optionsViewModel;
+
+		private ColorPickerWindow? ColorPickerWindow { get; set; }
+		private enum ColorPickerEditingColor { None, Error, Warning, Running}
+		private ColorPickerEditingColor _colorPickerEditingColor = ColorPickerEditingColor.None;
 
 		private string _colorErrorText = string.Empty;
 		private string _colorWarningText = string.Empty;
@@ -41,15 +46,24 @@ namespace PulsoidToOSC
 		}
 
 		public ICommand SetColorsCommand { get; }
+		public ICommand OpenColorPickerErrorCommand { get; }
+		public ICommand OpenColorPickerWarningCommand { get; }
+		public ICommand OpenColorPickerRunningCommand { get; }
+		public ICommand ColorPickerDoneCommand { get; }
 
 		public OptionsUIViewModel(OptionsViewModel optionsViewModel)
 		{
 			_optionsViewModel = optionsViewModel;
 
 			SetColorsCommand = new RelayCommand(SetColors);
+			OpenColorPickerErrorCommand = new RelayCommand(OpenColorPickerError);
+			OpenColorPickerWarningCommand = new RelayCommand(OpenColorPickerWarning);
+			OpenColorPickerRunningCommand = new RelayCommand(OpenColorPickerRunning);
+			ColorPickerDoneCommand = new RelayCommand(ColorPickerDone);
 		}
 
-		private void SetColors()
+		private void SetColors() { SetColors(true); }
+		private void SetColors(bool canSaveConfig)
 		{
 			(_optionsViewModel?.OptionsWindow?.FindName("SetColorsButton") as UIElement)?.Focus();
 
@@ -71,11 +85,73 @@ namespace PulsoidToOSC
 				saveConfig = true;
 			}
 
-			if (saveConfig) ConfigData.SaveConfig();
+			if (saveConfig && canSaveConfig) ConfigData.SaveConfig();
 
 			ColorErrorText = ConfigData.UIColorError;
 			ColorWarningText = ConfigData.UIColorWarning;
 			ColorRunningText = ConfigData.UIColorRunning;
+		}
+
+		public void OptionsDone()
+		{
+			SetColors(false);
+		}
+
+
+
+		private void OpenColorPickerError()
+		{
+			_colorPickerEditingColor = ColorPickerEditingColor.Error;
+			OpenColorPicker(MyRegex.RGBHexCode().IsMatch(_colorErrorText) ? _colorErrorText : ConfigData.UIColorError);
+		}
+
+		private void OpenColorPickerWarning()
+		{
+			_colorPickerEditingColor = ColorPickerEditingColor.Warning;
+			OpenColorPicker(MyRegex.RGBHexCode().IsMatch(_colorWarningText) ? _colorWarningText : ConfigData.UIColorWarning);
+		}
+
+		private void OpenColorPickerRunning()
+		{
+			_colorPickerEditingColor = ColorPickerEditingColor.Running;
+			OpenColorPicker(MyRegex.RGBHexCode().IsMatch(_colorRunningText) ? _colorRunningText : ConfigData.UIColorRunning);
+		}
+
+		private void OpenColorPicker(string hexColor)
+		{
+			ColorPickerWindow = new()
+			{
+				DataContext = this,
+				Owner = _optionsViewModel.OptionsWindow,
+				WindowStartupLocation = WindowStartupLocation.CenterOwner
+			};
+			ColorPickerWindow.SetColor((Color)ColorConverter.ConvertFromString(hexColor));
+			ColorPickerWindow.ShowDialog();
+		}
+
+		private void ColorPickerDone()
+		{
+			if (ColorPickerWindow == null) return;
+			
+			string hexColor = $"#{ColorPickerWindow.Color.R:X2}{ColorPickerWindow.Color.G:X2}{ColorPickerWindow.Color.B:X2}";
+
+			switch (_colorPickerEditingColor)
+			{
+				case ColorPickerEditingColor.Error:
+					ColorErrorText = hexColor;
+					break;
+				case ColorPickerEditingColor.Warning:
+					ColorWarningText = hexColor;
+					break;
+				case ColorPickerEditingColor.Running:
+					ColorRunningText = hexColor;
+					break;
+				default:
+					break;
+			}
+
+			_colorPickerEditingColor = ColorPickerEditingColor.None;
+			ColorPickerWindow.Close();
 		}
 	}
 }

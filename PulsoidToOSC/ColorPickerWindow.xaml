@@ -1,0 +1,79 @@
+﻿<Window x:Class="PulsoidToOSC.ColorPickerWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+		xmlns:local="clr-namespace:PulsoidToOSC"
+		mc:Ignorable="d"
+		Title="PulsoidToOSC color picker" ResizeMode="NoResize" Height="490" Width="300"
+		xmlns:ui="http://schemas.modernwpf.com/2019" d:DataContext="{d:DesignInstance Type=local:OptionsUIViewModel}"
+		ui:ThemeManager.IsThemeAware="True"
+		ui:TitleBar.IsIconVisible="False"
+		ui:WindowHelper.UseModernWindowStyle="True">
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="AUto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<Image
+			x:Name="HueImage"
+			Grid.Row="0"
+			Margin="12"
+			Width="256"
+			Height="32"
+		/>
+		<Canvas
+			x:Name="HueCanvas"
+			Grid.Row="0"
+			Margin="10"
+			Width="256"
+			Height="32"
+			Background="#00000000"
+			MouseMove="HueCanvas_MouseMove"
+			MouseLeftButtonDown="HueCanvas_MouseMove"
+		/>
+
+		<Image
+			x:Name="ValueSaturationImage"
+			Grid.Row="1"
+			Margin="12"
+			Width="256"
+			Height="256"
+		/>
+		<Canvas
+			x:Name="ValueSaturationCanvas"
+			Grid.Row="1"
+			Margin="10"
+			Width="256"
+			Height="256"
+			Background="#00000000"
+			MouseMove="ValueSaturationCanvas_MouseMove"
+			MouseLeftButtonDown="ValueSaturationCanvas_MouseMove"
+		/>
+		
+		<Grid
+			x:Name="ColorIndicator"
+			Grid.Row="2"
+			Margin="12"
+			Width="256"
+			Height="32"
+			VerticalAlignment="Top"
+			Background="#00000000"
+		/>
+
+		<Button
+			Grid.Row="3"
+			Margin="12"
+			VerticalAlignment="Bottom"
+			HorizontalAlignment="Center"
+			Command="{Binding ColorPickerDoneCommand}"
+			Content="Done"
+			ToolTip="Close options window and apply changes"
+		/>
+	</Grid>
+</Window>

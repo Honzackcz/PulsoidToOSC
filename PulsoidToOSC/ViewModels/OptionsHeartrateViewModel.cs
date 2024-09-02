@@ -44,7 +44,8 @@ namespace PulsoidToOSC
 			SetHrTrendCommand = new RelayCommand(SetHrTrend);
 		}
 
-		private void SetHrFloat()
+		private void SetHrFloat() { SetHrFloat(true); }
+		private void SetHrFloat(bool canSaveConfig)
 		{
 			(_optionsViewModel?.OptionsWindow?.FindName("SetHrFloatButton") as UIElement)?.Focus();
 
@@ -62,13 +63,14 @@ namespace PulsoidToOSC
 				saveConfig = true;
 			}
 
-			if (saveConfig) ConfigData.SaveConfig();
+			if (saveConfig && canSaveConfig) ConfigData.SaveConfig();
 
 			HrFloatMinText = ConfigData.HrFloatMin.ToString();
 			HrFloatMaxText = ConfigData.HrFloatMax.ToString();
 		}
 
-		private void SetHrTrend()
+		private void SetHrTrend() { SetHrTrend(true); }
+		private void SetHrTrend(bool canSaveConfig)
 		{
 			(_optionsViewModel?.OptionsWindow?.FindName("SetHrTrendButton") as UIElement)?.Focus();
 
@@ -86,10 +88,16 @@ namespace PulsoidToOSC
 				saveConfig = true;
 			}
 
-			if (saveConfig) ConfigData.SaveConfig();
+			if (saveConfig && canSaveConfig) ConfigData.SaveConfig();
 
 			HrTrendMinText = ConfigData.HrTrendMin.ToString();
 			HrTrendMaxText = ConfigData.HrTrendMax.ToString();
+		}
+
+		public void OptionsDone()
+		{
+			SetHrFloat(false);
+			SetHrTrend(false);
 		}
 	}
 }

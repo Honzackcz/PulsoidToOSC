@@ -90,8 +90,14 @@ namespace PulsoidToOSC
 
 		private void OptionsDone()
 		{
-			if (OptionsWindow == null) return;
-			OptionsWindow.Close();
+			OptionsOscViewModel.OptionsDone();
+			OptionsVRChatViewModel.OptionsDone();
+			OptionsHeartrateViewModel.OptionsDone();
+			OptionsUIViewModel.OptionsDone();
+			OptionsParametersViewModel.OptionsDone();
+			ConfigData.SaveConfig();
+
+			OptionsWindow?.Close();
 		}
 
 		public void OptionsWindowClosing(object? sender, CancelEventArgs e)

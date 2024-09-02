@@ -132,7 +132,8 @@ namespace PulsoidToOSC
 			Parameters.Add(new() { ParametersOptionsViewModel = this });
 		}
 
-		private void ApplyParameters()
+		private void ApplyParameters() { ApplyParameters(true); }
+		private void ApplyParameters(bool canSaveConfig)
 		{
 			(_optionsViewModel?.OptionsWindow?.FindName("ApplyParametersButton") as UIElement)?.Focus();
 
@@ -144,7 +145,13 @@ namespace PulsoidToOSC
 			}
 
 			ConfigData.OSCParameters = parameters;
-			ConfigData.SaveConfig();
+
+			if (canSaveConfig) ConfigData.SaveConfig();
+		}
+
+		public void OptionsDone()
+		{
+			ApplyParameters(false);
 		}
 	}
 }

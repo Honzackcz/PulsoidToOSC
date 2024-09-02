@@ -49,7 +49,8 @@ namespace PulsoidToOSC
 			ConfigData.SaveConfig();
 		}
 
-		private void SetOSC()
+		private void SetOSC() { SetOSC(true); }
+		private void SetOSC(bool canSaveConfig)
 		{
 			(_optionsViewModel?.OptionsWindow?.FindName("SetOSCButton") as UIElement)?.Focus();
 
@@ -57,7 +58,7 @@ namespace PulsoidToOSC
 
 			// OSC IP
 			if (OSCIPText == "localhost") OSCIPText = "127.0.0.1";
-			if (MyRegex.IP().IsMatch(OSCIPText) && IPAddress.TryParse(OSCIPText, out IPAddress? parsedIp) && parsedIp != ConfigData.OSCIP)
+			if (MyRegex.IP().IsMatch(OSCIPText) && IPAddress.TryParse(OSCIPText, out IPAddress? parsedIp) && !parsedIp.Equals(ConfigData.OSCIP))
 			{
 				ConfigData.OSCIP = parsedIp;
 				saveConfig = true;
@@ -82,11 +83,16 @@ namespace PulsoidToOSC
 			}
 
 			// Save
-			if (saveConfig) ConfigData.SaveConfig();
+			if (saveConfig && canSaveConfig) ConfigData.SaveConfig();
 
 			OSCIPText = ConfigData.OSCIP.ToString();
 			OSCPortText = ConfigData.OSCPort.ToString();
 			OSCPathText = ConfigData.OSCPath;
+		}
+
+		public void OptionsDone()
+		{
+			SetOSC(false);
 		}
 	}
 }

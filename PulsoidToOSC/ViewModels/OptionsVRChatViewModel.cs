@@ -62,13 +62,19 @@ namespace PulsoidToOSC
 			ConfigData.SaveConfig();
 		}
 
-		private void SetVRCChatboxMessage()
+		private void SetVRCChatboxMessage() { SetVRCChatboxMessage(true); }
+		private void SetVRCChatboxMessage(bool canSaveConfig)
 		{
 			(_optionsViewModel?.OptionsWindow?.FindName("SetVRCChatboxMessageButton") as UIElement)?.Focus();
 
 			if (ConfigData.VRCChatboxMessage == VRCChatboxMessageText) return;
 			ConfigData.VRCChatboxMessage = VRCChatboxMessageText;
-			ConfigData.SaveConfig();
+			if (canSaveConfig) ConfigData.SaveConfig();
+		}
+
+		public void OptionsDone()
+		{
+			SetVRCChatboxMessage(false);
 		}
 	}
 }
