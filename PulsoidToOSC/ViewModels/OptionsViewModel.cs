@@ -66,9 +66,9 @@ namespace PulsoidToOSC
 			OptionsHeartrateViewModel.HrTrendMaxText = ConfigData.HrTrendMax.ToString();
 
 			// UI
-			OptionsUIViewModel.ColorErrorText = ConfigData.UIColorError.ToString();
-			OptionsUIViewModel.ColorWarningText = ConfigData.UIColorWarning.ToString();
-			OptionsUIViewModel.ColorRunningText = ConfigData.UIColorRunning.ToString();
+			OptionsUIViewModel.ColorErrorText = ConfigData.UIColorError;
+			OptionsUIViewModel.ColorWarningText = ConfigData.UIColorWarning;
+			OptionsUIViewModel.ColorRunningText = ConfigData.UIColorRunning;
 
 			// Parameters
 			OptionsParametersViewModel.Parameters.Clear();

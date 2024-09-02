@@ -44,7 +44,7 @@ namespace PulsoidToOSC
 				}, _delayedStartTaskCts.Token);
 			}
 
-			_ = Task.Run(async () => 
+			_ = Task.Run(async () =>
 			{
 				MainViewModel.InfoViewModel.IsNewVersionAvailable = await GitHubApi.IsNewVersionAvailable(GitHubOwner, GitHubRepo, AppVersion) == GitHubApi.VersionStatus.NewIsAvailable;
 			});

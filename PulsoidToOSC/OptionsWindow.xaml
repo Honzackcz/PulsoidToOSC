@@ -23,7 +23,7 @@
 		
 		<Grid Grid.Row="0">
 			<TabControl>
-                <TabItem Name="general" Header="General" DataContext="{Binding OptionsGeneralViewModel}">
+				<TabItem Name="general" Header="General" DataContext="{Binding OptionsGeneralViewModel}">
 					<TabItem.Content>
 						<Grid Margin="12">
 							<Grid.RowDefinitions>
@@ -303,7 +303,7 @@
 									Content="Set VRC msg text"
 									HorizontalAlignment="Stretch"
 									VerticalAlignment="Top"
-									ToolTip="Apply message."
+									ToolTip="Apply message"
 								/>
 								<TextBox
 									Grid.Column="1"
@@ -333,7 +333,7 @@
 							
 							<Grid Grid.Row="0">
 								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="130"/>
+									<ColumnDefinition Width="150"/>
 									<ColumnDefinition Width="50"/>
 									<ColumnDefinition Width="*"/>
 									<ColumnDefinition Width="50"/>
@@ -345,8 +345,8 @@
 									HorizontalAlignment="Stretch"
 									Name="SetHrFloatButton"
 									Command="{Binding SetHrFloatCommand}"
-									Content="Set Float Range"
-									ToolTip="Apply float range"
+									Content="Set HR Float Range"
+									ToolTip="Apply heart rate float range"
 								/>
 								
 								<TextBlock
@@ -360,7 +360,7 @@
 									Grid.Column="2"
 									Margin="4"
 									Text="{Binding HrFloatMinText, UpdateSourceTrigger=PropertyChanged}"
-									ToolTip="Min value of heart rate mapped to float"
+									ToolTip="Minimal value of heart rate mapped to float."
 								>
 									<TextBox.InputBindings>
 										<KeyBinding Key="Enter" Command="{Binding SetHrFloatCommand}"/>
@@ -378,7 +378,7 @@
 									Grid.Column="4"
 									Margin="4"
 									Text="{Binding HrFloatMaxText, UpdateSourceTrigger=PropertyChanged}"
-									ToolTip="Max value of heart rate mapped to float"
+									ToolTip="Maximal value of heart rate mapped to float."
 								>
 									<TextBox.InputBindings>
 										<KeyBinding Key="Enter" Command="{Binding SetHrFloatCommand}"/>
@@ -388,7 +388,7 @@
 
 							<Grid Grid.Row="1">
 								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="130"/>
+									<ColumnDefinition Width="150"/>
 									<ColumnDefinition Width="50"/>
 									<ColumnDefinition Width="*"/>
 									<ColumnDefinition Width="50"/>
@@ -415,7 +415,7 @@
 									Grid.Column="2"
 									Margin="4"
 									Text="{Binding HrTrendMinText, UpdateSourceTrigger=PropertyChanged}"
-									ToolTip="Higer value will make trend less sensitive to decreasing heart rate"
+									ToolTip="Higer value will make trend less sensitive to decreasing heart rate."
 								>
 									<TextBox.InputBindings>
 										<KeyBinding Key="Enter" Command="{Binding SetHrTrendCommand}"/>
@@ -433,7 +433,7 @@
 									Grid.Column="4"
 									Margin="4"
 									Text="{Binding HrTrendMaxText, UpdateSourceTrigger=PropertyChanged}"
-									ToolTip="Higer value will make trend less sensitive to increasing heart rate"
+									ToolTip="Higer value will make trend less sensitive to increasing heart rate."
 								>
 									<TextBox.InputBindings>
 										<KeyBinding Key="Enter" Command="{Binding SetHrTrendCommand}"/>
@@ -462,11 +462,12 @@
 									Grid.Column="0"
 									Margin="4"
 									VerticalAlignment="Center"
-									Text="List of OSC parameters"
+									Text="List of OSC parameters:"
 								/>
 								<Button
 									Grid.Column="1"
 									Margin="4"
+									Name="ApplyParametersButton"
 									Command="{Binding ApplyParametersCommand}"
 									Content="Apply Parameters"
 									ToolTip="Apply and save all parameters"
@@ -496,7 +497,7 @@
 									<DataTemplate>
 										<Grid>
 											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="130"/>
+												<ColumnDefinition Width="150"/>
 												<ColumnDefinition Width="*"/>
 												<ColumnDefinition Width="50"/>
 											</Grid.ColumnDefinitions>
@@ -512,28 +513,28 @@
 													<ui:MenuFlyout Placement="BottomEdgeAlignedLeft">
 														<MenuItem
 															Command="{Binding SetItegerTypeCommand}"
-															Header="Integer"
+															Header="HR Integer"
 															ToolTip="Heart rate - Integer [0, 255]"
 														/>
 														<MenuItem
 															Command="{Binding SetFloatTypeCommand}"
-															Header="Float [-1, 1]"
+															Header="HR Float [-1, 1]"
 															ToolTip="Heart rate - Float ([0, 255] -> [-1, 1])"
 														/>
 														<MenuItem
 															Command="{Binding SetFloat01TypeCommand}"
-															Header="Float [0, 1]"
+															Header="HR Float [0, 1]"
 															ToolTip="Heart rate - Float ([0, 255] -> [0, 1])"
 														/>
 														<MenuItem
 															Command="{Binding SetBoolToggleTypeCommand}"
 															Header="Bool Toggle"
-															ToolTip="Toggles with each update"
+															ToolTip="Toggles with each OSC update"
 														/>
 														<MenuItem
 															Command="{Binding SetBoolActiveTypeCommand}"
 															Header="Bool Active"
-															ToolTip="Is true when app is working"
+															ToolTip="True when app is working"
 														/>
 														<MenuItem
 															Command="{Binding SetTrendFTypeCommand}"
@@ -553,7 +554,11 @@
 												Margin="4"
 												Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
 												ToolTip="Parameter name"
-											/>
+											>
+												<TextBox.InputBindings>
+													<KeyBinding Key="Enter" Command="{Binding ApplyParameterCommand}"/>
+												</TextBox.InputBindings>
+											</TextBox>
 											<Button
 												Grid.Column="2"
 												Margin="4"
@@ -591,7 +596,7 @@
 									Name="SetColorsButton"
 									Command="{Binding SetColorsCommand}"
 									Content="Set Colors"
-									ToolTip="Apply colors"
+									ToolTip="Apply UI colors"
 								/>
 								<Grid Grid.Column="1">
 									<Grid.RowDefinitions>
@@ -701,6 +706,7 @@
 				Content="Close"
 				Margin="0,0,0,12"
 				HorizontalAlignment="Center"
+				ToolTip="Close options window - unsaved changes will be lost!"
 			/>
 		</Grid>
 	</Grid>

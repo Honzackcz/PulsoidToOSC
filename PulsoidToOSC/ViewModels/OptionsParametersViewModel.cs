@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace PulsoidToOSC
@@ -14,13 +15,13 @@ namespace PulsoidToOSC
 			public OptionsParametersViewModel? ParametersOptionsViewModel { get; set; }
 			private static readonly Dictionary<OSCParameter.Types, string> ParameterTypeNames = new()
 			{
-				{OSCParameter.Types.Integer, "Integer" },
-				{OSCParameter.Types.Float, "Float [-1, 1]" },
-				{OSCParameter.Types.Float01, "Float [0, 1]" },
+				{OSCParameter.Types.Integer, "HR Integer" },
+				{OSCParameter.Types.Float, "HR Float [-1, 1]" },
+				{OSCParameter.Types.Float01, "HR Float [0, 1]" },
 				{OSCParameter.Types.BoolToggle, "Bool Toggle" },
 				{OSCParameter.Types.BoolActive, "Bool Active" },
-				{OSCParameter.Types.TrendF, "Trend [-1, 1]" },
-				{OSCParameter.Types.TrendF01, "Trend [0, 1]" }
+				{OSCParameter.Types.Trend, "Trend [-1, 1]" },
+				{OSCParameter.Types.Trend01, "Trend [0, 1]" }
 			};
 
 			private OSCParameter.Types _type = OSCParameter.Types.Integer;
@@ -31,13 +32,16 @@ namespace PulsoidToOSC
 				get => _type;
 				set { _type = value; OnPropertyChanged(nameof(TypeName)); }
 			}
+			public string TypeName
+			{
+				get => ParameterTypeNames[_type];
+			}
 
 			public string Name
 			{
 				get => _name;
 				set { _name = value?.Replace("=", string.Empty).Replace(";", string.Empty) ?? string.Empty; OnPropertyChanged(); }
 			}
-			public string TypeName { get => ParameterTypeNames[_type]; }
 
 			public ICommand SetItegerTypeCommand { get; }
 			public ICommand SetFloatTypeCommand { get; }
@@ -47,6 +51,7 @@ namespace PulsoidToOSC
 			public ICommand SetTrendFTypeCommand { get; }
 			public ICommand SetTrendF01TypeCommand { get; }
 			public ICommand DeleteParameterCommand { get; }
+			public ICommand ApplyParameterCommand { get; }
 
 			public ParameterItem()
 			{
@@ -58,6 +63,7 @@ namespace PulsoidToOSC
 				SetTrendFTypeCommand = new RelayCommand(SetTrendFType);
 				SetTrendF01TypeCommand = new RelayCommand(SetTrendF01Type);
 				DeleteParameterCommand = new RelayCommand(DeleteParameter);
+				ApplyParameterCommand = new RelayCommand(ApplyParameter);
 			}
 
 			private void SetItegerType()
@@ -87,17 +93,22 @@ namespace PulsoidToOSC
 
 			private void SetTrendFType()
 			{
-				Type = OSCParameter.Types.TrendF;
+				Type = OSCParameter.Types.Trend;
 			}
 
 			private void SetTrendF01Type()
 			{
-				Type = OSCParameter.Types.TrendF01;
+				Type = OSCParameter.Types.Trend01;
 			}
 
 			private void DeleteParameter()
 			{
 				ParametersOptionsViewModel?.DeleteParameter(this);
+			}
+
+			private void ApplyParameter()
+			{
+				ParametersOptionsViewModel?.ApplyParameters();
 			}
 		}
 
@@ -123,6 +134,8 @@ namespace PulsoidToOSC
 
 		private void ApplyParameters()
 		{
+			(_optionsViewModel?.OptionsWindow?.FindName("ApplyParametersButton") as UIElement)?.Focus();
+
 			List<OSCParameter> parameters = [];
 
 			foreach (ParameterItem parameterItem in Parameters)
