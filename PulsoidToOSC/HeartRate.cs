@@ -13,28 +13,39 @@ namespace PulsoidToOSC
 
 		public static void Send(int heartRate = 0)
 		{
-			if (heartRate < 0) return;
-
-			HBToggle = !HBToggle;
-
-			_recentHeartRates.Add(heartRate);
-			if (_recentHeartRates.Count > 5)
+			if (heartRate < 0)
 			{
-				_recentHeartRates.RemoveAt(0);
-				TrendF = Math.Clamp(Remap(CalcualteTrend(_recentHeartRates), -ConfigData.HrTrendMin, ConfigData.HrTrendMax, -1f, 1f), -1f, 1f);
-				Trend = TrendF switch
-				{
-					> 0.5f => Trends.StrongUpward,
-					< -0.5f => Trends.StrongDownward,
-					> 0.25f => Trends.Upward,
-					< -0.25f => Trends.Downward,
-					_ => Trends.Stable
-				};
+				return;
+			}
+			else if (heartRate == 0)
+			{
+				HBToggle = false;
+				TrendF = 0;
+				Trend = Trends.None;
 			}
 			else
 			{
-				TrendF = 0;
-				Trend = Trends.None;
+				HBToggle = !HBToggle;
+
+				_recentHeartRates.Add(heartRate);
+				if (_recentHeartRates.Count > 5)
+				{
+					_recentHeartRates.RemoveAt(0);
+					TrendF = Math.Clamp(Remap(CalcualteTrend(_recentHeartRates), -ConfigData.HrTrendMin, ConfigData.HrTrendMax, -1f, 1f), -1f, 1f);
+					Trend = TrendF switch
+					{
+						> 0.5f => Trends.StrongUpward,
+						< -0.5f => Trends.StrongDownward,
+						> 0.25f => Trends.Upward,
+						< -0.25f => Trends.Downward,
+						_ => Trends.Stable
+					};
+				}
+				else
+				{
+					TrendF = 0;
+					Trend = Trends.None;
+				}
 			}
 			
 			VRCOSC.SendHeartRates(heartRate, HBToggle, TrendF);

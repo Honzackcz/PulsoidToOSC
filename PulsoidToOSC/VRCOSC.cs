@@ -133,7 +133,7 @@ namespace PulsoidToOSC
 			private static ServiceDiscovery? _serviceDiscovery;
 			private static MulticastService? _multicastService;
 
-			public static void SetupQuerry()
+			public static void SetupQuery()
 			{
 				_serviceDiscovery = new ServiceDiscovery();
 				_multicastService = new MulticastService();
@@ -222,7 +222,7 @@ namespace PulsoidToOSC
 				}
 			}
 
-			public static void StopQuerry()
+			public static void StopQuery()
 			{
 				VRCClients.Clear();
 				_serviceDiscovery?.Dispose();

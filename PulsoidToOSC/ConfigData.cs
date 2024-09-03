@@ -1,5 +1,4 @@
-﻿using System.Windows.Media;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 
 namespace PulsoidToOSC
