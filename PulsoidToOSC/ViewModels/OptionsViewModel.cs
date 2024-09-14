@@ -18,6 +18,7 @@ namespace PulsoidToOSC
 		public OptionsUIViewModel OptionsUIViewModel { get; }
 
 		public ICommand OptionsDoneCommand { get; }
+		public ICommand OptionsApplyCommand { get; }
 
 		public OptionsViewModel(MainViewModel mainViewModel)
 		{
@@ -30,6 +31,7 @@ namespace PulsoidToOSC
 			OptionsUIViewModel = new OptionsUIViewModel(this);
 
 			OptionsDoneCommand = new RelayCommand(OptionsDone);
+			OptionsApplyCommand = new RelayCommand(OptionsApply);
 		}
 
 		public void OpenOptionsWindow()
@@ -62,8 +64,9 @@ namespace PulsoidToOSC
 			// Heart rate
 			OptionsHeartrateViewModel.HrFloatMinText = ConfigData.HrFloatMin.ToString();
 			OptionsHeartrateViewModel.HrFloatMaxText = ConfigData.HrFloatMax.ToString();
-			OptionsHeartrateViewModel.HrTrendMinText = ConfigData.HrTrendMin.ToString();
-			OptionsHeartrateViewModel.HrTrendMaxText = ConfigData.HrTrendMax.ToString();
+			OptionsHeartrateViewModel.HrTrendMinText = ConfigData.HrTrendMin.ToString(ConfigData.FloatLocal);
+			OptionsHeartrateViewModel.HrTrendMaxText = ConfigData.HrTrendMax.ToString(ConfigData.FloatLocal);
+			OptionsHeartrateViewModel.HrOffsetText = ConfigData.HrOffset.ToString();
 
 			// UI
 			OptionsUIViewModel.ColorErrorText = ConfigData.UIColorError;
@@ -88,13 +91,27 @@ namespace PulsoidToOSC
 			OptionsWindow.ShowDialog();
 		}
 
+		public void OptionsApply()
+		{
+			(OptionsWindow?.FindName("ApplyOptionsButton") as UIElement)?.Focus();
+
+			OptionsGeneralViewModel.OptionsApply();
+			OptionsOscViewModel.OptionsApply();
+			OptionsVRChatViewModel.OptionsApply();
+			OptionsHeartrateViewModel.OptionsApply();
+			OptionsUIViewModel.OptionsApply();
+			OptionsParametersViewModel.OptionsApply();
+			ConfigData.SaveConfig();
+		}
+
 		private void OptionsDone()
 		{
-			OptionsOscViewModel.OptionsDone();
-			OptionsVRChatViewModel.OptionsDone();
-			OptionsHeartrateViewModel.OptionsDone();
-			OptionsUIViewModel.OptionsDone();
-			OptionsParametersViewModel.OptionsDone();
+			OptionsGeneralViewModel.OptionsApply(true);
+			OptionsOscViewModel.OptionsApply();
+			OptionsVRChatViewModel.OptionsApply();
+			OptionsHeartrateViewModel.OptionsApply();
+			OptionsUIViewModel.OptionsApply();
+			OptionsParametersViewModel.OptionsApply();
 			ConfigData.SaveConfig();
 
 			OptionsWindow?.Close();

@@ -1,5 +1,4 @@
 ﻿using System.Windows.Input;
-using System.Windows;
 
 namespace PulsoidToOSC
 {
@@ -33,12 +32,12 @@ namespace PulsoidToOSC
 			set { _vrcChatboxMessageText = value?.Replace("=", string.Empty) ?? string.Empty; OnPropertyChanged(); }
 		}
 
-		public ICommand SetVRCChatboxMessageCommand { get; }
+		public ICommand OptionsVRChatApplyCommand { get; }
 
 		public OptionsVRChatViewModel(OptionsViewModel optionsViewModel)
 		{
 			_optionsViewModel = optionsViewModel;
-			SetVRCChatboxMessageCommand = new RelayCommand(SetVRCChatboxMessage);
+			OptionsVRChatApplyCommand = new RelayCommand(_optionsViewModel.OptionsApply);
 		}
 
 		private void ToggleVRCAutoConfig()
@@ -62,19 +61,16 @@ namespace PulsoidToOSC
 			ConfigData.SaveConfig();
 		}
 
-		private void SetVRCChatboxMessage() { SetVRCChatboxMessage(true); }
+		public void OptionsApply()
+		{
+			SetVRCChatboxMessage(false);
+		}
+
 		private void SetVRCChatboxMessage(bool canSaveConfig)
 		{
-			(_optionsViewModel?.OptionsWindow?.FindName("SetVRCChatboxMessageButton") as UIElement)?.Focus();
-
 			if (ConfigData.VRCChatboxMessage == VRCChatboxMessageText) return;
 			ConfigData.VRCChatboxMessage = VRCChatboxMessageText;
 			if (canSaveConfig) ConfigData.SaveConfig();
-		}
-
-		public void OptionsDone()
-		{
-			SetVRCChatboxMessage(false);
 		}
 	}
 }

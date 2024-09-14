@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Windows.Input;
-using System.Windows;
 
 namespace PulsoidToOSC
 {
@@ -26,7 +25,21 @@ namespace PulsoidToOSC
 		public string OSCPortText
 		{
 			get => _oscPortText;
-			set { _oscPortText = MyRegex.NotNumber().Replace(value ?? string.Empty, string.Empty); OnPropertyChanged(); }
+			set
+			{
+				string newText = value ?? string.Empty;
+
+				if (newText == string.Empty)
+				{
+					_oscPortText = newText;
+				}
+				else if (Int32.TryParse(newText, out int result))
+				{
+					_oscPortText = Math.Clamp(result, 1, 65535).ToString();
+				}
+
+				OnPropertyChanged();
+			}
 		}
 		public string OSCPathText
 		{
@@ -34,12 +47,12 @@ namespace PulsoidToOSC
 			set { _oscPathText = value?.Replace("=", string.Empty) ?? string.Empty; OnPropertyChanged(); }
 		}
 
-		public ICommand SetOSCCommand { get; }
+		public ICommand OptionsOSCApplyCommand { get; }
 
 		public OptionsOscViewModel(OptionsViewModel optionsViewModel)
 		{
 			_optionsViewModel = optionsViewModel;
-			SetOSCCommand = new RelayCommand(SetOSC);
+			OptionsOSCApplyCommand = new RelayCommand(_optionsViewModel.OptionsApply);
 		}
 
 		private void ToggleOSCManualConfig()
@@ -49,11 +62,13 @@ namespace PulsoidToOSC
 			ConfigData.SaveConfig();
 		}
 
-		private void SetOSC() { SetOSC(true); }
+		public void OptionsApply()
+		{
+			SetOSC(false);
+		}
+
 		private void SetOSC(bool canSaveConfig)
 		{
-			(_optionsViewModel?.OptionsWindow?.FindName("SetOSCButton") as UIElement)?.Focus();
-
 			bool saveConfig = false;
 
 			// OSC IP
@@ -88,11 +103,6 @@ namespace PulsoidToOSC
 			OSCIPText = ConfigData.OSCIP.ToString();
 			OSCPortText = ConfigData.OSCPort.ToString();
 			OSCPathText = ConfigData.OSCPath;
-		}
-
-		public void OptionsDone()
-		{
-			SetOSC(false);
 		}
 	}
 }

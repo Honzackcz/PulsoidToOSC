@@ -56,13 +56,13 @@ namespace PulsoidToOSC
 		private static string _httpServerUri = string.Empty;
 
 
-		public static void SetPulsoidToken(string? token)
+		public static void SetPulsoidToken(string? token, bool saveConfig = true)
 		{
 			if (token != null && token != ConfigData.PulsoidToken && MyRegex.GUID().IsMatch(token))
 			{
 				ConfigData.PulsoidToken = token;
 				TokenValidity = TokenValidities.Unknown;
-				ConfigData.SaveConfig();
+				if (saveConfig) ConfigData.SaveConfig();
 			}
 		}
 

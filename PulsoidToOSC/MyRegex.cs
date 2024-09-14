@@ -25,9 +25,6 @@ namespace PulsoidToOSC
 		[GeneratedRegex(@"[^A-Fa-f0-9-]")]
 		public static partial Regex NotTokenSymbol();
 
-		[GeneratedRegex(@"[^0-9]")]
-		public static partial Regex NotNumber();
-
 		[GeneratedRegex(@"/n")]
 		public static partial Regex LineEnd();
 

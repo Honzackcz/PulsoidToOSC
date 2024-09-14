@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Input;
 
 namespace PulsoidToOSC
@@ -108,18 +107,19 @@ namespace PulsoidToOSC
 
 			private void ApplyParameter()
 			{
-				ParametersOptionsViewModel?.ApplyParameters();
+				ParametersOptionsViewModel?._optionsViewModel.OptionsApply();
 			}
 		}
 
 		public ICommand AddNewParameterCommand { get; }
-		public ICommand ApplyParametersCommand { get; }
+		public ICommand OptionsParametersApplyCommand { get; }
+
 
 		public OptionsParametersViewModel(OptionsViewModel optionsViewModel)
 		{
 			_optionsViewModel = optionsViewModel;
 			AddNewParameterCommand = new RelayCommand(AddNewParameter);
-			ApplyParametersCommand = new RelayCommand(ApplyParameters);
+			OptionsParametersApplyCommand = new RelayCommand(_optionsViewModel.OptionsApply);
 		}
 
 		private void DeleteParameter(ParameterItem parameterItem)
@@ -132,11 +132,13 @@ namespace PulsoidToOSC
 			Parameters.Add(new() { ParametersOptionsViewModel = this });
 		}
 
-		private void ApplyParameters() { ApplyParameters(true); }
+		public void OptionsApply()
+		{
+			ApplyParameters(false);
+		}
+
 		private void ApplyParameters(bool canSaveConfig)
 		{
-			(_optionsViewModel?.OptionsWindow?.FindName("ApplyParametersButton") as UIElement)?.Focus();
-
 			List<OSCParameter> parameters = [];
 
 			foreach (ParameterItem parameterItem in Parameters)
@@ -147,11 +149,6 @@ namespace PulsoidToOSC
 			ConfigData.OSCParameters = parameters;
 
 			if (canSaveConfig) ConfigData.SaveConfig();
-		}
-
-		public void OptionsDone()
-		{
-			ApplyParameters(false);
 		}
 	}
 }

@@ -61,19 +61,27 @@ namespace PulsoidToOSC
 			PulsoidApi.GetPulsoidToken();
 		}
 
-		private async void SetToken()
+		private void SetToken() { SetToken(true, true); }
+		private async void SetToken(bool canSaveConfig = true, bool validate = true)
 		{
 			(_optionsViewModel?.OptionsWindow?.FindName("SetTokenButton") as UIElement)?.Focus();
 
 			TokenValidity = PulsoidApi.TokenValidities.Unknown;
-			string previousToken = ConfigData.PulsoidToken;
-			PulsoidApi.SetPulsoidToken(TokenText);
-			TokenText = ConfigData.PulsoidToken;
-			if (previousToken != ConfigData.PulsoidToken && _optionsViewModel != null) _optionsViewModel.RestartToApplyOptions = true;
 
-			await PulsoidApi.ValidateToken();
-			await Task.Delay(250); //just for user to see the validation happens in case it was too fast
-			TokenValidity = PulsoidApi.TokenValidity;
+			if (TokenText != ConfigData.PulsoidToken)
+			{
+				string previousToken = ConfigData.PulsoidToken;
+				PulsoidApi.SetPulsoidToken(TokenText, canSaveConfig);
+				TokenText = ConfigData.PulsoidToken;
+				if (previousToken != ConfigData.PulsoidToken && _optionsViewModel != null) _optionsViewModel.RestartToApplyOptions = true;
+			}
+
+			if (validate)
+			{
+				await PulsoidApi.ValidateToken();
+				await Task.Delay(250); //just for user to see the validation happens in case it was too fast
+				TokenValidity = PulsoidApi.TokenValidity;
+			}
 		}
 
 		private void ToggleAutoStart()
@@ -81,6 +89,11 @@ namespace PulsoidToOSC
 			if (ConfigData.AutoStart == AutoStartCheckmark) return;
 			ConfigData.AutoStart = AutoStartCheckmark;
 			ConfigData.SaveConfig();
+		}
+
+		public void OptionsApply(bool done = false)
+		{
+			SetToken(false, !done);
 		}
 	}
 }

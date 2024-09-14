@@ -45,28 +45,30 @@ namespace PulsoidToOSC
 			get => MyRegex.RGBHexCode().IsMatch(_colorRunningText) ? _colorRunningText : "#00000000";
 		}
 
-		public ICommand SetColorsCommand { get; }
 		public ICommand OpenColorPickerErrorCommand { get; }
 		public ICommand OpenColorPickerWarningCommand { get; }
 		public ICommand OpenColorPickerRunningCommand { get; }
 		public ICommand ColorPickerDoneCommand { get; }
+		public ICommand OptionsUIApplyCommand { get; }
 
 		public OptionsUIViewModel(OptionsViewModel optionsViewModel)
 		{
 			_optionsViewModel = optionsViewModel;
 
-			SetColorsCommand = new RelayCommand(SetColors);
 			OpenColorPickerErrorCommand = new RelayCommand(OpenColorPickerError);
 			OpenColorPickerWarningCommand = new RelayCommand(OpenColorPickerWarning);
 			OpenColorPickerRunningCommand = new RelayCommand(OpenColorPickerRunning);
 			ColorPickerDoneCommand = new RelayCommand(ColorPickerDone);
+			OptionsUIApplyCommand = new RelayCommand(_optionsViewModel.OptionsApply);
 		}
 
-		private void SetColors() { SetColors(true); }
+		public void OptionsApply()
+		{
+			SetColors(false);
+		}
+
 		private void SetColors(bool canSaveConfig)
 		{
-			(_optionsViewModel?.OptionsWindow?.FindName("SetColorsButton") as UIElement)?.Focus();
-
 			bool saveConfig = false;
 
 			if (MyRegex.RGBHexCode().IsMatch(ColorErrorText) && ColorErrorText != ConfigData.UIColorError)
@@ -91,13 +93,6 @@ namespace PulsoidToOSC
 			ColorWarningText = ConfigData.UIColorWarning;
 			ColorRunningText = ConfigData.UIColorRunning;
 		}
-
-		public void OptionsDone()
-		{
-			SetColors(false);
-		}
-
-
 
 		private void OpenColorPickerError()
 		{
