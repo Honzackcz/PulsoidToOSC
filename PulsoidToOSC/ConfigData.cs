@@ -5,6 +5,9 @@ namespace PulsoidToOSC
 {
 	internal static class ConfigData
 	{
+		public static readonly System.Globalization.NumberStyles FloatStyle = System.Globalization.NumberStyles.AllowDecimalPoint | System.Globalization.NumberStyles.AllowLeadingWhite | System.Globalization.NumberStyles.AllowTrailingWhite;
+		public static readonly System.Globalization.CultureInfo FloatLocal = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+
 		private const string FilePath = "config.txt";
 		// General
 		private static string _pulsoidToken = string.Empty;
@@ -24,6 +27,7 @@ namespace PulsoidToOSC
 		private static int _hrFloatMax = 255;
 		private static float _hrTrendMin = 2f;
 		private static float _hrTrendMax = 2f;
+		private static int _hrOffset = 0;
 		// UI
 		private static string _uiColorError = "#FF0000";
 		private static string _uiColorWarning = "#FFFF00";
@@ -114,6 +118,11 @@ namespace PulsoidToOSC
 			get => _hrTrendMax;
 			set => _hrTrendMax = value;
 		}
+		public static int HrOffset
+		{
+			get => _hrOffset;
+			set => _hrOffset = value;
+		}
 		// UI
 		public static string UIColorError
 		{
@@ -156,8 +165,9 @@ namespace PulsoidToOSC
 			// Heart rate
 			writer.WriteLine($"hrFloatMin={HrFloatMin}");
 			writer.WriteLine($"hrFloatMax={HrFloatMax}");
-			writer.WriteLine($"hrTrendMin={HrTrendMin}");
-			writer.WriteLine($"hrTrendMax={HrTrendMax}");
+			writer.WriteLine($"hrTrendMin={HrTrendMin.ToString(FloatLocal)}");
+			writer.WriteLine($"hrTrendMax={HrTrendMax.ToString(FloatLocal)}");
+			writer.WriteLine($"hrOffset={HrOffset}");
 			// UI
 			writer.WriteLine($"uiColorError={UIColorError}");
 			writer.WriteLine($"uiColorWarning={UIColorWarning}");
@@ -190,6 +200,7 @@ namespace PulsoidToOSC
 			string? hrFloatMax = null;
 			string? hrTrendMin = null;
 			string? hrTrendMax = null;
+			string? hrOffset = null;
 			// UI
 			string? uiColorError = null;
 			string? uiColorWarning = null;
@@ -257,6 +268,9 @@ namespace PulsoidToOSC
 							case "hrTrendMax":
 								hrTrendMax = value;
 								break;
+							case "hrOffset":
+								hrOffset = value;
+								break;
 							// UI
 							case "uiColorError":
 								uiColorError = value;
@@ -304,8 +318,9 @@ namespace PulsoidToOSC
 			// Heart rate
 			if (int.TryParse(hrFloatMin, out int parsedHrFloatMin) && parsedHrFloatMin <= 255 && parsedHrFloatMin >= 0) HrFloatMin = parsedHrFloatMin;
 			if (int.TryParse(hrFloatMax, out int parsedHrFloatMax) && parsedHrFloatMax <= 255 && parsedHrFloatMax >= 0) HrFloatMax = parsedHrFloatMax;
-			if (float.TryParse(hrTrendMin, out float parsedHrTrendMin) && parsedHrTrendMin <= 65535 && parsedHrTrendMin > 0) HrTrendMin = parsedHrTrendMin;
-			if (float.TryParse(hrTrendMax, out float parsedHrTrendMax) && parsedHrTrendMax <= 65535 && parsedHrTrendMax > 0) HrTrendMax = parsedHrTrendMax;
+			if (float.TryParse(hrTrendMin, FloatStyle, FloatLocal, out float parsedHrTrendMin) && parsedHrTrendMin <= 255f && parsedHrTrendMin >= 0.1) HrTrendMin = parsedHrTrendMin;
+			if (float.TryParse(hrTrendMax, FloatStyle, FloatLocal, out float parsedHrTrendMax) && parsedHrTrendMax <= 255f && parsedHrTrendMax >= 0.1) HrTrendMax = parsedHrTrendMax;
+			if (int.TryParse(hrOffset, out int parsedHrOffset) && parsedHrOffset < 255 && parsedHrOffset > -255) HrOffset = parsedHrOffset;
 			// UI
 			if (uiColorError != null && MyRegex.RGBHexCode().IsMatch(uiColorError)) UIColorError = uiColorError;
 			if (uiColorWarning != null && MyRegex.RGBHexCode().IsMatch(uiColorWarning)) UIColorWarning = uiColorWarning;

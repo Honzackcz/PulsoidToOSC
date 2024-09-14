@@ -7,7 +7,7 @@ namespace PulsoidToOSC
 {
 	internal static class MainProgram
 	{
-		public const string AppVersion = "v0.2.0";
+		public const string AppVersion = "v0.3.0";
 		public const string GitHubOwner = "Honzackcz";
 		public const string GitHubRepo = "PulsoidToOSC";
 
@@ -72,7 +72,7 @@ namespace PulsoidToOSC
 			_appSate = AppSates.Starting;
 			MainViewModel.StartButton = MainViewModel.StartButtonType.Disabled;
 			MainViewModel.SetWarning("Connecting to Pulsoid...");
-			HeartRate.ResetTrends();
+			HeartRate.Reset();
 			SetupOSC();
 			VRCOSC.Query.SetupQuery();
 			_ = StartWebSocket();
@@ -202,7 +202,7 @@ namespace PulsoidToOSC
 
 			HeartRate.Send(heartRate);
 
-			if (heartRate > 0) MainViewModel.SetRunning($"BPM: {heartRate}", measuredAt > 0 ? "Measured at: " + DateTimeOffset.FromUnixTimeMilliseconds(measuredAt).LocalDateTime.ToLongTimeString() : string.Empty);
+			if (HeartRate.HRValue > 0) MainViewModel.SetRunning($"BPM: {HeartRate.HRValue}", measuredAt > 0 ? "Measured at: " + DateTimeOffset.FromUnixTimeMilliseconds(measuredAt).LocalDateTime.ToLongTimeString() : string.Empty);
 			else MainViewModel.SetError("Error at obtaing heart rate data!");
 		}
 	}

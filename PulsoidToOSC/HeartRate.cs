@@ -4,6 +4,7 @@ namespace PulsoidToOSC
 {
 	internal static class HeartRate
 	{
+		public static int HRValue {  get; private set; } = 0;
 		public static bool HBToggle { get; private set; } = false;
 		public enum Trends { None, Stable, Upward, Downward, StrongUpward, StrongDownward };
 		public static Trends Trend { get; private set; } = Trends.None;
@@ -19,15 +20,17 @@ namespace PulsoidToOSC
 			}
 			else if (heartRate == 0)
 			{
+				HRValue = 0;
 				HBToggle = false;
 				TrendF = 0;
 				Trend = Trends.None;
 			}
 			else
 			{
+				HRValue = Math.Clamp(heartRate + ConfigData.HrOffset, 0, 255);
 				HBToggle = !HBToggle;
 
-				_recentHeartRates.Add(heartRate);
+				_recentHeartRates.Add(HRValue);
 				if (_recentHeartRates.Count > 5)
 				{
 					_recentHeartRates.RemoveAt(0);
@@ -48,19 +51,21 @@ namespace PulsoidToOSC
 				}
 			}
 			
-			VRCOSC.SendHeartRates(heartRate, HBToggle, TrendF);
+			VRCOSC.SendHeartRates();
 
 			if (MainProgram.OSCSender == null || !ConfigData.OSCUseManualConfig) return;
 
 			foreach (OSCParameter oscParameter in ConfigData.OSCParameters)
 			{
-				OscMessage? oscMessage = oscParameter.GetOscMessage(ConfigData.OSCPath, heartRate, HBToggle, TrendF);
+				OscMessage? oscMessage = oscParameter.GetOscMessage(ConfigData.OSCPath);
 				if (oscMessage != null) MainProgram.OSCSender.Send(oscMessage);
 			}
 		}
 
-		public static void ResetTrends()
+		public static void Reset()
 		{
+			HRValue = 0;
+			HBToggle = false;
 			TrendF = 0;
 			Trend = Trends.None;
 			_recentHeartRates.Clear();

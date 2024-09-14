@@ -22,7 +22,7 @@ namespace PulsoidToOSC
 
 		private static DateTime _lastVRCChatboxMessageTime = DateTime.MinValue;
 
-		public static void SendHeartRates(int heartRate, bool hbToggle, float trendF)
+		public static void SendHeartRates()
 		{
 			if (ConfigData.VRCUseAutoConfig && VRCClients.Count > 0)
 			{
@@ -30,21 +30,21 @@ namespace PulsoidToOSC
 				{
 					if (!(vrcClient.IsLocalHost || ConfigData.VRCSendToAllClinetsOnLAN) || vrcClient.OscSender == null) continue;
 
-					if (ConfigData.VRCSendBPMToChatbox && heartRate > 0) SendVRCChatBox(vrcClient.OscSender, heartRate);
+					if (ConfigData.VRCSendBPMToChatbox && HeartRate.HRValue > 0) SendVRCChatBox(vrcClient.OscSender, HeartRate.HRValue);
 					else ClearVRCChatbox(vrcClient.OscSender);
 
 					if (vrcClient.IsOscSenderSameAsGlobal && OSCPath == ConfigData.OSCPath) continue; // check against sending same values twice to one endpoint
 
 					foreach (OSCParameter oscParameter in ConfigData.OSCParameters)
 					{
-						OscMessage? oscMessage = oscParameter.GetOscMessage(OSCPath, heartRate, hbToggle, trendF);
+						OscMessage? oscMessage = oscParameter.GetOscMessage(OSCPath);
 						if (oscMessage != null) vrcClient.OscSender.Send(oscMessage);
 					}
 				}
 			}
 			else if (MainProgram.OSCSender != null && ConfigData.OSCUseManualConfig) // send chatbox message to manually set OSC endpoint when VRC auto config is disabled
 			{
-				if (ConfigData.VRCSendBPMToChatbox && heartRate > 0) SendVRCChatBox(MainProgram.OSCSender, heartRate);
+				if (ConfigData.VRCSendBPMToChatbox && HeartRate.HRValue > 0) SendVRCChatBox(MainProgram.OSCSender, HeartRate.HRValue);
 				else ClearVRCChatbox(MainProgram.OSCSender);
 			}
 		}
@@ -53,7 +53,7 @@ namespace PulsoidToOSC
 		{
 			if (_lastVRCChatboxMessageTime.AddSeconds(1.9) < DateTime.UtcNow)
 			{
-				string message = ConfigData.VRCChatboxMessage.Contains("<bpm>") ? ConfigData.VRCChatboxMessage.Replace("<bpm>", heartRate.ToString()) : ConfigData.VRCChatboxMessage + heartRate;
+				string message = ConfigData.VRCChatboxMessage.Contains("<bpm>") ? ConfigData.VRCChatboxMessage.Replace("<bpm>", HeartRate.HRValue.ToString()) : ConfigData.VRCChatboxMessage + HeartRate.HRValue;
 				message = message.Replace("<trend>", HeartRateTrendStrings[HeartRate.Trend]);
 				message = ConvertSpecialCharacters(message);
 				oscSender.Send(new OscMessage("/chatbox/input", message, true, false));
