@@ -20,6 +20,7 @@ namespace PulsoidToOSC
 		private static DateTime _lastWSMessageTime = DateTime.MinValue;
 		private static bool _wsMessageTimeout = false;
 		private static int _failedWSConnectionAttempts = 0;
+		private static bool _heartRateDataTimeoutRunning = false;
 		private static CancellationTokenSource _delayedStartTaskCts = new();
 
 		public static void StartUp()
@@ -74,8 +75,8 @@ namespace PulsoidToOSC
 			MainViewModel.SetWarning("Connecting to Pulsoid...");
 			HeartRate.Reset();
 			SetupOSC();
+			StartWebSocket();
 			VRCOSC.Query.SetupQuery();
-			_ = StartWebSocket();
 		}
 
 		public static async Task StopPulsoidToOSC()
@@ -119,13 +120,18 @@ namespace PulsoidToOSC
 			SimpleWSClient.OnClose += (response) => Disp.Invoke(() => OnWSClose(response));
 		}
 
-		private static async Task StartWebSocket()
+		private static async void StartWebSocket()
 		{
 			await SimpleWSClient.OpenConnectionAsync(PulsoidApi.PulsoidWSURL + ConfigData.PulsoidToken);
+		}
+
+		private static async void HeartRateDataTimeout()
+		{
+			if (_heartRateDataTimeoutRunning) return;
 
 			_lastWSMessageTime = DateTime.MinValue;
+			_heartRateDataTimeoutRunning = true;
 
-			await Task.Delay(1000);
 			while (SimpleWSClient.ClientState == WebSocketState.Open)
 			{
 				if (!_wsMessageTimeout && _lastWSMessageTime != DateTime.MinValue && _lastWSMessageTime.AddSeconds(10) < DateTime.UtcNow)
@@ -135,8 +141,11 @@ namespace PulsoidToOSC
 
 					MainViewModel.SetWarning("Waiting for heart rate...");
 				}
+
 				await Task.Delay(100);
 			}
+
+			_heartRateDataTimeoutRunning = false;
 		}
 
 		private static void OnWSOpen()
@@ -148,6 +157,8 @@ namespace PulsoidToOSC
 			_failedWSConnectionAttempts = 0;
 
 			MainViewModel.SetWarning("Waiting for heart rate...");
+
+			HeartRateDataTimeout();
 		}
 
 		private static void OnWSClose(SimpleWSClient.Response response)
