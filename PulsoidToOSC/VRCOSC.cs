@@ -30,7 +30,7 @@ namespace PulsoidToOSC
 				{
 					if (!(vrcClient.IsLocalHost || ConfigData.VRCSendToAllClinetsOnLAN) || vrcClient.OscSender == null) continue;
 
-					if (ConfigData.VRCSendBPMToChatbox && HeartRate.HRValue > 0) SendVRCChatBox(vrcClient.OscSender, HeartRate.HRValue);
+					if (ConfigData.VRCSendBPMToChatbox && HeartRate.HRValue > 0) SendVRCChatBox(vrcClient.OscSender);
 					else ClearVRCChatbox(vrcClient.OscSender);
 
 					if (vrcClient.IsOscSenderSameAsGlobal && OSCPath == ConfigData.OSCPath) continue; // check against sending same values twice to one endpoint
@@ -44,12 +44,12 @@ namespace PulsoidToOSC
 			}
 			else if (MainProgram.OSCSender != null && ConfigData.OSCUseManualConfig) // send chatbox message to manually set OSC endpoint when VRC auto config is disabled
 			{
-				if (ConfigData.VRCSendBPMToChatbox && HeartRate.HRValue > 0) SendVRCChatBox(MainProgram.OSCSender, HeartRate.HRValue);
+				if (ConfigData.VRCSendBPMToChatbox && HeartRate.HRValue > 0) SendVRCChatBox(MainProgram.OSCSender);
 				else ClearVRCChatbox(MainProgram.OSCSender);
 			}
 		}
 
-		public static void SendVRCChatBox(UDPSender oscSender, int heartRate) // Not reliable due to VRC message rate limit - will not send in 2 sec cooldown
+		public static void SendVRCChatBox(UDPSender oscSender) // Not reliable due to VRC message rate limit - will not send in 2 sec cooldown
 		{
 			if (_lastVRCChatboxMessageTime.AddSeconds(1.9) < DateTime.UtcNow)
 			{
