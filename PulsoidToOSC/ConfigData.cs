@@ -37,11 +37,21 @@ namespace PulsoidToOSC
 		[
 			new() { Type = OSCParameter.Types.Integer, Name = "HeartRateInt" },
 			new() { Type = OSCParameter.Types.Integer, Name = "HeartRate3" },
+			new() { Type = OSCParameter.Types.Integer, Name = "HR" },
+
 			new() { Type = OSCParameter.Types.Float, Name = "HeartRateFloat" },
 			new() { Type = OSCParameter.Types.Float, Name = "HeartRate" },
+			new() { Type = OSCParameter.Types.Float, Name = "FullHRPercent" },
+
 			new() { Type = OSCParameter.Types.Float01, Name = "HeartRateFloat01" },
 			new() { Type = OSCParameter.Types.Float01, Name = "HeartRate2" },
+			new() { Type = OSCParameter.Types.Float01, Name = "HRPercent" },
+
 			new() { Type = OSCParameter.Types.BoolToggle, Name = "HeartBeatToggle" },
+			new() { Type = OSCParameter.Types.BoolToggle, Name = "isHRBeat" },
+
+			new() { Type = OSCParameter.Types.BoolActive, Name = "isHRConnected" },
+			new() { Type = OSCParameter.Types.BoolActive, Name = "isHRActive" }
 		];
 
 		// General

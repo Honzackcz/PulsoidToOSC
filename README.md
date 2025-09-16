@@ -86,11 +86,17 @@ An example of a full path combined with a parameter might look like this: `/avat
 | ------------------ | ---------- | ---------------------------------------- |
 | `HeartRateInt`     | Int        | Heart rate - Integer [0, 255]            |
 | `HeartRate3`       | Int        | Same as HeartRateInt                     |
+| `HR`               | Int        | Same as HeartRateInt                     |
 | `HeartRateFloat`   | Float      | Heart rate - Float ([0, 255] -> [-1, 1]) |
 | `HeartRate`        | Float      | Same as HeartRateFloat                   |
+| `FullHRPercent`    | Float      | Same as HeartRateFloat                   |
 | `HeartRateFloat01` | Float      | Heart rate - Float ([0, 255] -> [0, 1])  |
 | `HeartRate2`       | Float      | Same as HeartRateFloat01                 |
+| `HRPercent `       | Float      | Same as HeartRateFloat01                 |
 | `HeartBeatToggle`  | Bool       | Toggles with each OSC update             |
+| `isHRBeat`         | Bool       | Toggles with each OSC update             |
+| `isHRConnected`    | Bool       | True when app is working                 |
+| `isHRActive`       | Bool       | True when app is working                 |
 
 These parameters are chosen to support most currently used systems. In practice, the only necessary parameters are `HeartRateInt` for data and the additional `HeartBeatToggle` for reliable detection of timeouts.
 
