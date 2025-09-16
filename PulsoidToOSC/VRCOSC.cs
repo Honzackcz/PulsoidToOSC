@@ -53,7 +53,7 @@ namespace PulsoidToOSC
 		{
 			if (_lastVRCChatboxMessageTime.AddSeconds(1.9) < DateTime.UtcNow)
 			{
-				string message = ConfigData.VRCChatboxMessage.Contains("<bpm>") ? ConfigData.VRCChatboxMessage.Replace("<bpm>", HeartRate.HRValue.ToString()) : ConfigData.VRCChatboxMessage + HeartRate.HRValue;
+				string message = ConfigData.VRCChatboxMessage.Contains("<bpm>") ? ConfigData.VRCChatboxMessage.Replace("<bpm>", HeartRate.HRValue.ToString()) : ConfigData.VRCChatboxMessage.Contains("<nobpm>") ? ConfigData.VRCChatboxMessage.Replace("<nobpm>", "") : ConfigData.VRCChatboxMessage + HeartRate.HRValue;
 				message = message.Replace("<trend>", HeartRateTrendStrings[HeartRate.Trend]);
 				message = ConvertSpecialCharacters(message);
 				oscSender.Send(new OscMessage("/chatbox/input", message, true, false));
