@@ -1,6 +1,4 @@
 ﻿using SharpOSC;
-using System.Text.Json;
-using System.Windows.Threading;
 using System.Net.WebSockets;
 
 namespace PulsoidToOSC
@@ -11,7 +9,6 @@ namespace PulsoidToOSC
 		public const string GitHubOwner = "Honzackcz";
 		public const string GitHubRepo = "PulsoidToOSC";
 
-		public static Dispatcher Disp { get; } = Dispatcher.CurrentDispatcher;
 		public static MainViewModel MainViewModel { get; } = new();
 		public static UDPSender? OSCSender { get; private set; }
 
@@ -22,6 +19,8 @@ namespace PulsoidToOSC
 		private static int _failedWSConnectionAttempts = 0;
 		private static bool _heartRateDataTimeoutRunning = false;
 		private static CancellationTokenSource _delayedStartTaskCts = new();
+		private static CancellationTokenSource _heartRateDataTimeoutCts = new();
+		private static TaskCompletionSource<bool> _awaitWSConnectionLost = new();
 
 		public static void StartUp()
 		{
@@ -41,7 +40,7 @@ namespace PulsoidToOSC
 				_ = Task.Run(async () =>
 				{
 					await Task.Delay(500, _delayedStartTaskCts.Token);
-					if (_appSate == AppSates.Stopped) Disp.Invoke(() => StartPulsoidToOSC());
+					if (_appSate == AppSates.Stopped) StartPulsoidToOSC();
 				}, _delayedStartTaskCts.Token);
 			}
 
@@ -51,9 +50,12 @@ namespace PulsoidToOSC
 			});
 		}
 
-		public static void StartPulsoidToOSC(bool reconnect = false)
+		public static async void StartPulsoidToOSC()
 		{
-			if (!reconnect) _failedWSConnectionAttempts = 0;
+			_failedWSConnectionAttempts = 0;
+
+			while (true)
+			{
 			_delayedStartTaskCts.Cancel();
 
 			if (_appSate == AppSates.Running)
@@ -75,20 +77,56 @@ namespace PulsoidToOSC
 			MainViewModel.SetWarning("Connecting to Pulsoid...");
 			HeartRate.Reset();
 			SetupOSC();
+				VRCOSC.Query.SetupQuery();
+
+				_awaitWSConnectionLost = new();
 			StartWebSocket();
-			VRCOSC.Query.SetupQuery();
+				bool retry = await _awaitWSConnectionLost.Task;
+
+				if (retry)
+				{
+					_ = StopPulsoidToOSC();
+
+					if (_failedWSConnectionAttempts <= 20)
+					{
+						MainViewModel.SetError($"Error: Connection to Pulsoid!\nRetrying connection... ({_failedWSConnectionAttempts})");
+
+						_delayedStartTaskCts = new();
+						try
+						{
+							await Task.Delay(_failedWSConnectionAttempts == 0 ? 0 : 5000, _delayedStartTaskCts.Token);
+						}
+						catch
+						{
+							return;
+						}
+						_failedWSConnectionAttempts++;
+					}
+					else
+					{
+						return;
+					}
+				}
+				else
+				{
+					return;
+				}
+			}
 		}
 
 		public static async Task StopPulsoidToOSC()
 		{
 			if (_appSate == AppSates.Stopped || _appSate == AppSates.Stopping) return;
-
 			_appSate = AppSates.Stopping;
+
+			_awaitWSConnectionLost.TrySetResult(false);
+			if(_heartRateDataTimeoutRunning) _heartRateDataTimeoutCts.Cancel();
+
 			MainViewModel.StartButton = MainViewModel.StartButtonType.Disabled;
-			MainViewModel.SetWarning("Closing connection to Pulsoid...");
 
 			if (SimpleWSClient.ClientState == WebSocketState.Open)
 			{
+				MainViewModel.SetWarning("Closing connection to Pulsoid...");
 				await SimpleWSClient.CloseConnectionAsync();
 			}
 
@@ -115,9 +153,9 @@ namespace PulsoidToOSC
 
 		private static void SetupWebSocketEvents()
 		{
-			SimpleWSClient.OnOpen += () => Disp.Invoke(() => OnWSOpen());
-			SimpleWSClient.OnMessage += (message) => Disp.Invoke(() => OnWSMessage(message));
-			SimpleWSClient.OnClose += (response) => Disp.Invoke(() => OnWSClose(response));
+			SimpleWSClient.OnOpen += OnWSOpen;
+			SimpleWSClient.OnMessage += OnWSMessage;
+			SimpleWSClient.OnClose += OnWSClose;
 		}
 
 		private static async void StartWebSocket()
@@ -131,6 +169,7 @@ namespace PulsoidToOSC
 
 			_lastWSMessageTime = DateTime.MinValue;
 			_heartRateDataTimeoutRunning = true;
+			_heartRateDataTimeoutCts = new();
 
 			while (SimpleWSClient.ClientState == WebSocketState.Open)
 			{
@@ -142,7 +181,11 @@ namespace PulsoidToOSC
 					MainViewModel.SetWarning("Waiting for heart rate...");
 				}
 
-				await Task.Delay(100);
+				try
+				{
+					await Task.Delay(100, _heartRateDataTimeoutCts.Token);
+			}
+				catch { }
 			}
 
 			_heartRateDataTimeoutRunning = false;
@@ -163,31 +206,24 @@ namespace PulsoidToOSC
 
 		private static void OnWSClose(SimpleWSClient.Response response)
 		{
-			_ = StopPulsoidToOSC();
 
 			if (response.HttpStatusCode == 400 || response.HttpStatusCode == 401 || response.HttpStatusCode == 403) //Invalid token
 			{
-				PulsoidApi.TokenValidity = PulsoidApi.TokenValidities.Invalid;
+				_ = StopPulsoidToOSC();
+
+				PulsoidApi.TokenValidity = PulsoidApi.TokenValidityStatus.Invalid;
 
 				MainViewModel.SetError("Invalid Pulsoid token!\nIn options setup valid token.");
 			}
-			else if (response.WebSocketCloseStatusCode > 1000 && (_appSate == AppSates.Stopping || _appSate == AppSates.Stopped) && SimpleWSClient.ClientState != WebSocketState.Open && SimpleWSClient.ClientState != WebSocketState.Connecting) //Connection lost
+			else if (response.WebSocketCloseStatusCode > 1000 && SimpleWSClient.ClientState != WebSocketState.Open && SimpleWSClient.ClientState != WebSocketState.Connecting) //Connection lost
 			{
 				MainViewModel.SetError("Error: Connection to Pulsoid!");
 
-				if (_failedWSConnectionAttempts <= 20 && PulsoidApi.TokenValidity != PulsoidApi.TokenValidities.Invalid)
+				_awaitWSConnectionLost.TrySetResult(true);
+			}
+			else
 				{
-					MainViewModel.SetError($"Error: Connection to Pulsoid!\nRetrying connection... ({_failedWSConnectionAttempts + 1})");
-
-					_delayedStartTaskCts = new();
-					Task.Run(async () =>
-					{
-						await Task.Delay(_failedWSConnectionAttempts == 0 ? 0 : 5000, _delayedStartTaskCts.Token);
-						if (_appSate == AppSates.Stopped) Disp.Invoke(() => StartPulsoidToOSC(true));
-					}, _delayedStartTaskCts.Token);
-
-					_failedWSConnectionAttempts++;
-				}
+				_ = StopPulsoidToOSC();
 			}
 		}
 
