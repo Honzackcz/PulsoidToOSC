@@ -27,14 +27,14 @@ namespace PulsoidToOSC
 		{
 			ConfigData.LoadConfig();
 
-			if (!MyRegex.GUID().IsMatch(ConfigData.PulsoidToken)) PulsoidApi.TokenValidity = PulsoidApi.TokenValidities.Invalid;
+			if (!MyRegex.GUID().IsMatch(ConfigData.PulsoidToken)) PulsoidApi.TokenValidity = PulsoidApi.TokenValidityStatus.Invalid;
 
 			MainViewModel.OpenMainWindow();
 
 			SetupOSC();
 			SetupWebSocketEvents();
 
-			if (ConfigData.AutoStart && PulsoidApi.TokenValidity != PulsoidApi.TokenValidities.Invalid)
+			if (ConfigData.AutoStart && PulsoidApi.TokenValidity != PulsoidApi.TokenValidityStatus.Invalid)
 			{
 				MainViewModel.SetWarning("Auto start...");
 
@@ -64,7 +64,7 @@ namespace PulsoidToOSC
 
 			if (_appSate != AppSates.Stopped) return;
 
-			if (PulsoidApi.TokenValidity == PulsoidApi.TokenValidities.Invalid)
+				if (PulsoidApi.TokenValidity == PulsoidApi.TokenValidityStatus.Invalid)
 			{
 				MainViewModel.SetError("Invalid Pulsoid token!\nIn options setup valid token.");
 				return;
@@ -122,7 +122,7 @@ namespace PulsoidToOSC
 
 		private static async void StartWebSocket()
 		{
-			await SimpleWSClient.OpenConnectionAsync(PulsoidApi.PulsoidWSURL + ConfigData.PulsoidToken);
+			await SimpleWSClient.OpenConnectionAsync(PulsoidApi.PulsoidWsUri + ConfigData.PulsoidToken);
 		}
 
 		private static async void HeartRateDataTimeout()
@@ -153,7 +153,7 @@ namespace PulsoidToOSC
 			_appSate = AppSates.Running;
 			MainViewModel.StartButton = MainViewModel.StartButtonType.Stop;
 
-			PulsoidApi.TokenValidity = PulsoidApi.TokenValidities.Valid;
+			PulsoidApi.TokenValidity = PulsoidApi.TokenValidityStatus.Valid;
 			_failedWSConnectionAttempts = 0;
 
 			MainViewModel.SetWarning("Waiting for heart rate...");
@@ -196,25 +196,12 @@ namespace PulsoidToOSC
 			_lastWSMessageTime = DateTime.UtcNow;
 			_wsMessageTimeout = false;
 
-			long measuredAt = 0L;
-			int heartRate = 0;
-
-			PulsoidApi.Json.WSMessage? messageJson = JsonSerializer.Deserialize<PulsoidApi.Json.WSMessage>(message);
-
-			if (messageJson != null)
-			{
-				measuredAt = messageJson.MeasuredAt ?? 0L;
-
-				if (messageJson.Data != null)
-				{
-					heartRate = messageJson.Data.HeartRate ?? 0;
-				}
-			}
+			bool hrSucceed = PulsoidApi.ProcessWSMessage(message, out long measuredAt, out int heartRate);
 
 			HeartRate.Send(heartRate);
 
-			if (HeartRate.HRValue > 0) MainViewModel.SetRunning($"BPM: {HeartRate.HRValue}", measuredAt > 0 ? "Measured at: " + DateTimeOffset.FromUnixTimeMilliseconds(measuredAt).LocalDateTime.ToLongTimeString() : string.Empty);
-			else MainViewModel.SetError("Error at obtaing heart rate data!");
+			if (HeartRate.HRValue > 0 && hrSucceed) MainViewModel.SetRunning($"BPM: {HeartRate.HRValue}", measuredAt > 0 ? "Measured at: " + DateTimeOffset.FromUnixTimeMilliseconds(measuredAt).LocalDateTime.ToLongTimeString() : string.Empty);
+			else MainViewModel.SetError("Error at obtaining heart rate data!");
 		}
 	}
 }

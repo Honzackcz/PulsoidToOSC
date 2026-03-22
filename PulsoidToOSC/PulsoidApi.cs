@@ -1,15 +1,10 @@
 ﻿using System.Diagnostics;
-using System.Net.Http.Headers;
-using System.Net.Http;
-using System.Text;
 using System.Net;
-using System.Text.Json.Serialization;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
-using System.Collections.Specialized;
-using System.Web;
-using System.Net.Sockets;
-using System.IO;
-using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace PulsoidToOSC
 {
@@ -30,7 +25,8 @@ namespace PulsoidToOSC
 				[JsonPropertyName("heart_rate")]
 				public int? HeartRate { get; set; }
 			}
-			public class ValidateResponse
+
+			public class ValidateTokenResponse
 			{
 				[JsonPropertyName("client_id")]
 				public string? ClientId { get; set; }
@@ -44,95 +40,218 @@ namespace PulsoidToOSC
 				[JsonPropertyName("scopes")]
 				public List<string>? Scopes { get; set; }
 			}
+
+			public class DeviceAuthorizationFlow
+			{
+				public class InitialResponse
+				{
+					[JsonPropertyName("device_code")]
+					public string? DeviceCode { get; set; }
+
+					[JsonPropertyName("user_code")]
+					public string? UserCode { get; set; }
+
+					[JsonPropertyName("verification_uri")]
+					public string? VerificationUri { get; set; }
+
+					[JsonPropertyName("verification_uri_complete")]
+					public string? VerificationUriComplete { get; set; }
+
+					[JsonPropertyName("expires_in")]
+					public int ExpiresIn { get; set; }
+
+					[JsonPropertyName("interval")]
+					public int Interval { get; set; }
+				}
+				public class TokenOKResponse
+				{
+					[JsonPropertyName("access_token")]
+					public string? AccessToken { get; set; }
+
+					[JsonPropertyName("expires_in")]
+					public int ExpiresIn { get; set; }
+
+					[JsonPropertyName("token_type")]
+					public string? TokenType { get; set; }
+				}
+				public class TokenErrorResponse
+				{
+					[JsonPropertyName("error")]
+					public string? Error { get; set; }
+
+					[JsonPropertyName("error_description")]
+					public string? ErrorDescription { get; set; }
+				}
+			}
 		}
 
-		public enum TokenValidities { Invalid, Unknown, Valid };
-		public static TokenValidities TokenValidity { get; set; } = TokenValidities.Unknown;
-		public const string PulsoidWSURL = "wss://dev.pulsoid.net/api/v1/data/real_time?access_token=";
-		private const string ClientID = "ZTQ5ZDVhMGMtZWM0My00MDUzLTgyYTgtMmM1YzkxMzE5ZTNh";
-		private static readonly int[] HttpPorts = [54269, 60422, 63671];
-		private static HttpListener? _listenerHttpServer;
-		private static bool _httpServerIsRunning = false;
-		private static string _httpServerUri = string.Empty;
+		public static bool ProcessWSMessage(string message, out long measuredAt, out int heartRate)
+		{
+			measuredAt = 0L;
+			heartRate = 0;
 
+			try
+			{
+				Json.WSMessage? messageJson = JsonSerializer.Deserialize<Json.WSMessage>(message);
+				if (messageJson != null)
+				{
+					measuredAt = messageJson.MeasuredAt ?? 0L;
+					if (messageJson.Data != null)
+					{
+						heartRate = messageJson.Data.HeartRate ?? 0;
+					}
+				}
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		public enum TokenValidityStatus { Invalid, Unknown, Valid };
+		public static TokenValidityStatus TokenValidity { get; set; } = TokenValidityStatus.Unknown;
+		public const string PulsoidWsUri = "wss://dev.pulsoid.net/api/v1/data/real_time?access_token=";
+		private const string PublicClientID = "ZTQ5ZDVhMGMtZWM0My00MDUzLTgyYTgtMmM1YzkxMzE5ZTNh";
 
 		public static void SetPulsoidToken(string? token, bool saveConfig = true)
 		{
 			if (token != null && token != ConfigData.PulsoidToken && MyRegex.GUID().IsMatch(token))
 			{
 				ConfigData.PulsoidToken = token;
-				TokenValidity = TokenValidities.Unknown;
+				TokenValidity = TokenValidityStatus.Unknown;
 				if (saveConfig) ConfigData.SaveConfig();
 			}
 		}
 
-		private static string PulsoidAuthorizeUrl(string redirectUri = "")
+		public static async Task GetPulsoidToken_DeviceAuthorizationFlow()
 		{
-			bool responseModeWebPage = redirectUri == string.Empty;
-			string baseUrl = "https://pulsoid.net/oauth2/authorize";
-			string client_id = Encoding.UTF8.GetString(Convert.FromBase64String(ClientID));
-			string redirect_uri = redirectUri;
-			string response_type = "token";
-			string scope = "data:heart_rate:read";
-			string state = Guid.NewGuid().ToString();
-			string response_mode = "web_page";
+			Json.DeviceAuthorizationFlow.InitialResponse? initialResponse = await InitiateDeviceAuthorizationSession();
 
-			string completeGetRequest =
-				baseUrl
-				+ "?client_id="		+ client_id
-				+ "&redirect_uri="	+ (responseModeWebPage ? string.Empty : redirect_uri)
-				+ "&response_type="	+ response_type
-				+ "&scope="			+ scope
-				+ "&state="			+ state
-				+ (responseModeWebPage ? "&response_mode=" + response_mode : string.Empty)
-			;
+			bool invalidVerificationUri = initialResponse == null || string.IsNullOrEmpty(initialResponse.VerificationUriComplete);
 
-			return completeGetRequest;
-		}
-
-		public static void GetPulsoidToken()
-		{
-			string redirectUri = string.Empty;
-
-			if (_httpServerIsRunning)
+			Process.Start(new ProcessStartInfo
 			{
-				redirectUri = _httpServerUri;
-			}
-			else
+				FileName = invalidVerificationUri ? GetManualAuthorizationUri() : initialResponse?.VerificationUriComplete,
+				UseShellExecute = true
+			});
+
+			if (invalidVerificationUri) return;
+
+			TokenValidity = TokenValidityStatus.Unknown;
+			MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenValidity = TokenValidity;
+
+			DateTime expireTime = DateTime.UtcNow.AddSeconds(initialResponse?.ExpiresIn ?? 0);
+			const string pollingUri = "https://pulsoid.net/oauth2/token";
+			using HttpClient httpClient = new();
+			FormUrlEncodedContent formData = new(
+			[
+				new KeyValuePair<string, string>("grant_type", "urn:ietf:params:oauth:grant-type:device_code"),
+				new KeyValuePair<string, string>("device_code", initialResponse?.DeviceCode ?? ""),
+				new KeyValuePair<string, string>("client_id", Encoding.UTF8.GetString(Convert.FromBase64String(PublicClientID)))
+			]);
+
+			while (true)
 			{
-				foreach (int port in HttpPorts)
+				await Task.Delay(1000 * (initialResponse?.Interval ?? 3));
+				if (DateTime.UtcNow > expireTime) break;
+
+				HttpResponseMessage? httpResponse;
+
+				try
 				{
-					if (IsPortAvailable(port))
+					httpResponse = await httpClient.PostAsync(pollingUri, formData);
+				}
+				catch
+				{
+					continue;
+				}
+
+				if (httpResponse == null) continue;
+				string httpResponseBody = await httpResponse.Content.ReadAsStringAsync();
+
+				if (httpResponse.StatusCode == HttpStatusCode.OK)
+				{
+					try
 					{
-						redirectUri = $"http://localhost:{port}/pulsoidtokenredirect/";
-
-						StartGETServer(redirectUri);
-
-						break;
+						Json.DeviceAuthorizationFlow.TokenOKResponse? tokenOKResponse = JsonSerializer.Deserialize<Json.DeviceAuthorizationFlow.TokenOKResponse>(httpResponseBody);
+						if (tokenOKResponse == null) break;
+						if (MyRegex.GUID().IsMatch(tokenOKResponse.AccessToken ?? "") && tokenOKResponse.ExpiresIn > 0)
+						{
+							SetPulsoidToken(tokenOKResponse.AccessToken);
+							MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenText = ConfigData.PulsoidToken;
+							MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenValidity = TokenValidity;
+						}
+					}
+					catch
+					{
+						
+					}
+					break;
+				}
+				else if (httpResponse.StatusCode == HttpStatusCode.BadRequest)
+				{
+					try
+					{
+						Json.DeviceAuthorizationFlow.TokenErrorResponse? tokenErrorResponse = JsonSerializer.Deserialize<Json.DeviceAuthorizationFlow.TokenErrorResponse>(httpResponseBody);
+						if (tokenErrorResponse?.Error != "authorization_pending")
+						{
+							break;
+						}
+					}
+					catch
+					{
+						continue;
 					}
 				}
 			}
 
-			Process.Start(new ProcessStartInfo
+			await ValidateToken();
+			MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenValidity = TokenValidity;
+		}
+
+		private static async Task<Json.DeviceAuthorizationFlow.InitialResponse?> InitiateDeviceAuthorizationSession()
+		{
+			const string initiateUri = "https://pulsoid.net/oauth2/device_authorization";
+			using HttpClient httpClient = new();
+			FormUrlEncodedContent formData = new(
+			[
+				new KeyValuePair<string, string>("client_id", Encoding.UTF8.GetString(Convert.FromBase64String(PublicClientID))),
+				new KeyValuePair<string, string>("scope", "data:heart_rate:read")
+			]);
+
+			try
 			{
-				FileName = PulsoidAuthorizeUrl(redirectUri),
-				UseShellExecute = true
-			});
+				HttpResponseMessage httpResponse = await httpClient.PostAsync(initiateUri, formData);
+				httpResponse.EnsureSuccessStatusCode();
+				string responseBody = await httpResponse.Content.ReadAsStringAsync();
+				return JsonSerializer.Deserialize<Json.DeviceAuthorizationFlow.InitialResponse>(responseBody);
+			}
+			catch
+			{
+				return null;
+			}
 		}
 
 		public static async Task ValidateToken()
 		{
 			if (!MyRegex.GUID().IsMatch(ConfigData.PulsoidToken))
 			{
-				TokenValidity = TokenValidities.Invalid;
+				TokenValidity = TokenValidityStatus.Invalid;
 				return;
 			}
 
+			using HttpClient httpClient = new();
+			httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ConfigData.PulsoidToken);
+			httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
 			try
 			{
-				string result = await ValidateTokenAsync(ConfigData.PulsoidToken);
-				
-				Json.ValidateResponse? resultJson = JsonSerializer.Deserialize<Json.ValidateResponse>(result);
+				HttpResponseMessage httpResponse = await httpClient.GetAsync("https://dev.pulsoid.net/api/v1/token/validate");
+				httpResponse.EnsureSuccessStatusCode();
+				string resultBody = await httpResponse.Content.ReadAsStringAsync();
+
+				Json.ValidateTokenResponse? resultJson = JsonSerializer.Deserialize<Json.ValidateTokenResponse>(resultBody);
 
 				if (resultJson == null) return;
 				string client_id = resultJson.ClientId ?? string.Empty;
@@ -140,167 +259,37 @@ namespace PulsoidToOSC
 				string profile_id = resultJson.ProfileId ?? string.Empty;
 				List<string> scopes = resultJson.Scopes ?? [];
 
-				if (scopes.Contains("data:heart_rate:read") && expires_in > 0) TokenValidity = TokenValidities.Valid;
-				else TokenValidity = TokenValidities.Invalid;
+				if (scopes.Contains("data:heart_rate:read") && expires_in > 0) TokenValidity = TokenValidityStatus.Valid;
+				else TokenValidity = TokenValidityStatus.Invalid;
 			}
 			catch (Exception ex)
 			{
-				if (ex.Message.Contains(" 401 ")) TokenValidity = TokenValidities.Invalid;
-				else TokenValidity = TokenValidities.Unknown;
+				if (ex.Message.Contains(" 401 ")) TokenValidity = TokenValidityStatus.Invalid;
+				else TokenValidity = TokenValidityStatus.Unknown;
 			}
 		}
 
-		private static async Task<string> ValidateTokenAsync(string token)
+		private static string GetManualAuthorizationUri()
 		{
-			using HttpClient client = new();
-			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+			string baseUri = "https://pulsoid.net/oauth2/authorize";
+			string client_id = Encoding.UTF8.GetString(Convert.FromBase64String(PublicClientID));
+			string redirect_uri = "http://localhost:54269/pulsoidtokenredirect/";
+			string response_type = "token";
+			string scope = "data:heart_rate:read";
+			string state = Guid.NewGuid().ToString();
+			string response_mode = "web_page";
 
-			HttpResponseMessage response = await client.GetAsync("https://dev.pulsoid.net/api/v1/token/validate");
-			response.EnsureSuccessStatusCode();
+			string completeGetRequest =
+				baseUri
+				+ "?client_id=" + client_id
+				+ "&redirect_uri=" +  redirect_uri
+				+ "&response_type=" + response_type
+				+ "&scope=" + scope
+				+ "&state=" + state
+				+ "&response_mode=" + response_mode
+			;
 
-			return await response.Content.ReadAsStringAsync();
-		}
-
-		private static void StartGETServer(string redirectUri)
-		{
-			if (!_httpServerIsRunning && redirectUri != string.Empty)
-			{
-				_httpServerIsRunning = true;
-				_httpServerUri = redirectUri;
-				Task.Run(async () =>
-				{
-					await StartHTTPServer(redirectUri);
-				});
-			}
-		}
-
-		public static void StopGETServer()
-		{
-			_httpServerIsRunning = false;
-			_httpServerUri = string.Empty;
-			_listenerHttpServer?.Stop();
-			_listenerHttpServer?.Close();
-			_listenerHttpServer = null;
-		}
-
-		private static async Task StartHTTPServer(string redirectUri)
-		{
-			_listenerHttpServer = new HttpListener();
-			_listenerHttpServer.Prefixes.Add(redirectUri);
-			_listenerHttpServer.Start();
-
-			while (_httpServerIsRunning)
-			{
-				ProcessHTTPRequest(await _listenerHttpServer.GetContextAsync());
-			}
-		}
-
-		private static void ProcessHTTPRequest(HttpListenerContext context)
-		{
-			bool tokenReceived = false;
-			string responseString = HttpResponse.Get(HttpResponse.Responses.Error);
-			
-			if (context.Request.Url != null && context.Request.Url.ToString().Contains("/pulsoidtokenredirect/?"))
-			{
-				string queryString = context.Request.Url.Query;
-				if (queryString.StartsWith('?')) queryString = queryString[1..];
-				NameValueCollection queryParameters = HttpUtility.ParseQueryString(queryString);
-
-				string token = queryParameters["token"] ?? string.Empty;
-				string accessToken = queryParameters["access_token"] ?? string.Empty;
-				if (!Int32.TryParse(queryParameters["expires_in"], out int expiresIn)) expiresIn = 0;
-				string scope = queryParameters["scope"] ?? string.Empty;
-				string state = queryParameters["state"] ?? string.Empty;
-
-				if (MyRegex.GUID().IsMatch(accessToken) && scope.Contains("data:heart_rate:read") && expiresIn > 0)
-				{
-					SetPulsoidToken(accessToken);
-					MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenText = ConfigData.PulsoidToken;
-					MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenValidity = TokenValidity;
-
-					Task.Run(async () =>
-					{
-						await ValidateToken();
-						MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenValidity = TokenValidity;
-					});
-
-					tokenReceived = true;
-					responseString = HttpResponse.Get(HttpResponse.Responses.TokenObtained);
-				}
-			}
-			else if (context.Request.Url != null && context.Request.Url.ToString().Contains("/pulsoidtokenredirect/"))
-			{
-				responseString = HttpResponse.Get(HttpResponse.Responses.Redirect);
-			}
-
-			HttpListenerResponse response = context.Response;
-			byte[] buffer = Encoding.UTF8.GetBytes(responseString);
-
-			response.ContentLength64 = buffer.Length;
-			Stream output = response.OutputStream;
-			output.Write(buffer, 0, buffer.Length);
-			output.Close();
-
-			if (tokenReceived) StopGETServer();
-		}
-
-		public static bool IsPortAvailable(int port)
-		{
-			bool isAvailable = true;
-			TcpListener? tcpListener = null;
-
-			try
-			{
-				tcpListener = new TcpListener(IPAddress.Loopback, port);
-				tcpListener.Start();
-			}
-			catch (SocketException)
-			{
-				isAvailable = false;
-			}
-			finally
-			{
-				tcpListener?.Stop();
-			}
-
-			return isAvailable;
-		}
-
-		private static class HttpResponse
-		{
-			private static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
-			private static readonly string ResourceRoot = "PulsoidToOSC.PulsoidHttpResponses";
-			private static readonly Dictionary<Responses, string> ResourceNames = new()
-			{
-				{Responses.Error, "Error.html" },
-				{Responses.Redirect, "Redirect.html" },
-				{Responses.TokenObtained, "TokenObtained.html" }
-			};
-
-			public enum Responses { Error, Redirect, TokenObtained}
-
-			public static string Get(Responses response)
-			{
-				return ReadResource($"{ResourceRoot}.{ResourceNames[response]}");
-			}
-
-			private static string ReadResource(string resourceName)
-			{
-				string result = string.Empty;
-
-				using (Stream? stream = Assembly.GetManifestResourceStream(resourceName))
-				{
-					if (stream == null) return string.Empty;
-
-					using (StreamReader reader = new(stream))
-					{
-						result = reader.ReadToEnd();
-					}
-				}
-
-				return result;
-			}
+			return completeGetRequest;
 		}
 	}
 }

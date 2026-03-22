@@ -39,7 +39,7 @@ namespace PulsoidToOSC
 			// General
 			OptionsGeneralViewModel.TokenText = ConfigData.PulsoidToken;
 			OptionsGeneralViewModel.TokenValidity = PulsoidApi.TokenValidity;
-			if (PulsoidApi.TokenValidity == PulsoidApi.TokenValidities.Unknown)
+			if (PulsoidApi.TokenValidity == PulsoidApi.TokenValidityStatus.Unknown)
 			{
 				Task.Run(async () =>
 				{
@@ -119,8 +119,6 @@ namespace PulsoidToOSC
 
 		public void OptionsWindowClosing(object? sender, CancelEventArgs e)
 		{
-			PulsoidApi.StopGETServer();
-
 			if (RestartToApplyOptions)
 			{
 				RestartToApplyOptions = false;

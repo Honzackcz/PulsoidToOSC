@@ -9,7 +9,7 @@ namespace PulsoidToOSC
 
 		private string _tokenText = string.Empty;
 		private bool _autoStartCheckmark = false;
-		private PulsoidApi.TokenValidities? _tokenValidity = null;
+		private PulsoidApi.TokenValidityStatus? _tokenValidity = null;
 
 		public string TokenText
 		{
@@ -21,22 +21,22 @@ namespace PulsoidToOSC
 			get => MyRegex.TokenSymbolToHide().Replace(_tokenText, "●");
 		}
 
-		public PulsoidApi.TokenValidities? TokenValidity
+		public PulsoidApi.TokenValidityStatus? TokenValidity
 		{
 			get => _tokenValidity;
 			set { _tokenValidity = value; OnPropertyChanged(nameof(TokenValidationIndicator)); OnPropertyChanged(nameof(TokenValidationValid)); OnPropertyChanged(nameof(TokenValidationInvalid)); }
 		}
 		public bool TokenValidationIndicator
 		{
-			get => _tokenValidity == PulsoidApi.TokenValidities.Unknown;
+			get => _tokenValidity == PulsoidApi.TokenValidityStatus.Unknown;
 		}
 		public string TokenValidationValid
 		{
-			get => _tokenValidity == PulsoidApi.TokenValidities.Valid ? "Visible" : "Hidden";
+			get => _tokenValidity == PulsoidApi.TokenValidityStatus.Valid ? "Visible" : "Hidden";
 		}
 		public string TokenValidationInvalid
 		{
-			get => _tokenValidity == PulsoidApi.TokenValidities.Invalid ? "Visible" : "Hidden";
+			get => _tokenValidity == PulsoidApi.TokenValidityStatus.Invalid ? "Visible" : "Hidden";
 		}
 
 		public bool AutoStartCheckmark
@@ -58,7 +58,7 @@ namespace PulsoidToOSC
 
 		private void GetToken()
 		{
-			PulsoidApi.GetPulsoidToken();
+			_ = PulsoidApi.GetPulsoidToken_DeviceAuthorizationFlow();
 		}
 
 		private void SetToken() { SetToken(true, true); }
@@ -66,7 +66,7 @@ namespace PulsoidToOSC
 		{
 			(_optionsViewModel?.OptionsWindow?.FindName("SetTokenButton") as UIElement)?.Focus();
 
-			TokenValidity = PulsoidApi.TokenValidities.Unknown;
+			TokenValidity = PulsoidApi.TokenValidityStatus.Unknown;
 
 			if (TokenText != ConfigData.PulsoidToken)
 			{
