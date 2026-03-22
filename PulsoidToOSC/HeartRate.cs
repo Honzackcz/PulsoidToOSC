@@ -51,7 +51,7 @@ namespace PulsoidToOSC
 				}
 			}
 			
-			VRCOSC.SendHeartRates();
+			VRCOSC.SendHeartRates(); // Send VRC specific OSC messages
 
 			if (MainProgram.OSCSender == null || !ConfigData.OSCUseManualConfig) return;
 

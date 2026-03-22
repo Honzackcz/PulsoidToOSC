@@ -61,7 +61,7 @@ namespace PulsoidToOSC
 			}
 		}
 
-		public static void ClearVRCChatbox(UDPSender oscSender, bool tryAgainLater = true) // Not reliable due to VRC message rate limit - will retry after 2.5 sec cooldown
+		public static async void ClearVRCChatbox(UDPSender oscSender, bool tryAgainLater = true) // Not reliable due to VRC message rate limit - will retry after 2.5 sec cooldown
 		{
 			if (_lastVRCChatboxMessageTime.Equals(DateTime.MinValue)) return;
 
@@ -76,11 +76,8 @@ namespace PulsoidToOSC
 			{
 				TimeSpan delay = nextVRCChatboxMessageTime - DateTime.UtcNow;
 
-				Task.Run(async () =>
-				{
-					await Task.Delay(delay + TimeSpan.FromMilliseconds(500));
-					MainProgram.Disp.Invoke(() => ClearVRCChatbox(oscSender, false));
-				});
+				await Task.Delay(delay + TimeSpan.FromMilliseconds(500));
+				ClearVRCChatbox(oscSender, false);
 			}
 		}
 
