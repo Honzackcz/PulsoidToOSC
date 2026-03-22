@@ -5,7 +5,7 @@ namespace PulsoidToOSC
 {
 	internal static class MainProgram
 	{
-		public const string AppVersion = "v0.3.1";
+		public const string AppVersion = "v0.4.0";
 		public const string GitHubOwner = "Honzackcz";
 		public const string GitHubRepo = "PulsoidToOSC";
 
@@ -56,31 +56,31 @@ namespace PulsoidToOSC
 
 			while (true)
 			{
-			_delayedStartTaskCts.Cancel();
+				_delayedStartTaskCts.Cancel();
 
-			if (_appSate == AppSates.Running)
-			{
-				_ = StopPulsoidToOSC();
-				return;
-			}
+				if (_appSate == AppSates.Running)
+				{
+					_ = StopPulsoidToOSC();
+					return;
+				}
 
-			if (_appSate != AppSates.Stopped) return;
+				if (_appSate != AppSates.Stopped) return;
 
 				if (PulsoidApi.TokenValidity == PulsoidApi.TokenValidityStatus.Invalid)
-			{
-				MainViewModel.SetError("Invalid Pulsoid token!\nIn options setup valid token.");
-				return;
-			}
+				{
+					MainViewModel.SetError("Invalid Pulsoid token!\nIn options setup valid token.");
+					return;
+				}
 
-			_appSate = AppSates.Starting;
-			MainViewModel.StartButton = MainViewModel.StartButtonType.Disabled;
-			MainViewModel.SetWarning("Connecting to Pulsoid...");
-			HeartRate.Reset();
-			SetupOSC();
+				_appSate = AppSates.Starting;
+				MainViewModel.StartButton = MainViewModel.StartButtonType.Disabled;
+				MainViewModel.SetWarning("Connecting to Pulsoid...");
+				HeartRate.Reset();
+				SetupOSC();
 				VRCOSC.Query.SetupQuery();
 
 				_awaitWSConnectionLost = new();
-			StartWebSocket();
+				StartWebSocket();
 				bool retry = await _awaitWSConnectionLost.Task;
 
 				if (retry)
@@ -184,7 +184,7 @@ namespace PulsoidToOSC
 				try
 				{
 					await Task.Delay(100, _heartRateDataTimeoutCts.Token);
-			}
+				}
 				catch { }
 			}
 
@@ -222,7 +222,7 @@ namespace PulsoidToOSC
 				_awaitWSConnectionLost.TrySetResult(true);
 			}
 			else
-				{
+			{
 				_ = StopPulsoidToOSC();
 			}
 		}

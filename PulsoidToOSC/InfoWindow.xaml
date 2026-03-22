@@ -52,7 +52,7 @@
 				Margin="4"
 				HorizontalAlignment="Center"
 			>
-				Copyright © 2024 Honzackcz 
+				Copyright © 2026 Honzackcz 
 				<Hyperlink
 					Command="{Binding OpenGitHubLicenseCommand}"
 					ToolTip="https://github.com/Honzackcz/PulsoidToOSC/blob/master/LICENSE.txt"

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>False</UseWindowsForms>
@@ -13,11 +13,12 @@
     <PackageIcon>PulsoidToOSC-128.png</PackageIcon>
     <PackageProjectUrl>https://github.com/Honzackcz/PulsoidToOSC</PackageProjectUrl>
     <Title>PulsoidToOSC</Title>
-    <AssemblyVersion>0.3.1</AssemblyVersion>
-    <FileVersion>0.3.1</FileVersion>
-    <Version>0.3.1</Version>
-    <Copyright>Copyright (c) 2024 Honzackcz</Copyright>
+    <AssemblyVersion>0.4.0</AssemblyVersion>
+    <FileVersion>0.4.0</FileVersion>
+    <Version>0.4.0</Version>
+    <Copyright>Copyright (c) 2026 Honzackcz</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
