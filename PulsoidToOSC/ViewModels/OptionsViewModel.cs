@@ -119,6 +119,7 @@ namespace PulsoidToOSC
 
 		public void OptionsWindowClosing(object? sender, CancelEventArgs e)
 		{
+			_ = PulsoidApi.CancelGetPulsoidToken_DeviceAuthorizationFlow();
 			if (RestartToApplyOptions)
 			{
 				RestartToApplyOptions = false;

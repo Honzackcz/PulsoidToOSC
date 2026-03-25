@@ -113,6 +113,8 @@ namespace PulsoidToOSC
 		public static TokenValidityStatus TokenValidity { get; set; } = TokenValidityStatus.Unknown;
 		public const string PulsoidWsUri = "wss://dev.pulsoid.net/api/v1/data/real_time?access_token=";
 		private const string PublicClientID = "ZTQ5ZDVhMGMtZWM0My00MDUzLTgyYTgtMmM1YzkxMzE5ZTNh";
+		private static CancellationTokenSource GetPulsoidToken_Cts = new();
+		private static bool GetPulsoidToken_IsRunning = false;
 
 		public static void SetPulsoidToken(string? token, bool saveConfig = true)
 		{
@@ -124,9 +126,30 @@ namespace PulsoidToOSC
 			}
 		}
 
+		public static async Task CancelGetPulsoidToken_DeviceAuthorizationFlow()
+		{
+			await GetPulsoidToken_Cts.CancelAsync();
+			GetPulsoidToken_Cts = new();
+		}
+
 		public static async Task GetPulsoidToken_DeviceAuthorizationFlow()
 		{
-			Json.DeviceAuthorizationFlow.InitialResponse? initialResponse = await InitiateDeviceAuthorizationSession();
+			if (GetPulsoidToken_IsRunning) await CancelGetPulsoidToken_DeviceAuthorizationFlow();
+			GetPulsoidToken_IsRunning = true;
+
+			Json.DeviceAuthorizationFlow.InitialResponse? initialResponse = null;
+			try
+			{
+				initialResponse = await InitiateDeviceAuthorizationSession(GetPulsoidToken_Cts.Token);
+			}
+			catch (TaskCanceledException ex)
+			{
+				if (ex.CancellationToken.IsCancellationRequested)
+				{
+					GetPulsoidToken_IsRunning = false;
+					return;
+				}
+			}
 
 			bool invalidVerificationUri = initialResponse == null || string.IsNullOrEmpty(initialResponse.VerificationUriComplete);
 
@@ -153,14 +176,27 @@ namespace PulsoidToOSC
 
 			while (true)
 			{
-				await Task.Delay(1000 * (initialResponse?.Interval ?? 3));
+				try
+				{
+					await Task.Delay(1000 * (initialResponse?.Interval ?? 3), GetPulsoidToken_Cts.Token);
+				}
+				catch
+				{
+					 break;
+				}
+
 				if (DateTime.UtcNow > expireTime) break;
 
 				HttpResponseMessage? httpResponse;
-
+				
 				try
 				{
-					httpResponse = await httpClient.PostAsync(pollingUri, formData);
+					httpResponse = await httpClient.PostAsync(pollingUri, formData, GetPulsoidToken_Cts.Token);
+				}
+				catch (TaskCanceledException ex)
+				{
+					if (ex.CancellationToken.IsCancellationRequested) break;
+					continue;
 				}
 				catch
 				{
@@ -206,11 +242,12 @@ namespace PulsoidToOSC
 				}
 			}
 
+			GetPulsoidToken_IsRunning = false;
 			await ValidateToken();
 			MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenValidity = TokenValidity;
 		}
 
-		private static async Task<Json.DeviceAuthorizationFlow.InitialResponse?> InitiateDeviceAuthorizationSession()
+		private static async Task<Json.DeviceAuthorizationFlow.InitialResponse?> InitiateDeviceAuthorizationSession(CancellationToken cancellationToken)
 		{
 			const string initiateUri = "https://pulsoid.net/oauth2/device_authorization";
 			using HttpClient httpClient = new();
@@ -222,15 +259,16 @@ namespace PulsoidToOSC
 
 			try
 			{
-				HttpResponseMessage httpResponse = await httpClient.PostAsync(initiateUri, formData);
+				HttpResponseMessage httpResponse = await httpClient.PostAsync(initiateUri, formData, cancellationToken);
 				httpResponse.EnsureSuccessStatusCode();
 				string responseBody = await httpResponse.Content.ReadAsStringAsync();
 				return JsonSerializer.Deserialize<Json.DeviceAuthorizationFlow.InitialResponse>(responseBody);
 			}
-			catch
+			catch (TaskCanceledException ex)
 			{
-				return null;
+				if (ex.CancellationToken.IsCancellationRequested) throw;
 			}
+			return null;
 		}
 
 		public static async Task ValidateToken()
