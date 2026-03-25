@@ -6,33 +6,40 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:PulsoidToOSC"
 	mc:Ignorable="d"
-	Title="PulsoidToOSC options" ResizeMode="CanResizeWithGrip" MinHeight="350" Height="350" MinWidth="560" Width="560"
-	xmlns:ui="http://schemas.modernwpf.com/2019" d:DataContext="{d:DesignInstance Type=local:OptionsViewModel}"
-	ui:ThemeManager.IsThemeAware="True"
-	ui:TitleBar.IsIconVisible="False"
-	ui:WindowHelper.UseModernWindowStyle="True">
-	
-	<Window.Resources>
-	</Window.Resources>
-	
-	<Grid>
+	Title="PulsoidToOSC options" ResizeMode="CanResizeWithGrip" MinHeight="360" Height="360" MinWidth="570" Width="570"
+    d:DataContext="{d:DesignInstance Type=local:OptionsViewModel}">
+
+    <Window.Resources>
+    </Window.Resources>
+
+    <Grid Background="{DynamicResource SmokeFillColorDefaultBrush}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
-		
-		<Grid Grid.Row="0">
-			<TabControl>
-				<TabItem Name="general" Header="General" DataContext="{Binding OptionsGeneralViewModel}">
-					<TabItem.Content>
-						<Grid Margin="12">
+
+        <Grid Grid.Row="0" Margin="8">
+            <TabControl Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">
+                <TabItem Name="general" DataContext="{Binding OptionsGeneralViewModel}" Margin="-1">
+                    <TabItem.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xE80F; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="General"/>
+                        </Grid>
+                    </TabItem.Header>
+                    <TabItem.Content>
+                        <Grid Margin="8">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
 							</Grid.RowDefinitions>
-
-							<Grid Grid.Row="0">
+                            
+                            <Grid Grid.Row="0">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="140"/>
 									<ColumnDefinition Width="*"/>
@@ -83,69 +90,88 @@
 										<KeyBinding Key="Enter" Command="{Binding SetTokenCommand}"/>
 									</TextBox.InputBindings>
 								</TextBox>
-								<TextBox
-									Grid.Column="1"
-									Margin="4"
-									x:Name="TokenHiddenBox"
-									Visibility="Visible"
-									GotFocus="GotFocusToken"
-									Text="{Binding TokenTextHidden, Mode=OneWay}"
-									ToolTip="Click to show token.&#x0a;&#x0a;Enter Pulsoid token, then submit it with the Set button."
-								/>
-								<ui:ProgressRing
-									Grid.Column="2"
-									IsActive="{Binding TokenValidationIndicator}"
-								/>
+								<Grid Grid.Column="1">
+									<Grid.RowDefinitions>
+										<RowDefinition Height="*"/>
+										<RowDefinition Height="Auto"/>
+									</Grid.RowDefinitions>
+									<TextBox
+										Grid.Row="1"
+										Margin="4"
+										x:Name="TokenHiddenBox"
+										Visibility="Visible"
+										GotFocus="GotFocusToken"
+										Text="{Binding TokenTextHidden, Mode=OneWay}"
+										ToolTip="Click to show token.&#x0a;&#x0a;Enter Pulsoid token, then submit it with the Set button."
+									/>
+									<ProgressBar
+										Grid.Row="2"
+										VerticalAlignment="Bottom"
+										IsIndeterminate="True"
+										Visibility="{Binding TokenValidationIndicator}"
+										Margin="6,0"
+									/>
+								</Grid>
 								<Label
 									Grid.Column="2"
+                                    Padding="0,2,0,0"
 									HorizontalAlignment="Center"
 									VerticalAlignment="Center"
 									Visibility="{Binding TokenValidationValid}"
 									Content="&#xE10B;"
-									FontFamily="Segoe MDL2 Assets"
-									FontSize="24"
+									FontFamily="{StaticResource SymbolThemeFontFamily}"
+									FontSize="30"
 									Foreground="Green"
 									ToolTip="Token is valid"
 								/>
 								<Label
 									Grid.Column="2"
+                                    Padding="0,2,0,0"
 									HorizontalAlignment="Center"
 									VerticalAlignment="Center"
 									Visibility="{Binding TokenValidationInvalid}"
 									Content="&#xE711;"
-									FontFamily="Segoe MDL2 Assets"
-									FontSize="24"
+									FontFamily="{StaticResource SymbolThemeFontFamily}"
+									FontSize="30"
 									Foreground="Red"
 									ToolTip="Token is invalid"
 								/>
 							</Grid>
 
-							<ui:ToggleSwitch
+							<CheckBox
 								Grid.Row="2"
 								Margin="4"
-								IsOn="{Binding AutoStartCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-								OnContent="Auto Start"
-								OffContent="Auto Start"
+								IsChecked="{Binding AutoStartCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+								Content="Auto Start"
 								ToolTip="When enabled, the connection to Pulsoid and OSC will start when the app is opened, saving you one click.&#x0a;&#x0a;It will NOT start the application with the system."
 							/>
-						</Grid>
-					</TabItem.Content>
+                        </Grid>
+                    </TabItem.Content>
 				</TabItem>
 
-				<TabItem Name="osc" Header="OSC" DataContext="{Binding OptionsOscViewModel}">
-					<TabItem.Content>
-						<Grid Margin="12">
+                <TabItem Name="osc" DataContext="{Binding OptionsOscViewModel}" Margin="-1">
+                    <TabItem.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xEDA3; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="OSC"/>
+                        </Grid>
+                    </TabItem.Header>
+                    <TabItem.Content>
+						<Grid Margin="8">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
 							</Grid.RowDefinitions>
 
-							<ui:ToggleSwitch
+							<CheckBox
 								Grid.Row="0"
 								Margin="4"
-								IsOn="{Binding OSCManualConfigCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-								OnContent="Send heart rate to manual OSC endpoint"
-								OffContent="Send heart rate to manual OSC endpoint"
+								IsChecked="{Binding OSCManualConfigCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+								Content="Send heart rate to manual OSC endpoint"
 								ToolTip="When enebled, heart rate parameters will be sent to the following OSC configuration."
 							/>
 							
@@ -249,9 +275,19 @@
 					</TabItem.Content>
 				</TabItem>
 
-				<TabItem Name="vrchat" Header="VRChat" DataContext="{Binding OptionsVRChatViewModel}">
-					<TabItem.Content>
-						<Grid Margin="12">
+                <TabItem Name="vrchat" DataContext="{Binding OptionsVRChatViewModel}" Margin="-1">
+                    <TabItem.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xE90A; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="VRChat"/>
+                        </Grid>
+                    </TabItem.Header>
+                    <TabItem.Content>
+						<Grid Margin="8">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
@@ -259,31 +295,28 @@
 								<RowDefinition Height="Auto"/>
 							</Grid.RowDefinitions>
 
-							<ui:ToggleSwitch
+							<CheckBox
 								Grid.Row="0"
 								Margin="4"
-								IsOn="{Binding VRCAutoConfigCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-								OnContent="Use VRC OSC Query auto configuration"
-								OffContent="Use VRC OSC Query auto configuration"
+								IsChecked="{Binding VRCAutoConfigCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+								Content="Use VRC OSC Query auto configuration"
 								ToolTip="When enabled, all data will be sent to VRChat clients running on localhost (the same PC where this app is running) automatically, independent of the OSC settings.&#x0a;&#x0a;If you want to use this app only for VRChat, you can disable sending data to the manual OSC endpoint."
 							/>
 
-							<ui:ToggleSwitch
+							<CheckBox
 								Grid.Row="1"
 								Margin="4"
 								IsEnabled="{Binding VRCAutoConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
-								IsOn="{Binding VRCClinetsOnLANCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-								OnContent="Send to all VRC Clients on LAN (requires auto config)"
-								OffContent="Send to all VRC Clients on LAN (requires auto config)"
+								IsChecked="{Binding VRCClinetsOnLANCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+								Content="Send to all VRC Clients on LAN (requires auto config)"
 								ToolTip="If you want to run this app on a different PC than VRChat but on the same LAN, you can enable this."
 							/>
 
-							<ui:ToggleSwitch
+							<CheckBox
 								Grid.Row="2"
 								Margin="4"
-								IsOn="{Binding VRCChatboxCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-								OnContent="Send heart rate to VRC chatbox"
-								OffContent="Send heart rate to VRC chatbox"
+								IsChecked="{Binding VRCChatboxCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+								Content="Send heart rate to VRC chatbox"
 								ToolTip="Messages are sent to all auto-configured VRChat clients and the manually defined OSC endpoint."
 							/>
 
@@ -298,27 +331,37 @@
 									VerticalAlignment="Center"
 									Text="VRChat chat box message:"
 								/>
-								<TextBox
+                                <TextBox
 									Grid.Row="1"
 									Margin="4"
 									Height="Auto"
 									IsEnabled="{Binding VRCChatboxCheckmark, UpdateSourceTrigger=PropertyChanged}"
-									Text="{Binding VRCChatboxMessageText, UpdateSourceTrigger=PropertyChanged}"
 									TextWrapping="Wrap"
+									Text="{Binding VRCChatboxMessageText, UpdateSourceTrigger=PropertyChanged}"
 									ToolTip="&lt;bpm&gt; will be replaced with the heart rate value. If the message doesn't contain &lt;bpm&gt;, the heart rate will be added at the end of the message.&#x0a;&#x0a;&lt;trend&gt; will be replaced with an arrow indicating trend of how much the heart rate is changing."
 								>
-								<TextBox.InputBindings>
-									<KeyBinding Key="Enter" Command="{Binding OptionsVRChatApplyCommand}"/>
-								</TextBox.InputBindings>
+                                    <TextBox.InputBindings>
+										<KeyBinding Key="Enter" Command="{Binding OptionsVRChatApplyCommand}"/>
+									</TextBox.InputBindings>
 								</TextBox>
 							</Grid>
 						</Grid>
 					</TabItem.Content>
 				</TabItem>
 
-				<TabItem Name="heartrate" Header="Heart rate" DataContext="{Binding OptionsHeartrateViewModel}">
-					<TabItem.Content>
-						<Grid Margin="12">
+                <TabItem Name="heartrate" DataContext="{Binding OptionsHeartrateViewModel}" Margin="-1">
+                    <TabItem.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xE95E; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Heart rate"/>
+                        </Grid>
+                    </TabItem.Header>
+                    <TabItem.Content>
+						<Grid Margin="8">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
@@ -464,15 +507,25 @@
 					</TabItem.Content>
 				</TabItem>
 
-				<TabItem Name="parameters" Header="Parameters" DataContext="{Binding OptionsParametersViewModel}">
-					<TabItem.Content>
-						<Grid Margin="12">
+                <TabItem Name="parameters" DataContext="{Binding OptionsParametersViewModel}" Margin="-1">
+                    <TabItem.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xF2C7; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Parameters"/>
+                        </Grid>
+                    </TabItem.Header>
+                    <TabItem.Content>
+						<Grid Margin="8">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="40"/>
 								<RowDefinition Height="*"/>
 							</Grid.RowDefinitions>
 							
-							<Grid Grid.Row="0" Margin="0, 0, 10, 0">
+							<Grid Grid.Row="0" Margin="0, 0, 6, 0">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="*"/>
 									<ColumnDefinition Width="Auto"/>
@@ -490,14 +543,14 @@
 									VerticalAlignment="Stretch"
 									Command="{Binding AddNewParameterCommand}"
 									Content="&#xE710;"
-									FontFamily="Segoe MDL2 Assets"
+									FontFamily="{StaticResource SymbolThemeFontFamily}"
 									ToolTip="Add new parameter"
 								/>
 							</Grid>
 
 							<ListView
 								Grid.Row="1"
-								Margin="-12, 0"
+								Margin="-14, 4, -8, -4"
 								HorizontalContentAlignment="Stretch"
 								ItemsSource="{Binding Parameters}"
 								ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -511,56 +564,26 @@
 											<Grid.ColumnDefinitions>
 												<ColumnDefinition Width="150"/>
 												<ColumnDefinition Width="*"/>
-												<ColumnDefinition Width="50"/>
+												<ColumnDefinition Width="Auto"/>
 											</Grid.ColumnDefinitions>
-											<ui:DropDownButton
+											<ComboBox
 												Grid.Column="0"
-												Margin="4"
+												Margin="0,0,4,0"
 												HorizontalAlignment="Stretch"
 												HorizontalContentAlignment="Left"
-												Content="{Binding TypeName, UpdateSourceTrigger=PropertyChanged}"
 												ToolTip="Select data type of the parameter"
+												ItemsSource="{Binding ParameterType_Items}"
+												SelectedItem="{Binding ParameterType_SelectedItem}"
 											>
-												<ui:DropDownButton.Flyout>
-													<ui:MenuFlyout Placement="BottomEdgeAlignedLeft">
-														<MenuItem
-															Command="{Binding SetItegerTypeCommand}"
-															Header="HR Integer"
-															ToolTip="Heart rate - Integer [0, 255]"
+												<ComboBox.ItemTemplate>
+													<DataTemplate>
+														<TextBlock
+															Text="{Binding ParameterType_ItemName}"
+															ToolTip="{Binding ParameterType_ItemToolTip}"
 														/>
-														<MenuItem
-															Command="{Binding SetFloatTypeCommand}"
-															Header="HR Float [-1, 1]"
-															ToolTip="Heart rate - Float ([0, 255] -> [-1, 1])"
-														/>
-														<MenuItem
-															Command="{Binding SetFloat01TypeCommand}"
-															Header="HR Float [0, 1]"
-															ToolTip="Heart rate - Float ([0, 255] -> [0, 1])"
-														/>
-														<MenuItem
-															Command="{Binding SetBoolToggleTypeCommand}"
-															Header="Bool Toggle"
-															ToolTip="Toggles with each OSC update"
-														/>
-														<MenuItem
-															Command="{Binding SetBoolActiveTypeCommand}"
-															Header="Bool Active"
-															ToolTip="True when app is working"
-														/>
-														<MenuItem
-															Command="{Binding SetTrendFTypeCommand}"
-															Header="Trend [-1, 1]"
-															ToolTip="Trend of heart rate change - Float [-1, 1]"
-														/>
-														<MenuItem
-															Command="{Binding SetTrendF01TypeCommand}"
-															Header="Trend [0, 1]"
-															ToolTip="Trend of heart rate change - Float [0, 1]"
-														/>
-													</ui:MenuFlyout>
-												</ui:DropDownButton.Flyout>
-											</ui:DropDownButton>
+													</DataTemplate>
+												</ComboBox.ItemTemplate>
+											</ComboBox>
 											<TextBox
 												Grid.Column="1"
 												Margin="4"
@@ -577,7 +600,7 @@
 												VerticalAlignment="Stretch"
 												Command="{Binding DeleteParameterCommand}"
 												Content="&#xE711;"
-												FontFamily="Segoe MDL2 Assets"
+												FontFamily="{StaticResource SymbolThemeFontFamily}"
 												ToolTip="Delete parameter"
 											/>
 										</Grid>
@@ -588,9 +611,19 @@
 					</TabItem.Content>
 				</TabItem>
 
-				<TabItem Name="ui" Header="UI" DataContext="{Binding OptionsUIViewModel}">
-					<TabItem.Content>
-						<Grid Margin="12">
+                <TabItem Name="ui" DataContext="{Binding OptionsUIViewModel}" Margin="-1">
+                    <TabItem.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xF0E2; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="UI"/>
+                        </Grid>
+                    </TabItem.Header>
+                    <TabItem.Content>
+						<Grid Margin="8">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
@@ -620,8 +653,9 @@
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="120"/>
 											<ColumnDefinition Width="150"/>
-											<ColumnDefinition Width="40"/>
-										</Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="40"/>
+                                        </Grid.ColumnDefinitions>
 										<TextBlock
 											Grid.Column="0"
 											Margin="4"
@@ -629,36 +663,42 @@
 											HorizontalAlignment="Right"
 											Text="Error color:"
 										/>
-										<TextBox
+                                        <TextBox
 											Grid.Column="1"
 											Margin="4"
 											Text="{Binding ColorErrorText, UpdateSourceTrigger=PropertyChanged}"
 											ToolTip="Error color hex code"
 										>
-											<TextBox.InputBindings>
-												<KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
-											</TextBox.InputBindings>
-										</TextBox>
-										<Grid
-											Grid.Column="2"
-											Margin="6"
-											Background="{Binding ColorErrorIndicator}"
-										>
-											<Button
-												Padding="13"
-												VerticalAlignment="Stretch"
-												HorizontalContentAlignment="Stretch"
-												Command="{Binding OpenColorPickerErrorCommand}"
-												Background="#00000000"
-											/>
-										</Grid>
-									</Grid>
+                                            <TextBox.InputBindings>
+                                                <KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
+                                            </TextBox.InputBindings>
+                                        </TextBox>
+                                        <Rectangle
+                                            Grid.Column="2"
+											Height="30" Width="30"
+											Fill="{Binding ColorErrorIndicator}"
+                                            RadiusX="4"
+                                            RadiusY="4"
+                                        />
+                                        <Button
+                                            Grid.Column="3"
+											Height="32" Width="32"
+                                            Margin="4"
+                                            Padding="0"
+											VerticalAlignment="Center"
+											HorizontalContentAlignment="Center"
+											Command="{Binding OpenColorPickerErrorCommand}"
+											Content="&#xEF3C;"
+											FontFamily="{StaticResource SymbolThemeFontFamily}"
+										/>
+                                    </Grid>
 									<Grid Grid.Row="1">
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="120"/>
 											<ColumnDefinition Width="150"/>
-											<ColumnDefinition Width="40"/>
-										</Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="40"/>
+                                        </Grid.ColumnDefinitions>
 										<TextBlock
 											Grid.Column="0"
 											Margin="4"
@@ -666,36 +706,42 @@
 											HorizontalAlignment="Right"
 											Text="Warning color:"
 										/>
-										<TextBox
+                                        <TextBox
 											Grid.Column="1"
 											Margin="4"
 											Text="{Binding ColorWarningText, UpdateSourceTrigger=PropertyChanged}"
 											ToolTip="Warning color hex code"
 										>
-											<TextBox.InputBindings>
-												<KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
-											</TextBox.InputBindings>
-										</TextBox>
-										<Grid 
-											Grid.Column="2"
-											Margin="6"
-											Background="{Binding ColorWarningIndicator}"
-										>
-											<Button
-												Padding="13"
-												VerticalAlignment="Stretch"
-												HorizontalContentAlignment="Stretch"
-												Command="{Binding OpenColorPickerWarningCommand}"
-												Background="#00000000"
-											/>
-										</Grid>
+                                            <TextBox.InputBindings>
+                                                <KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
+                                            </TextBox.InputBindings>
+                                        </TextBox>
+                                        <Rectangle
+                                            Grid.Column="2"
+											Height="30" Width="30"
+											Fill="{Binding ColorWarningIndicator}"
+                                            RadiusX="4"
+                                            RadiusY="4"
+                                        />
+                                        <Button
+                                            Grid.Column="3"
+											Height="32" Width="32"
+                                            Margin="4"
+                                            Padding="0"
+											VerticalAlignment="Center"
+											HorizontalContentAlignment="Center"
+											Command="{Binding OpenColorPickerWarningCommand}"
+											Content="&#xEF3C;"
+											FontFamily="{StaticResource SymbolThemeFontFamily}"
+										/>
 									</Grid>
 									<Grid Grid.Row="2">
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="120"/>
 											<ColumnDefinition Width="150"/>
 											<ColumnDefinition Width="40"/>
-										</Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                        </Grid.ColumnDefinitions>
 										<TextBlock
 											Grid.Column="0"
 											Margin="4"
@@ -713,20 +759,25 @@
 												<KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
 											</TextBox.InputBindings>
 										</TextBox>
-										<Grid
-											Grid.Column="2"
-											Margin="6"
-											Background="{Binding ColorRunningIndicator}"
-										>
-											<Button
-												Padding="13"
-												VerticalAlignment="Stretch"
-												HorizontalContentAlignment="Stretch"
-												Command="{Binding OpenColorPickerRunningCommand}"
-												Background="#00000000"
-											/>
-										</Grid>
-									</Grid>
+                                        <Rectangle
+                                            Grid.Column="2"
+											Height="30" Width="30"
+											Fill="{Binding ColorRunningIndicator}"
+                                            RadiusX="4"
+                                            RadiusY="4"
+                                        />
+                                        <Button
+                                            Grid.Column="3"
+											Height="32" Width="32"
+                                            Margin="4"
+                                            Padding="0"
+											VerticalAlignment="Center"
+											HorizontalContentAlignment="Center"
+											Command="{Binding OpenColorPickerRunningCommand}"
+											Content="&#xEF3C;"
+											FontFamily="{StaticResource SymbolThemeFontFamily}"
+										/>
+                                    </Grid>
 								</Grid>
 							</Grid>
 						</Grid>
@@ -738,7 +789,7 @@
 		<Grid Grid.Row="1">
 			<Grid Width="200">
 				<Button
-					Margin="0,0,0,12"
+					Margin="0,4,0,12"
 					HorizontalAlignment="Left"
 					Name="ApplyOptionsButton"
 					Command="{Binding OptionsApplyCommand}"
@@ -746,7 +797,7 @@
 					ToolTip="Apply and save changes"
 				/>
 				<Button
-					Margin="0,0,0,12"
+					Margin="0,4,0,12"
 					HorizontalAlignment="Right"
 					Command="{Binding OptionsDoneCommand}"
 					Content="Done"

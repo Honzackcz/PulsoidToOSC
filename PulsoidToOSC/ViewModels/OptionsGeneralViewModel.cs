@@ -26,9 +26,9 @@ namespace PulsoidToOSC
 			get => _tokenValidity;
 			set { _tokenValidity = value; OnPropertyChanged(nameof(TokenValidationIndicator)); OnPropertyChanged(nameof(TokenValidationValid)); OnPropertyChanged(nameof(TokenValidationInvalid)); }
 		}
-		public bool TokenValidationIndicator
+		public string TokenValidationIndicator
 		{
-			get => _tokenValidity == PulsoidApi.TokenValidityStatus.Unknown;
+			get => _tokenValidity == PulsoidApi.TokenValidityStatus.Unknown ? "Visible" : "Hidden";
 		}
 		public string TokenValidationValid
 		{

@@ -8,10 +8,7 @@
 	xmlns:local="clr-namespace:PulsoidToOSC"
 	mc:Ignorable="d"
 	Title="PulsoidToOSC color picker" ResizeMode="NoResize" Height="490" Width="300"
-	xmlns:ui="http://schemas.modernwpf.com/2019" d:DataContext="{d:DesignInstance Type=local:OptionsUIViewModel}"
-	ui:ThemeManager.IsThemeAware="True"
-	ui:TitleBar.IsIconVisible="False"
-	ui:WindowHelper.UseModernWindowStyle="True">
+    d:DataContext="{d:DesignInstance Type=local:OptionsUIViewModel}">
 
 	<Grid>
 		<Grid.RowDefinitions>

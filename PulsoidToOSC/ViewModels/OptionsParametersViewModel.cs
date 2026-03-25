@@ -22,6 +22,16 @@ namespace PulsoidToOSC
 				{OSCParameter.Types.Trend, "Trend [-1, 1]" },
 				{OSCParameter.Types.Trend01, "Trend [0, 1]" }
 			};
+			private static readonly Dictionary<OSCParameter.Types, string> ParameterTypeToolTips = new()
+			{
+				{OSCParameter.Types.Integer, "Heart rate - Integer [0, 255]" },
+				{OSCParameter.Types.Float, "Heart rate - Float ([0, 255] -> [-1, 1])" },
+				{OSCParameter.Types.Float01, "Heart rate - Float ([0, 255] -> [0, 1])" },
+				{OSCParameter.Types.BoolToggle, "Toggles with each OSC update" },
+				{OSCParameter.Types.BoolActive, "True when app is working" },
+				{OSCParameter.Types.Trend, "Trend of heart rate change - Float [-1, 1]" },
+				{OSCParameter.Types.Trend01, "Trend of heart rate change - Float [0, 1]" }
+			};
 
 			private OSCParameter.Types _type = OSCParameter.Types.Integer;
 			private string _name = string.Empty;
@@ -36,68 +46,56 @@ namespace PulsoidToOSC
 				get => ParameterTypeNames[_type];
 			}
 
+			public class ParameterType_Item
+			{
+				private OSCParameter.Types _itemType;
+				public OSCParameter.Types ParameterType_ItemType
+				{
+					get => _itemType;
+					set { _itemType = value; }
+				}
+				public string ParameterType_ItemName
+				{ 
+					get => ParameterTypeNames[_itemType];
+				}
+				public string ParameterType_ItemToolTip
+				{ 
+					get => ParameterTypeToolTips[_itemType];
+				}
+			}
+			public ObservableCollection<ParameterType_Item> ParameterType_Items { get; set; } =
+			[
+				new ParameterType_Item() { ParameterType_ItemType = (OSCParameter.Types)0 },
+				new ParameterType_Item() { ParameterType_ItemType = (OSCParameter.Types)1 },
+				new ParameterType_Item() { ParameterType_ItemType = (OSCParameter.Types)2 },
+				new ParameterType_Item() { ParameterType_ItemType = (OSCParameter.Types)3 },
+				new ParameterType_Item() { ParameterType_ItemType = (OSCParameter.Types)4 },
+				new ParameterType_Item() { ParameterType_ItemType = (OSCParameter.Types)5 },
+				new ParameterType_Item() { ParameterType_ItemType = (OSCParameter.Types)6 }
+			];
+			public ParameterType_Item ParameterType_SelectedItem
+			{ 
+				get => ParameterType_Items[((int)_type)];
+				set
+				{
+					_type = value.ParameterType_ItemType;
+					OnPropertyChanged();
+				}
+			}
+
 			public string Name
 			{
 				get => _name;
 				set { _name = value?.Replace("=", string.Empty).Replace(";", string.Empty) ?? string.Empty; OnPropertyChanged(); }
 			}
 
-			public ICommand SetItegerTypeCommand { get; }
-			public ICommand SetFloatTypeCommand { get; }
-			public ICommand SetFloat01TypeCommand { get; }
-			public ICommand SetBoolToggleTypeCommand { get; }
-			public ICommand SetBoolActiveTypeCommand { get; }
-			public ICommand SetTrendFTypeCommand { get; }
-			public ICommand SetTrendF01TypeCommand { get; }
 			public ICommand DeleteParameterCommand { get; }
 			public ICommand ApplyParameterCommand { get; }
 
 			public ParameterItem()
 			{
-				SetItegerTypeCommand = new RelayCommand(SetItegerType);
-				SetFloatTypeCommand = new RelayCommand(SetFloatType);
-				SetFloat01TypeCommand = new RelayCommand(SetFloat01Type);
-				SetBoolToggleTypeCommand = new RelayCommand(SetBoolToggleType);
-				SetBoolActiveTypeCommand = new RelayCommand(SetBoolActiveType);
-				SetTrendFTypeCommand = new RelayCommand(SetTrendFType);
-				SetTrendF01TypeCommand = new RelayCommand(SetTrendF01Type);
 				DeleteParameterCommand = new RelayCommand(DeleteParameter);
 				ApplyParameterCommand = new RelayCommand(ApplyParameter);
-			}
-
-			private void SetItegerType()
-			{
-				Type = OSCParameter.Types.Integer;
-			}
-
-			private void SetFloatType()
-			{
-				Type = OSCParameter.Types.Float;
-			}
-
-			private void SetFloat01Type()
-			{
-				Type = OSCParameter.Types.Float01;
-			}
-
-			private void SetBoolToggleType()
-			{
-				Type = OSCParameter.Types.BoolToggle;
-			}
-
-			private void SetBoolActiveType()
-			{
-				Type = OSCParameter.Types.BoolActive;
-			}
-
-			private void SetTrendFType()
-			{
-				Type = OSCParameter.Types.Trend;
-			}
-
-			private void SetTrendF01Type()
-			{
-				Type = OSCParameter.Types.Trend01;
 			}
 
 			private void DeleteParameter()

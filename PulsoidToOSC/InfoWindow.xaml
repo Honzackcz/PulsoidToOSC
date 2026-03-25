@@ -7,10 +7,7 @@
 	xmlns:local="clr-namespace:PulsoidToOSC"
 	mc:Ignorable="d"
 	Title="PulsoidToOSC info" ResizeMode="NoResize" Height="280" Width="400"
-	xmlns:ui="http://schemas.modernwpf.com/2019" d:DataContext="{d:DesignInstance Type=local:InfoViewModel}"
-	ui:ThemeManager.IsThemeAware="True"
-	ui:TitleBar.IsIconVisible="False"
-	ui:WindowHelper.UseModernWindowStyle="True">
+    d:DataContext="{d:DesignInstance Type=local:InfoViewModel}">
 
 	<Window.Resources>
 	</Window.Resources>

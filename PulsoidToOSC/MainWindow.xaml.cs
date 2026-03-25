@@ -1,7 +1,9 @@
-﻿using System.Windows;
-using System.Windows.Interop;
-using System.IO;
+﻿using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Interop;
 
 namespace PulsoidToOSC
 {
@@ -36,46 +38,83 @@ namespace PulsoidToOSC
 			return IntPtr.Zero;
 		}
 
+		private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			DragMove();
+		}
+
+		private void Minimize_Click(object sender, RoutedEventArgs e)
+		{
+			WindowState = WindowState.Minimized;
+		}
+
+		private void Close_Click(object sender, RoutedEventArgs e)
+		{
+			Close();
+		}
+
+		[DllImport("dwmapi.dll")]
+		private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+		const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
+		const int DWMWCP_ROUND = 2;
+
+		protected override void OnSourceInitialized(EventArgs e)
+		{
+			base.OnSourceInitialized(e);
+			
+			var hwnd = new WindowInteropHelper(this).Handle;
+			int preference = DWMWCP_ROUND;
+
+			_ = DwmSetWindowAttribute(
+				hwnd,
+				DWMWA_WINDOW_CORNER_PREFERENCE,
+				ref preference,
+				sizeof(int));
+
+			LoadWindowSettings();
+		}
+
+		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+		{
+			SaveWindowSettings();
+
+			base.OnClosing(e);
+		}
+
 		// Window Position Saving
-		const int LayoutCountToRemember = 5;
-		WindowSettings? settings;
-		static readonly string settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "WindowPositions.json");
+		private const int LayoutCountToRemember = 5;
+		private static WindowSettings? settings;
+		private static readonly string settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "WindowPositions.json");
 		private readonly JsonSerializerOptions JsonSerializerOptions = new()
 		{
 			WriteIndented = true
 		};
 
-		public class WindowSettings
+		private class WindowSettings
 		{
 			public Dictionary<string, WindowPosition> MonitorSetups { get; set; } = [];
 		}
 
-		public class WindowPosition
+		private class WindowPosition
 		{
 			public int Order { get; set; }
 			public double Left { get; set; }
 			public double Top { get; set; }
 		}
 
-		static string GetMonitorLayout()
+		private static string GetMonitorLayout()
 		{
 			return $"{SystemParameters.VirtualScreenWidth}x{SystemParameters.VirtualScreenHeight}@{SystemParameters.VirtualScreenLeft},{SystemParameters.VirtualScreenTop}";
 		}
 
-		void LoadSettings()
+		private void LoadWindowSettings()
 		{
 			if (File.Exists(settingsPath))
 			{
 				try { settings = JsonSerializer.Deserialize<WindowSettings>(File.ReadAllText(settingsPath)); } 
 				catch { settings = null; }
 			}
-		}
-
-		protected override void OnSourceInitialized(EventArgs e)
-		{
-			base.OnSourceInitialized(e);
-
-			LoadSettings();
 
 			string layout = GetMonitorLayout();
 
@@ -91,34 +130,26 @@ namespace PulsoidToOSC
 				Top = pos.Top;
 			}
 		}
-
-		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+		
+		private void SaveWindowSettings()
 		{
 			string layout = GetMonitorLayout();
-
 			settings ??= new WindowSettings();
 			settings.MonitorSetups.Remove(layout);
-
 			List<KeyValuePair<string, WindowPosition>> orderedItems = settings.MonitorSetups.OrderBy(x => x.Value.Order).Take(LayoutCountToRemember - 1).ToList();
-
 			int newOrder = 1;
 			foreach (KeyValuePair<string, WindowPosition> item in orderedItems )
 			{
 				item.Value.Order = newOrder++;
 			}
-
 			settings.MonitorSetups = orderedItems.ToDictionary();
-
 			settings.MonitorSetups.Add(layout, new WindowPosition
 			{
 				Order = 0,
 				Left = Left,
 				Top = Top
 			});
-
 			File.WriteAllText(settingsPath, JsonSerializer.Serialize(settings, JsonSerializerOptions));
-
-			base.OnClosing(e);
 		}
 	}
 }
