@@ -5,14 +5,14 @@ PulsoidToOSC is a simple, effective, and universal application that streams hear
 The main window is designed to be easily used in VR with applications like OVR Toolkit, allowing you to place it on your hand like a monitor.<br>
 Also includes easy-to-use VRChat integration with automated configuration through OSC query, letting you send heart rate data to your avatar or even to the chatbox with a customized message.
 
-Requires [.NET 9.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.14-windows-x64-installer)
+Requires [.NET 10.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-10.0.5-windows-x64-installer)
 
 ## Pulsoid Connection
 
 To connect this app to Pulsoid, you will need to obtain an authorization token:
 1. Click the "Get Pulsoid token" button - this will open the authorization page in your web browser.
 2. Log in and confirm authorization on the page.
-3. Token will be automatically entered in the app and you can close the page when it says so.
+3. Token will be automatically entered in the app and you can close the page.
 4. Green checkmark will indicate valid token.
 
 If the token is invalid, repeat the steps above.
@@ -129,7 +129,5 @@ Trend float minimal and maximal values affect sensitivity to how fast heart rate
 ## Used Libraries
 
 [SharpOSC](https://github.com/ValdemarOrn/SharpOSC) is a small library designed to make interacting with Open Sound Control easy (OSC).
-
-[ModernWPF](https://github.com/Kinnara/ModernWpf) - Modern styles and controls for your WPF applications.
 
 [net-mdns](https://github.com/richardschneider/net-mdns) - A simple Multicast Domain Name Service.
