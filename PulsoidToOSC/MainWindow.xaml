@@ -10,7 +10,7 @@
 	Title="PulsoidToOSC" ResizeMode="CanMinimize" Height="200" Width="400"
 	d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
 	WindowStyle="None"
-    Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}">
+	Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}">
 
 	<shell:WindowChrome.WindowChrome>
 		<shell:WindowChrome
@@ -24,8 +24,8 @@
 		<Style x:Key="TitleBarButton" TargetType="Button">
 			<Setter Property="Width" Value="48"/>
 			<Setter Property="Height" Value="32"/>
-            <Setter Property="Background" Value="{DynamicResource ControlAltFillColorTransparentBrush}"/>
-            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}"/>
+			<Setter Property="Background" Value="{DynamicResource ControlAltFillColorTransparentBrush}"/>
+			<Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}"/>
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="Template">
 				<Setter.Value>
@@ -34,18 +34,18 @@
 							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
 						</Border>
 						<ControlTemplate.Triggers>
-                            <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
-                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-                            </DataTrigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource ControlAltFillColorTertiaryBrush}"/>
-                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource ControlAltFillColorQuarternaryBrush}"/>
-                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
+							<DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+								<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+							</DataTrigger>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter Property="Background" Value="{DynamicResource ControlAltFillColorTertiaryBrush}"/>
+								<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+							</Trigger>
+							<Trigger Property="IsPressed" Value="True">
+								<Setter Property="Background" Value="{DynamicResource ControlAltFillColorQuarternaryBrush}"/>
+								<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
@@ -54,191 +54,209 @@
 		<Style x:Key="CloseButton" BasedOn="{StaticResource TitleBarButton}" TargetType="Button">
 			<Style.Triggers>
 				<Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#E81123"/>
-                    <Setter Property="Foreground" Value="#FFFFFF"/>
-                </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="#F1707A"/>
-                    <Setter Property="Foreground" Value="#FFFFFF"/>
-                </Trigger>
-            </Style.Triggers>
+					<Setter Property="Background" Value="#E81123"/>
+					<Setter Property="Foreground" Value="#FFFFFF"/>
+				</Trigger>
+				<Trigger Property="IsPressed" Value="True">
+					<Setter Property="Background" Value="#F1707A"/>
+					<Setter Property="Foreground" Value="#FFFFFF"/>
+				</Trigger>
+			</Style.Triggers>
 		</Style>
 
-        <Style x:Key="TitleText" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}"/>
+		<Style x:Key="TitleText" TargetType="TextBlock">
+			<Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}"/>
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+					<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
+
+        <Style x:Key="DynamicTextColorStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
-                    <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <DataTrigger Binding="{Binding TextColorType}" Value="Running">
+                    <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
                 </DataTrigger>
-            </Style.Triggers>
-        </Style>
+                <DataTrigger Binding="{Binding TextColorType}" Value="Warning">
+                    <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding TextColorType}" Value="Error">
+                    <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding TextColorType}" Value="Custom">
+					<Setter Property="Foreground" Value="{Binding TextColor}"/>
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
 	</Window.Resources>
 
-    <Grid>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="32"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid
+	<Grid>
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="32"/>
+				<RowDefinition/>
+			</Grid.RowDefinitions>
+
+			<!-- Custom title bar -->
+			<Grid
 				Grid.Row="0"
 				MouseDown="TitleBar_MouseDown"
 				shell:WindowChrome.IsHitTestVisibleInChrome="True"
 			>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				
+				<!-- Title text-->
+				<StackPanel Orientation="Horizontal">
+					<TextBlock
+						Style="{StaticResource TitleText}"
+						Text="PulsiodToOSC"
+						Margin="12,0,0,0"
+						VerticalAlignment="Center"
+						FontSize="12"
+					/>
+				</StackPanel>
 
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock
-							Style="{StaticResource TitleText}"
-							Text="PulsiodToOSC"
-							Margin="12,0,0,0"
-							VerticalAlignment="Center"
-							FontSize="12"
-						/>
-                </StackPanel>
+				<!-- Window buttons -->
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+					<Button 
+						Style="{StaticResource TitleBarButton}"
+						VerticalAlignment="Center"
+						Click="Minimize_Click"
+						Content="&#xE921;"
+						FontFamily="{StaticResource SymbolThemeFontFamily}"
+						FontSize="10"
+					/>
+					<Button
+						Style="{StaticResource CloseButton}"
+						VerticalAlignment="Center"
+						Click="Close_Click"
+						Content="&#xE8BB;"
+						FontFamily="{StaticResource SymbolThemeFontFamily}"
+						FontSize="10"
+					/>
+				</StackPanel>
+			</Grid>
+			
+			<!-- Window content-->
+			<Grid Grid.Row="1">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
 
-                <!-- Window buttons -->
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button 
-							Style="{StaticResource TitleBarButton}"
-							VerticalAlignment="Center"
-							Click="Minimize_Click"
-							Content="&#xE921;"
-							FontFamily="{StaticResource SymbolThemeFontFamily}"
-							FontSize="10"
-						/>
-                    <Button
-							Style="{StaticResource CloseButton}"
-							VerticalAlignment="Center"
-							Click="Close_Click"
-							Content="&#xE8BB;"
-							FontFamily="{StaticResource SymbolThemeFontFamily}"
-							FontSize="10"
-						/>
-                </StackPanel>
+				<Grid Grid.Row="0">
+					<Button
+						Margin="4"
+						HorizontalAlignment="Left"
+						Command="{Binding StartCommand}"
+						Content="{Binding StartButtonContent}"
+						IsEnabled="{Binding StartButtonEnabled}"
+						Width="80"
+						Height="32"
+					/>
 
+					<TextBlock
+						Margin="0,8,0,0"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						Text="{Binding IndicatorText}"
+						FontFamily="{StaticResource SymbolThemeFontFamily}"
+						FontSize="30"
+						Style="{StaticResource DynamicTextColorStyle}"
+					/>
 
+					<Grid HorizontalAlignment="Right">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
 
-            </Grid>
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Grid Grid.Row="0">
-                    <Button
-							Margin="4"
-							HorizontalAlignment="Left"
-							Command="{Binding StartCommand}"
-							Content="{Binding StartButtonContent}"
-							IsEnabled="{Binding StartButtonEnabled}"
-							Width="80"
-							Height="32"
-						/>
-
-                    <TextBlock
-							Margin="0,8,0,0"
-							HorizontalAlignment="Center"
-							VerticalAlignment="Center"
-							Text="{Binding IndicatorText}"
-							FontFamily="{StaticResource SymbolThemeFontFamily}"
-							FontSize="30"
-							Foreground="{Binding TextColor}"
-						/>
-
-                    <Grid
-							HorizontalAlignment="Right"
-						>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Grid Width="40" Height="40">
-                            <Button
-									Grid.Column="0"
-									Margin="4"
-									Padding="0"
-									HorizontalContentAlignment="Center"
-									VerticalContentAlignment="Center"
-									Command="{Binding OpenInfoCommand}"
-									ToolTip="Informations"
-									Width="32"
-									Height="32"
-								>
-                                <Grid>
-                                    <TextBlock
-											Margin="1.25,1.25,0,0"
-											HorizontalAlignment="Center"
-											VerticalAlignment="Center"
-											Text="&#xE946;"
-											FontFamily="{StaticResource SymbolThemeFontFamily}"
-											FontSize="20"
-										/>
-                                    <TextBlock
-											Margin="2,0,0,2"
-											HorizontalAlignment="Center"
-											VerticalAlignment="Center"
-											DataContext="{Binding InfoViewModel}"
-											Visibility="{Binding NewVersionIndicator}"
-											Text="&#xEC83;"
-											FontFamily="{StaticResource SymbolThemeFontFamily}"
-											FontSize="20"
-											Foreground="Red"
-										/>
-                                </Grid>
-                            </Button>
-                        </Grid>
-
-                        <Button
-								Grid.Column="1"
+						<Grid Width="40" Height="40">
+							<Button
+								Grid.Column="0"
 								Margin="4"
 								Padding="0"
 								HorizontalContentAlignment="Center"
 								VerticalContentAlignment="Center"
-								Command="{Binding OpenOptionsCommand}"
-								Content="&#xE713;"
-								FontFamily="{StaticResource SymbolThemeFontFamily}"
-								FontSize="20"
-								ToolTip="Options"
+								Command="{Binding OpenInfoCommand}"
+								ToolTip="Informations"
 								Width="32"
 								Height="32"
-							/>
-                    </Grid>
-                </Grid>
+							>
+								<Grid>
+									<TextBlock
+										Margin="1.25,1.25,0,0"
+										HorizontalAlignment="Center"
+										VerticalAlignment="Center"
+										Text="&#xE946;"
+										FontFamily="{StaticResource SymbolThemeFontFamily}"
+										FontSize="20"
+									/>
+									<TextBlock
+										Margin="2,0,0,2"
+										HorizontalAlignment="Center"
+										VerticalAlignment="Center"
+										DataContext="{Binding InfoViewModel}"
+										Visibility="{Binding NewVersionIndicator}"
+										Text="&#xEC83;"
+										FontFamily="{StaticResource SymbolThemeFontFamily}"
+										FontSize="20"
+										Foreground="Red"
+									/>
+								</Grid>
+							</Button>
+						</Grid>
 
-                <Grid Grid.Row="1">
-                    <TextBlock
-							Margin="0,8,0,0"
-							HorizontalAlignment="Center"
-							VerticalAlignment="Top"
-							Text="{Binding BPMText}"
-							FontSize="50"
-							Foreground="{Binding TextColor}"
+						<Button
+							Grid.Column="1"
+							Margin="4"
+							Padding="0"
+							HorizontalContentAlignment="Center"
+							VerticalContentAlignment="Center"
+							Command="{Binding OpenOptionsCommand}"
+							Content="&#xE713;"
+							FontFamily="{StaticResource SymbolThemeFontFamily}"
+							FontSize="20"
+							ToolTip="Options"
+							Width="32"
+							Height="32"
 						/>
+					</Grid>
+				</Grid>
 
-                    <TextBlock
-							Margin="0,0,0,24"
-							HorizontalAlignment="Center"
-							VerticalAlignment="Bottom"
-							Text="{Binding MeasuredAtText}"
-							Foreground="{Binding TextColor}"
-						/>
+				<Grid Grid.Row="1">
+					<TextBlock
+						Margin="0,8,0,0"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Top"
+						Text="{Binding BPMText}"
+						FontSize="50"
+						Style="{StaticResource DynamicTextColorStyle}"
+					/>
 
-                    <TextBlock
-							Margin="0,0,0,18"
-							VerticalAlignment="Center"
-							Text="{Binding InfoText}"
-							Foreground="{Binding TextColor}"
-							TextWrapping="Wrap"
-							TextAlignment="Center"
-						/>
-                </Grid>
-            </Grid>
-        </Grid>
-    </Grid>
+					<TextBlock
+						Margin="0,0,0,24"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Bottom"
+						Text="{Binding MeasuredAtText}"
+						Style="{StaticResource DynamicTextColorStyle}"
+					/>
+
+					<TextBlock
+						Margin="0,0,0,18"
+						VerticalAlignment="Center"
+						Text="{Binding InfoText}"
+						TextWrapping="Wrap"
+						TextAlignment="Center"
+						Style="{StaticResource DynamicTextColorStyle}"
+					/>
+				</Grid>
+			</Grid>
+		</Grid>
+	</Grid>
 </Window>

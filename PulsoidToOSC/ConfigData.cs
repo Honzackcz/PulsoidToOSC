@@ -29,6 +29,7 @@ namespace PulsoidToOSC
 		private static float _hrTrendMax = 2f;
 		private static int _hrOffset = 0;
 		// UI
+		private static bool _uiColorUseCustom = false;
 		private static string _uiColorError = "#FF0000";
 		private static string _uiColorWarning = "#FFFF00";
 		private static string _uiColorRunning = "#00FF00";
@@ -134,6 +135,11 @@ namespace PulsoidToOSC
 			set => _hrOffset = value;
 		}
 		// UI
+		public static bool UIColorUseCustom
+		{
+			get => _uiColorUseCustom;
+			set => _uiColorUseCustom = value;
+		}
 		public static string UIColorError
 		{
 			get => _uiColorError;
@@ -179,6 +185,7 @@ namespace PulsoidToOSC
 			writer.WriteLine($"hrTrendMax={HrTrendMax.ToString(FloatLocal)}");
 			writer.WriteLine($"hrOffset={HrOffset}");
 			// UI
+			writer.WriteLine($"uiColorUseCustom={UIColorUseCustom}");
 			writer.WriteLine($"uiColorError={UIColorError}");
 			writer.WriteLine($"uiColorWarning={UIColorWarning}");
 			writer.WriteLine($"uiColorRunning={UIColorRunning}");
@@ -212,6 +219,7 @@ namespace PulsoidToOSC
 			string? hrTrendMax = null;
 			string? hrOffset = null;
 			// UI
+			string? uiColorUseCustom = null;
 			string? uiColorError = null;
 			string? uiColorWarning = null;
 			string? uiColorRunning = null;
@@ -282,6 +290,9 @@ namespace PulsoidToOSC
 								hrOffset = value;
 								break;
 							// UI
+							case "uiColorUseCustom":
+								uiColorUseCustom = value;
+								break;
 							case "uiColorError":
 								uiColorError = value;
 								break;
@@ -332,6 +343,7 @@ namespace PulsoidToOSC
 			if (float.TryParse(hrTrendMax, FloatStyle, FloatLocal, out float parsedHrTrendMax) && parsedHrTrendMax <= 255f && parsedHrTrendMax >= 0.1) HrTrendMax = parsedHrTrendMax;
 			if (int.TryParse(hrOffset, out int parsedHrOffset) && parsedHrOffset < 255 && parsedHrOffset > -255) HrOffset = parsedHrOffset;
 			// UI
+			if (bool.TryParse(uiColorUseCustom, out bool parsedUIColorUseCustom)) UIColorUseCustom = parsedUIColorUseCustom;
 			if (uiColorError != null && MyRegex.RGBHexCode().IsMatch(uiColorError)) UIColorError = uiColorError;
 			if (uiColorWarning != null && MyRegex.RGBHexCode().IsMatch(uiColorWarning)) UIColorWarning = uiColorWarning;
 			if (uiColorRunning != null && MyRegex.RGBHexCode().IsMatch(uiColorRunning)) UIColorRunning = uiColorRunning;

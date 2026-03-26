@@ -12,10 +12,16 @@ namespace PulsoidToOSC
 		private enum ColorPickerEditingColor { None, Error, Warning, Running}
 		private ColorPickerEditingColor _colorPickerEditingColor = ColorPickerEditingColor.None;
 
+		private bool _colorUseCustomCheckmark = false;
 		private string _colorErrorText = string.Empty;
 		private string _colorWarningText = string.Empty;
 		private string _colorRunningText = string.Empty;
 
+		public bool ColorUseCustomCheckmark
+		{
+			get => _colorUseCustomCheckmark;
+			set { _colorUseCustomCheckmark = value; OnPropertyChanged(); ToggleColorsUseCustom(); }
+		}
 		public string ColorErrorText
 		{
 			get => _colorErrorText;
@@ -60,6 +66,13 @@ namespace PulsoidToOSC
 			OpenColorPickerRunningCommand = new RelayCommand(OpenColorPickerRunning);
 			ColorPickerDoneCommand = new RelayCommand(ColorPickerDone);
 			OptionsUIApplyCommand = new RelayCommand(_optionsViewModel.OptionsApply);
+		}
+
+		private void ToggleColorsUseCustom()
+		{
+			if (ConfigData.UIColorUseCustom == ColorUseCustomCheckmark) return;
+			ConfigData.UIColorUseCustom = ColorUseCustomCheckmark;
+			ConfigData.SaveConfig();
 		}
 
 		public void OptionsApply()

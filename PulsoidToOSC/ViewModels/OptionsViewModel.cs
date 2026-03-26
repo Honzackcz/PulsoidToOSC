@@ -69,6 +69,7 @@ namespace PulsoidToOSC
 			OptionsHeartrateViewModel.HrOffsetText = ConfigData.HrOffset.ToString();
 
 			// UI
+			OptionsUIViewModel.ColorUseCustomCheckmark = ConfigData.UIColorUseCustom;
 			OptionsUIViewModel.ColorErrorText = ConfigData.UIColorError;
 			OptionsUIViewModel.ColorWarningText = ConfigData.UIColorWarning;
 			OptionsUIViewModel.ColorRunningText = ConfigData.UIColorRunning;

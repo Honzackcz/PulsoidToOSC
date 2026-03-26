@@ -6,7 +6,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:PulsoidToOSC"
 	mc:Ignorable="d"
-	Title="PulsoidToOSC info" ResizeMode="NoResize" Height="280" Width="400"
+	Title="PulsoidToOSC info" ResizeMode="NoResize" Height="280" Width="410"
     d:DataContext="{d:DesignInstance Type=local:InfoViewModel}">
 
 	<Window.Resources>

@@ -7,39 +7,43 @@
 	xmlns:local="clr-namespace:PulsoidToOSC"
 	mc:Ignorable="d"
 	Title="PulsoidToOSC options" ResizeMode="CanResizeWithGrip" MinHeight="360" Height="360" MinWidth="570" Width="570"
-    d:DataContext="{d:DesignInstance Type=local:OptionsViewModel}">
+	d:DataContext="{d:DesignInstance Type=local:OptionsViewModel}">
 
-    <Window.Resources>
-    </Window.Resources>
+	<Window.Resources>
+	</Window.Resources>
 
-    <Grid Background="{DynamicResource SmokeFillColorDefaultBrush}">
+	<!-- Window content-->
+	<Grid Background="{DynamicResource SmokeFillColorDefaultBrush}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="8">
-            <TabControl Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">
-                <TabItem Name="general" DataContext="{Binding OptionsGeneralViewModel}" Margin="-1">
-                    <TabItem.Header>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xE80F; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="General"/>
-                        </Grid>
-                    </TabItem.Header>
-                    <TabItem.Content>
-                        <Grid Margin="8">
+		<!-- Window body -->
+		<Grid Grid.Row="0" Margin="8">
+			<TabControl Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">
+				
+				<!-- General options-->
+				<TabItem Name="general" DataContext="{Binding OptionsGeneralViewModel}" Margin="-1">
+					<TabItem.Header>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xE80F; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+							<TextBlock Grid.Column="1" VerticalAlignment="Center" Text="General"/>
+						</Grid>
+					</TabItem.Header>
+					<TabItem.Content>
+						<Grid Margin="8">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
 							</Grid.RowDefinitions>
-                            
-                            <Grid Grid.Row="0">
+
+							<Grid Grid.Row="0">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="140"/>
 									<ColumnDefinition Width="*"/>
@@ -114,7 +118,7 @@
 								</Grid>
 								<Label
 									Grid.Column="2"
-                                    Padding="0,2,0,0"
+									Padding="0,2,0,0"
 									HorizontalAlignment="Center"
 									VerticalAlignment="Center"
 									Visibility="{Binding TokenValidationValid}"
@@ -126,7 +130,7 @@
 								/>
 								<Label
 									Grid.Column="2"
-                                    Padding="0,2,0,0"
+									Padding="0,2,0,0"
 									HorizontalAlignment="Center"
 									VerticalAlignment="Center"
 									Visibility="{Binding TokenValidationInvalid}"
@@ -145,22 +149,23 @@
 								Content="Auto Start"
 								ToolTip="When enabled, the connection to Pulsoid and OSC will start when the app is opened, saving you one click.&#x0a;&#x0a;It will NOT start the application with the system."
 							/>
-                        </Grid>
-                    </TabItem.Content>
+						</Grid>
+					</TabItem.Content>
 				</TabItem>
-
-                <TabItem Name="osc" DataContext="{Binding OptionsOscViewModel}" Margin="-1">
-                    <TabItem.Header>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xEDA3; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="OSC"/>
-                        </Grid>
-                    </TabItem.Header>
-                    <TabItem.Content>
+				
+				<!-- OSC options-->
+				<TabItem Name="osc" DataContext="{Binding OptionsOscViewModel}" Margin="-1">
+					<TabItem.Header>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xEDA3; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+							<TextBlock Grid.Column="1" VerticalAlignment="Center" Text="OSC"/>
+						</Grid>
+					</TabItem.Header>
+					<TabItem.Content>
 						<Grid Margin="8">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
@@ -174,7 +179,7 @@
 								Content="Send heart rate to manual OSC endpoint"
 								ToolTip="When enebled, heart rate parameters will be sent to the following OSC configuration."
 							/>
-							
+
 							<Grid Grid.Row="1">
 								<Grid.RowDefinitions>
 									<RowDefinition Height="40"/>
@@ -187,7 +192,7 @@
 									VerticalAlignment="Center"
 									Text="Manual OSC endpoint configuration:"
 								/>
-								
+
 								<Grid Grid.Row="1">
 									<Grid.RowDefinitions>
 										<RowDefinition Height="Auto"/>
@@ -244,7 +249,7 @@
 											</TextBox.InputBindings>
 										</TextBox>
 									</Grid>
-									
+
 									<Grid Grid.Row="2">
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="50"/>
@@ -274,19 +279,20 @@
 						</Grid>
 					</TabItem.Content>
 				</TabItem>
-
-                <TabItem Name="vrchat" DataContext="{Binding OptionsVRChatViewModel}" Margin="-1">
-                    <TabItem.Header>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xE90A; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="VRChat"/>
-                        </Grid>
-                    </TabItem.Header>
-                    <TabItem.Content>
+				
+				<!-- VRChat options-->
+				<TabItem Name="vrchat" DataContext="{Binding OptionsVRChatViewModel}" Margin="-1">
+					<TabItem.Header>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xE90A; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+							<TextBlock Grid.Column="1" VerticalAlignment="Center" Text="VRChat"/>
+						</Grid>
+					</TabItem.Header>
+					<TabItem.Content>
 						<Grid Margin="8">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
@@ -331,7 +337,7 @@
 									VerticalAlignment="Center"
 									Text="VRChat chat box message:"
 								/>
-                                <TextBox
+								<TextBox
 									Grid.Row="1"
 									Margin="4"
 									Height="Auto"
@@ -340,7 +346,7 @@
 									Text="{Binding VRCChatboxMessageText, UpdateSourceTrigger=PropertyChanged}"
 									ToolTip="&lt;bpm&gt; will be replaced with the heart rate value. If the message doesn't contain &lt;bpm&gt;, the heart rate will be added at the end of the message.&#x0a;&#x0a;&lt;trend&gt; will be replaced with an arrow indicating trend of how much the heart rate is changing."
 								>
-                                    <TextBox.InputBindings>
+									<TextBox.InputBindings>
 										<KeyBinding Key="Enter" Command="{Binding OptionsVRChatApplyCommand}"/>
 									</TextBox.InputBindings>
 								</TextBox>
@@ -348,26 +354,27 @@
 						</Grid>
 					</TabItem.Content>
 				</TabItem>
-
-                <TabItem Name="heartrate" DataContext="{Binding OptionsHeartrateViewModel}" Margin="-1">
-                    <TabItem.Header>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xE95E; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Heart rate"/>
-                        </Grid>
-                    </TabItem.Header>
-                    <TabItem.Content>
+				
+				<!-- Heart rate options-->
+				<TabItem Name="heartrate" DataContext="{Binding OptionsHeartrateViewModel}" Margin="-1">
+					<TabItem.Header>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xE95E; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+							<TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Heart rate"/>
+						</Grid>
+					</TabItem.Header>
+					<TabItem.Content>
 						<Grid Margin="8">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
 							</Grid.RowDefinitions>
-							
+
 							<Grid Grid.Row="0">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="160"/>
@@ -402,7 +409,7 @@
 										<KeyBinding Key="Enter" Command="{Binding OptionsHrApplyCommand}"/>
 									</TextBox.InputBindings>
 								</TextBox>
-								
+
 								<TextBlock
 									Grid.Column="3"
 									Margin="4"
@@ -456,7 +463,7 @@
 										<KeyBinding Key="Enter" Command="{Binding OptionsHrApplyCommand}"/>
 									</TextBox.InputBindings>
 								</TextBox>
-								
+
 								<TextBlock
 									Grid.Column="3"
 									Margin="4"
@@ -491,7 +498,7 @@
 									HorizontalAlignment="Right"
 									Text="Heart rate offset:"
 								/>
-								
+
 								<TextBox
 									Grid.Column="2"
 									Margin="4"
@@ -506,25 +513,26 @@
 						</Grid>
 					</TabItem.Content>
 				</TabItem>
-
-                <TabItem Name="parameters" DataContext="{Binding OptionsParametersViewModel}" Margin="-1">
-                    <TabItem.Header>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xF2C7; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Parameters"/>
-                        </Grid>
-                    </TabItem.Header>
-                    <TabItem.Content>
+				
+				<!-- Parameters options-->
+				<TabItem Name="parameters" DataContext="{Binding OptionsParametersViewModel}" Margin="-1">
+					<TabItem.Header>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xF2C7; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+							<TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Parameters"/>
+						</Grid>
+					</TabItem.Header>
+					<TabItem.Content>
 						<Grid Margin="8">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="40"/>
 								<RowDefinition Height="*"/>
 							</Grid.RowDefinitions>
-							
+
 							<Grid Grid.Row="0" Margin="0, 0, 6, 0">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="*"/>
@@ -610,19 +618,20 @@
 						</Grid>
 					</TabItem.Content>
 				</TabItem>
-
-                <TabItem Name="ui" DataContext="{Binding OptionsUIViewModel}" Margin="-1">
-                    <TabItem.Header>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xF0E2; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                            <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="UI"/>
-                        </Grid>
-                    </TabItem.Header>
-                    <TabItem.Content>
+				
+				<!-- UI options-->
+				<TabItem Name="ui" DataContext="{Binding OptionsUIViewModel}" Margin="-1">
+					<TabItem.Header>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Grid.Column="0" VerticalAlignment="Center" Text="&#xF0E2; " FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+							<TextBlock Grid.Column="1" VerticalAlignment="Center" Text="UI"/>
+						</Grid>
+					</TabItem.Header>
+					<TabItem.Content>
 						<Grid Margin="8">
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto"/>
@@ -647,15 +656,24 @@
 										<RowDefinition Height="Auto"/>
 										<RowDefinition Height="Auto"/>
 										<RowDefinition Height="Auto"/>
+										<RowDefinition Height="Auto"/>
 									</Grid.RowDefinitions>
 
-									<Grid Grid.Row="0">
+									<CheckBox
+										Grid.Row="0"
+										Margin="4"
+										IsChecked="{Binding ColorUseCustomCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+										Content="Use custom colors"
+										ToolTip="When enabled, colors bellow will be used insted of system default."
+									/>
+
+									<Grid Grid.Row="1">
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="120"/>
 											<ColumnDefinition Width="150"/>
-                                            <ColumnDefinition Width="40"/>
-                                            <ColumnDefinition Width="40"/>
-                                        </Grid.ColumnDefinitions>
+											<ColumnDefinition Width="40"/>
+											<ColumnDefinition Width="40"/>
+										</Grid.ColumnDefinitions>
 										<TextBlock
 											Grid.Column="0"
 											Margin="4"
@@ -663,74 +681,31 @@
 											HorizontalAlignment="Right"
 											Text="Error color:"
 										/>
-                                        <TextBox
+										<TextBox
 											Grid.Column="1"
 											Margin="4"
 											Text="{Binding ColorErrorText, UpdateSourceTrigger=PropertyChanged}"
 											ToolTip="Error color hex code"
 										>
-                                            <TextBox.InputBindings>
-                                                <KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
-                                            </TextBox.InputBindings>
-                                        </TextBox>
-                                        <Rectangle
-                                            Grid.Column="2"
+											<TextBox.InputBindings>
+												<KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
+											</TextBox.InputBindings>
+										</TextBox>
+										<Rectangle
+											Grid.Column="2"
 											Height="30" Width="30"
 											Fill="{Binding ColorErrorIndicator}"
-                                            RadiusX="4"
-                                            RadiusY="4"
-                                        />
-                                        <Button
-                                            Grid.Column="3"
+											RadiusX="4"
+											RadiusY="4"
+										/>
+										<Button
+											Grid.Column="3"
 											Height="32" Width="32"
-                                            Margin="4"
-                                            Padding="0"
+											Margin="4"
+											Padding="0"
 											VerticalAlignment="Center"
 											HorizontalContentAlignment="Center"
 											Command="{Binding OpenColorPickerErrorCommand}"
-											Content="&#xEF3C;"
-											FontFamily="{StaticResource SymbolThemeFontFamily}"
-										/>
-                                    </Grid>
-									<Grid Grid.Row="1">
-										<Grid.ColumnDefinitions>
-											<ColumnDefinition Width="120"/>
-											<ColumnDefinition Width="150"/>
-                                            <ColumnDefinition Width="40"/>
-                                            <ColumnDefinition Width="40"/>
-                                        </Grid.ColumnDefinitions>
-										<TextBlock
-											Grid.Column="0"
-											Margin="4"
-											VerticalAlignment="Center"
-											HorizontalAlignment="Right"
-											Text="Warning color:"
-										/>
-                                        <TextBox
-											Grid.Column="1"
-											Margin="4"
-											Text="{Binding ColorWarningText, UpdateSourceTrigger=PropertyChanged}"
-											ToolTip="Warning color hex code"
-										>
-                                            <TextBox.InputBindings>
-                                                <KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
-                                            </TextBox.InputBindings>
-                                        </TextBox>
-                                        <Rectangle
-                                            Grid.Column="2"
-											Height="30" Width="30"
-											Fill="{Binding ColorWarningIndicator}"
-                                            RadiusX="4"
-                                            RadiusY="4"
-                                        />
-                                        <Button
-                                            Grid.Column="3"
-											Height="32" Width="32"
-                                            Margin="4"
-                                            Padding="0"
-											VerticalAlignment="Center"
-											HorizontalContentAlignment="Center"
-											Command="{Binding OpenColorPickerWarningCommand}"
 											Content="&#xEF3C;"
 											FontFamily="{StaticResource SymbolThemeFontFamily}"
 										/>
@@ -740,8 +715,51 @@
 											<ColumnDefinition Width="120"/>
 											<ColumnDefinition Width="150"/>
 											<ColumnDefinition Width="40"/>
-                                            <ColumnDefinition Width="40"/>
-                                        </Grid.ColumnDefinitions>
+											<ColumnDefinition Width="40"/>
+										</Grid.ColumnDefinitions>
+										<TextBlock
+											Grid.Column="0"
+											Margin="4"
+											VerticalAlignment="Center"
+											HorizontalAlignment="Right"
+											Text="Warning color:"
+										/>
+										<TextBox
+											Grid.Column="1"
+											Margin="4"
+											Text="{Binding ColorWarningText, UpdateSourceTrigger=PropertyChanged}"
+											ToolTip="Warning color hex code"
+										>
+											<TextBox.InputBindings>
+												<KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
+											</TextBox.InputBindings>
+										</TextBox>
+										<Rectangle
+											Grid.Column="2"
+											Height="30" Width="30"
+											Fill="{Binding ColorWarningIndicator}"
+											RadiusX="4"
+											RadiusY="4"
+										/>
+										<Button
+											Grid.Column="3"
+											Height="32" Width="32"
+											Margin="4"
+											Padding="0"
+											VerticalAlignment="Center"
+											HorizontalContentAlignment="Center"
+											Command="{Binding OpenColorPickerWarningCommand}"
+											Content="&#xEF3C;"
+											FontFamily="{StaticResource SymbolThemeFontFamily}"
+										/>
+									</Grid>
+									<Grid Grid.Row="3">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="120"/>
+											<ColumnDefinition Width="150"/>
+											<ColumnDefinition Width="40"/>
+											<ColumnDefinition Width="40"/>
+										</Grid.ColumnDefinitions>
 										<TextBlock
 											Grid.Column="0"
 											Margin="4"
@@ -759,25 +777,25 @@
 												<KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
 											</TextBox.InputBindings>
 										</TextBox>
-                                        <Rectangle
-                                            Grid.Column="2"
+										<Rectangle
+											Grid.Column="2"
 											Height="30" Width="30"
 											Fill="{Binding ColorRunningIndicator}"
-                                            RadiusX="4"
-                                            RadiusY="4"
-                                        />
-                                        <Button
-                                            Grid.Column="3"
+											RadiusX="4"
+											RadiusY="4"
+										/>
+										<Button
+											Grid.Column="3"
 											Height="32" Width="32"
-                                            Margin="4"
-                                            Padding="0"
+											Margin="4"
+											Padding="0"
 											VerticalAlignment="Center"
 											HorizontalContentAlignment="Center"
 											Command="{Binding OpenColorPickerRunningCommand}"
 											Content="&#xEF3C;"
 											FontFamily="{StaticResource SymbolThemeFontFamily}"
 										/>
-                                    </Grid>
+									</Grid>
 								</Grid>
 							</Grid>
 						</Grid>
@@ -786,6 +804,7 @@
 			</TabControl>
 		</Grid>
 		
+		<!-- Footer buttons -->
 		<Grid Grid.Row="1">
 			<Grid Width="200">
 				<Button

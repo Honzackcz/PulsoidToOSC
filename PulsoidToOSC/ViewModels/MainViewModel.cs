@@ -22,6 +22,7 @@ namespace PulsoidToOSC
 		private string _measuredAtText = string.Empty;
 		private string _infoText = string.Empty;
 		private string _indicatorText = string.Empty;
+		private string _textColorType = string.Empty;
 		private string _textColor = "#00000000";
 
 		public StartButtonType StartButton
@@ -57,6 +58,11 @@ namespace PulsoidToOSC
 		{
 			get => _indicatorText;
 			set { _indicatorText = value; OnPropertyChanged(); }
+		}
+		public string TextColorType
+		{
+			get => _textColorType;
+			set { _textColorType = value; OnPropertyChanged(); }
 		}
 		public string TextColor
 		{
@@ -104,6 +110,8 @@ namespace PulsoidToOSC
 
 		public void SetError(string errorText)
 		{
+			if (ConfigData.UIColorUseCustom) TextColorType = "Custom";
+			else TextColorType = "Error";
 			TextColor = ConfigData.UIColorError;
 			InfoText = errorText;
 			BPMText = string.Empty;
@@ -113,6 +121,8 @@ namespace PulsoidToOSC
 
 		public void SetWarning(string warningText)
 		{
+			if (ConfigData.UIColorUseCustom) TextColorType = "Custom";
+			else TextColorType = "Warning";
 			TextColor = ConfigData.UIColorWarning;
 			InfoText = warningText;
 			BPMText = string.Empty;
@@ -123,6 +133,8 @@ namespace PulsoidToOSC
 		private int runningIndicator = 0;
 		public void SetRunning(string bpmText, string measuredAtText)
 		{
+			if (ConfigData.UIColorUseCustom) TextColorType = "Custom";
+			else TextColorType = "Running";
 			TextColor = ConfigData.UIColorRunning;
 			InfoText = string.Empty;
 			BPMText = bpmText;
@@ -140,6 +152,7 @@ namespace PulsoidToOSC
 
 		public void ClearUI()
 		{
+			TextColorType = string.Empty;
 			TextColor = "#00000000";
 			InfoText = string.Empty;
 			BPMText = string.Empty;
