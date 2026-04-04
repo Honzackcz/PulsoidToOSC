@@ -67,6 +67,8 @@ namespace PulsoidToOSC
 			OptionsHeartrateViewModel.HrTrendMinText = ConfigData.HrTrendMin.ToString(ConfigData.FloatLocal);
 			OptionsHeartrateViewModel.HrTrendMaxText = ConfigData.HrTrendMax.ToString(ConfigData.FloatLocal);
 			OptionsHeartrateViewModel.HrOffsetText = ConfigData.HrOffset.ToString();
+			OptionsHeartrateViewModel.HrUndesiredValuesText = string.Join(";", ConfigData.HrUndesiredValues);
+			OptionsHeartrateViewModel.HrRandomValueCheckmark = ConfigData.HrRandomValue;
 
 			// UI
 			OptionsUIViewModel.ColorUseCustomCheckmark = ConfigData.UIColorUseCustom;

@@ -28,6 +28,8 @@ namespace PulsoidToOSC
 		private static float _hrTrendMin = 2f;
 		private static float _hrTrendMax = 2f;
 		private static int _hrOffset = 0;
+		private static List<int> _hrUndesiredValues = new List<int>();
+		private static bool _hrRandomValue = false;
 		// UI
 		private static bool _uiColorUseCustom = false;
 		private static string _uiColorError = "#FF0000";
@@ -134,6 +136,16 @@ namespace PulsoidToOSC
 			get => _hrOffset;
 			set => _hrOffset = value;
 		}
+		public static List<int> HrUndesiredValues
+		{
+			get => _hrUndesiredValues;
+			set => _hrUndesiredValues = value;
+		}
+		public static bool HrRandomValue
+		{
+			get => _hrRandomValue;
+			set => _hrRandomValue = value;
+		}
 		// UI
 		public static bool UIColorUseCustom
 		{
@@ -184,6 +196,8 @@ namespace PulsoidToOSC
 			writer.WriteLine($"hrTrendMin={HrTrendMin.ToString(FloatLocal)}");
 			writer.WriteLine($"hrTrendMax={HrTrendMax.ToString(FloatLocal)}");
 			writer.WriteLine($"hrOffset={HrOffset}");
+			writer.WriteLine($"hrUndesiredValues={string.Join(";", HrUndesiredValues)}");
+			writer.WriteLine($"hrRandomValue={HrRandomValue}");
 			// UI
 			writer.WriteLine($"uiColorUseCustom={UIColorUseCustom}");
 			writer.WriteLine($"uiColorError={UIColorError}");
@@ -218,6 +232,8 @@ namespace PulsoidToOSC
 			string? hrTrendMin = null;
 			string? hrTrendMax = null;
 			string? hrOffset = null;
+			List<int> hrUndesiredValues = [];
+			string? hrRandomValue = null;
 			// UI
 			string? uiColorUseCustom = null;
 			string? uiColorError = null;
@@ -302,6 +318,17 @@ namespace PulsoidToOSC
 							case "uiColorRunning":
 								uiColorRunning = value;
 								break;
+							case "hrUndesiredValues":
+								string[] undesiredValuesParts = value.Split(';');
+								foreach (string part in undesiredValuesParts)
+								{
+									if (int.TryParse(part.Trim(), out int parsedValue) && parsedValue > 1 && parsedValue < 255) hrUndesiredValues.Add(parsedValue);
+								}
+								hrUndesiredValues = hrUndesiredValues.Distinct().OrderBy(x => x).ToList();
+								break;
+							case "hrRandomValue":
+								hrRandomValue = value;
+								break;
 							// Parameters
 							case "oscParameter":
 								string[] parameterParts = value.Split(';');
@@ -342,6 +369,8 @@ namespace PulsoidToOSC
 			if (float.TryParse(hrTrendMin, FloatStyle, FloatLocal, out float parsedHrTrendMin) && parsedHrTrendMin <= 255f && parsedHrTrendMin >= 0.1) HrTrendMin = parsedHrTrendMin;
 			if (float.TryParse(hrTrendMax, FloatStyle, FloatLocal, out float parsedHrTrendMax) && parsedHrTrendMax <= 255f && parsedHrTrendMax >= 0.1) HrTrendMax = parsedHrTrendMax;
 			if (int.TryParse(hrOffset, out int parsedHrOffset) && parsedHrOffset < 255 && parsedHrOffset > -255) HrOffset = parsedHrOffset;
+			if (hrUndesiredValues.Count > 0) HrUndesiredValues = hrUndesiredValues;
+			if (bool.TryParse(hrRandomValue, out bool parsedHrRandomValue)) HrRandomValue = parsedHrRandomValue;
 			// UI
 			if (bool.TryParse(uiColorUseCustom, out bool parsedUIColorUseCustom)) UIColorUseCustom = parsedUIColorUseCustom;
 			if (uiColorError != null && MyRegex.RGBHexCode().IsMatch(uiColorError)) UIColorError = uiColorError;

@@ -27,8 +27,43 @@ namespace PulsoidToOSC
 			}
 			else
 			{
-				HRValue = Math.Clamp(heartRate + ConfigData.HrOffset, 0, 255);
 				HBToggle = !HBToggle;
+
+				if (ConfigData.HrRandomValue)
+				{
+					Random random = new();
+					HRValue = random.Next(1, 255);
+				}
+				else
+				{
+					HRValue = Math.Clamp(heartRate + ConfigData.HrOffset, 0, 255);
+				}
+
+				if (ConfigData.HrUndesiredValues.Contains(HRValue))
+				{
+					int i = 1;
+
+					while (i < 127)
+					{
+						if (ConfigData.HrUndesiredValues.Contains(HRValue + i) && HRValue + i < 255)
+						{
+							if (ConfigData.HrUndesiredValues.Contains(HRValue - i) && HRValue - i > 1)
+							{
+								i++;
+							}
+							else
+							{
+								HRValue -= i;
+								break;
+							}
+						}
+						else
+						{
+							HRValue += i;
+							break;
+						}
+					}
+				}
 
 				_recentHeartRates.Add(HRValue);
 				if (_recentHeartRates.Count > 5)

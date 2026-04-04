@@ -11,6 +11,8 @@ namespace PulsoidToOSC
 		private string _hrTrendMinText = string.Empty;
 		private string _hrTrendMaxText = string.Empty;
 		private string _hrOffsetText = string.Empty;
+		private string _hrUndesiredValuesText = string.Empty;
+		private bool _hrRandomValueCheckmark = false;
 
 		public string HrFloatMinText
 		{
@@ -124,6 +126,36 @@ namespace PulsoidToOSC
 				OnPropertyChanged();
 			}
 		}
+		public string HrUndesiredValuesText
+		{
+			get => _hrUndesiredValuesText;
+			set
+			{
+				string newText = value ?? string.Empty;
+
+				if (newText == string.Empty)
+				{
+					_hrUndesiredValuesText = newText;
+				}
+				else
+				{
+					newText = MyRegex.PossibleSeparators().Replace(newText, ";");
+					newText = MyRegex.NotDigitOrSemicolon().Replace(newText, string.Empty);
+					newText = MyRegex.ConsecutiveSemicolons().Replace(newText, ";");
+					_hrUndesiredValuesText = newText;
+				}
+
+				OnPropertyChanged();
+			}
+		}
+		public bool HrRandomValueCheckmark
+		{
+			get => _hrRandomValueCheckmark;
+			set
+			{
+				_hrRandomValueCheckmark = value; OnPropertyChanged(); ToggleHrRandomValue();
+			}
+		}
 
 		public ICommand OptionsHrApplyCommand { get; }
 
@@ -139,6 +171,7 @@ namespace PulsoidToOSC
 			SetHrFloat(false);
 			SetHrTrend(false);
 			SetOffset(false);
+			SetUndesiredValues(false);
 		}
 
 		private void SetHrFloat(bool canSaveConfig)
@@ -198,6 +231,37 @@ namespace PulsoidToOSC
 			if (saveConfig && canSaveConfig) ConfigData.SaveConfig();
 
 			HrOffsetText = ConfigData.HrOffset.ToString();
+		}
+
+		private void SetUndesiredValues(bool canSaveConfig)
+		{
+			bool saveConfig = false;
+
+			List<int> parsedValues = new List<int>();
+			string[] undesiredValuesParts = HrUndesiredValuesText.Split(';');
+			foreach (string part in undesiredValuesParts)
+			{
+				if (int.TryParse(part.Trim(), out int parsedValue) && parsedValue > 1 && parsedValue < 255) parsedValues.Add(parsedValue);
+			}
+
+			parsedValues = parsedValues.Distinct().OrderBy(x => x).ToList();
+
+			if (!parsedValues.SequenceEqual(ConfigData.HrUndesiredValues))
+			{
+				ConfigData.HrUndesiredValues = parsedValues;
+				saveConfig = true;
+			}
+
+			if (saveConfig && canSaveConfig) ConfigData.SaveConfig();
+
+			HrUndesiredValuesText = string.Join(";", ConfigData.HrUndesiredValues);
+		}
+
+		private void ToggleHrRandomValue()
+		{
+			if (ConfigData.HrRandomValue == HrRandomValueCheckmark) return;
+			ConfigData.HrRandomValue = HrRandomValueCheckmark;
+			ConfigData.SaveConfig();
 		}
 	}
 }

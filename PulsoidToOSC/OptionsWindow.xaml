@@ -392,6 +392,8 @@
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
 							</Grid.RowDefinitions>
 
 							<Grid Grid.Row="0">
@@ -503,8 +505,7 @@
 							</Grid>
 							<Grid Grid.Row="2">
 								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="160"/>
-									<ColumnDefinition Width="50"/>
+									<ColumnDefinition Width="210"/>
 									<ColumnDefinition Width="*"/>
 									<ColumnDefinition Width="50"/>
 									<ColumnDefinition Width="*"/>
@@ -519,7 +520,7 @@
 								/>
 
 								<TextBox
-									Grid.Column="2"
+									Grid.Column="1"
 									Margin="4"
 									Text="{Binding HrOffsetText, UpdateSourceTrigger=PropertyChanged}"
 									ToolTip="This offset will be added to received heart rate value and will affect all parameters."
@@ -529,6 +530,38 @@
 									</TextBox.InputBindings>
 								</TextBox>
 							</Grid>
+							<Grid Grid.Row="3">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="210"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+
+								<TextBlock
+									Grid.Column="0"
+									Margin="4"
+									VerticalAlignment="Center"
+									HorizontalAlignment="Right"
+									Text="Undesired heart rate values:"
+								/>
+
+								<TextBox
+									Grid.Column="1"
+									Margin="4"
+									Text="{Binding HrUndesiredValuesText, UpdateSourceTrigger=PropertyChanged}"
+									ToolTip="Undesired heart rate values should be adjusted to the nearest non-special value. This may not work for floats with adjusted range."
+								>
+									<TextBox.InputBindings>
+										<KeyBinding Key="Enter" Command="{Binding OptionsHrApplyCommand}"/>
+									</TextBox.InputBindings>
+								</TextBox>
+							</Grid>
+							<CheckBox
+								Grid.Row="4"
+								Margin="4"
+								IsChecked="{Binding HrRandomValueCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+								Content="Random heart rate value"
+								ToolTip="When enabled, heart rate will be replaced by a random value in range of 1 - 255."
+							/>
 						</Grid>
 					</TabItem.Content>
 				</TabItem>

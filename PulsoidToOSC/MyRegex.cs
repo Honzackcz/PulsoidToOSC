@@ -33,5 +33,14 @@ namespace PulsoidToOSC
 
 		[GeneratedRegex(@"[^A-Fa-f0-9]")]
 		public static partial Regex NotHexCodeSymbol();
+
+		[GeneratedRegex(@"[ ,./+_-]+")]
+		public static partial Regex PossibleSeparators();
+
+		[GeneratedRegex(@";{2,}")]
+		public static partial Regex ConsecutiveSemicolons();
+
+		[GeneratedRegex(@"[^0-9;]")]
+		public static partial Regex NotDigitOrSemicolon();
 	}
 }
