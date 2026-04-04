@@ -10,6 +10,20 @@
 	d:DataContext="{d:DesignInstance Type=local:OptionsViewModel}">
 
 	<Window.Resources>
+		<Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+			<Style.Triggers>
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}"/>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Style.Triggers>
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}"/>
+				</Trigger>
+			</Style.Triggers>
+		</Style>
 	</Window.Resources>
 
 	<!-- Window content-->
@@ -190,6 +204,7 @@
 									Grid.Row="0"
 									Margin="4"
 									VerticalAlignment="Center"
+									IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Text="Manual OSC endpoint configuration:"
 								/>
 
@@ -210,6 +225,7 @@
 											Margin="4"
 											VerticalAlignment="Center"
 											HorizontalAlignment="Right"
+											IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 											Text="IP:"
 										/>
 										<TextBox
@@ -235,6 +251,7 @@
 											Margin="4"
 											VerticalAlignment="Center"
 											HorizontalAlignment="Right"
+											IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 											Text="Port:"
 										/>
 										<TextBox
@@ -260,6 +277,7 @@
 											Margin="4"
 											VerticalAlignment="Center"
 											HorizontalAlignment="Right"
+											IsEnabled="{Binding OSCManualConfigCheckmark, UpdateSourceTrigger=PropertyChanged}"
 											Text=" Path:"
 										/>
 										<TextBox
@@ -335,6 +353,7 @@
 									Grid.Row="0"
 									Margin="4"
 									VerticalAlignment="Center"
+									IsEnabled="{Binding VRCChatboxCheckmark, UpdateSourceTrigger=PropertyChanged}"
 									Text="VRChat chat box message:"
 								/>
 								<TextBox
@@ -679,11 +698,13 @@
 											Margin="4"
 											VerticalAlignment="Center"
 											HorizontalAlignment="Right"
+                                            IsEnabled="{Binding ColorUseCustomCheckmark, UpdateSourceTrigger=PropertyChanged}"
 											Text="Error color:"
 										/>
 										<TextBox
 											Grid.Column="1"
 											Margin="4"
+                                            IsEnabled="{Binding ColorUseCustomCheckmark, UpdateSourceTrigger=PropertyChanged}"
 											Text="{Binding ColorErrorText, UpdateSourceTrigger=PropertyChanged}"
 											ToolTip="Error color hex code"
 										>
@@ -705,6 +726,7 @@
 											Padding="0"
 											VerticalAlignment="Center"
 											HorizontalContentAlignment="Center"
+                                            IsEnabled="{Binding ColorUseCustomCheckmark, UpdateSourceTrigger=PropertyChanged}"
 											Command="{Binding OpenColorPickerErrorCommand}"
 											Content="&#xEF3C;"
 											FontFamily="{StaticResource SymbolThemeFontFamily}"
@@ -722,11 +744,13 @@
 											Margin="4"
 											VerticalAlignment="Center"
 											HorizontalAlignment="Right"
+                                            IsEnabled="{Binding ColorUseCustomCheckmark, UpdateSourceTrigger=PropertyChanged}"
 											Text="Warning color:"
 										/>
 										<TextBox
 											Grid.Column="1"
 											Margin="4"
+                                            IsEnabled="{Binding ColorUseCustomCheckmark, UpdateSourceTrigger=PropertyChanged}"
 											Text="{Binding ColorWarningText, UpdateSourceTrigger=PropertyChanged}"
 											ToolTip="Warning color hex code"
 										>
@@ -748,6 +772,7 @@
 											Padding="0"
 											VerticalAlignment="Center"
 											HorizontalContentAlignment="Center"
+                                            IsEnabled="{Binding ColorUseCustomCheckmark, UpdateSourceTrigger=PropertyChanged}"
 											Command="{Binding OpenColorPickerWarningCommand}"
 											Content="&#xEF3C;"
 											FontFamily="{StaticResource SymbolThemeFontFamily}"
@@ -765,11 +790,13 @@
 											Margin="4"
 											VerticalAlignment="Center"
 											HorizontalAlignment="Right"
+                                            IsEnabled="{Binding ColorUseCustomCheckmark, UpdateSourceTrigger=PropertyChanged}"
 											Text="Running color:"
 										/>
 										<TextBox
 											Grid.Column="1"
 											Margin="4"
+                                            IsEnabled="{Binding ColorUseCustomCheckmark, UpdateSourceTrigger=PropertyChanged}"
 											Text="{Binding ColorRunningText, UpdateSourceTrigger=PropertyChanged}"
 											ToolTip="Running color hex code"
 										>
@@ -791,6 +818,7 @@
 											Padding="0"
 											VerticalAlignment="Center"
 											HorizontalContentAlignment="Center"
+                                            IsEnabled="{Binding ColorUseCustomCheckmark, UpdateSourceTrigger=PropertyChanged}"
 											Command="{Binding OpenColorPickerRunningCommand}"
 											Content="&#xEF3C;"
 											FontFamily="{StaticResource SymbolThemeFontFamily}"
