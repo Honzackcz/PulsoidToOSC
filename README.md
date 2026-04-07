@@ -73,6 +73,7 @@ Download: [Heart Rate Display unitypackage](https://github.com/Honzackcz/Pulsoid
 This display use edited version of RED_SIM's [Simple Counter Shader](https://www.patreon.com/posts/simple-counter-62864361).
 
 
+
 ## OSC Parameters
 
 Parameters are combined with your defined OSC path, which you can set in the OSC options.
@@ -118,12 +119,16 @@ All parameters can be easily edited.
 | Trend [0, 1]     | Float      | Trend of heart rate change - Float [0, 1] <br> 0 = decreasing; 0.5 = stable; 1 = increasing |
 
 
-### Parameter adjustments
-In Heart rate options is possible to adjust float parameters.
 
-Heart rate float can have adjusted range of heart rate values for systems that tries to improve accuracy by reducing minimal and maximal value of heart rate. By default the float uses full range of 0 - 255 because 8 bit float [-1, 1] should be able to handle all the possible values.
+## Heart rate adjustments
+In Heart rate options is possible to setup adjustments to how heart rate value is reported to the parameters.
 
-Trend float minimal and maximal values affect sensitivity to how fast heart rate is changing. Higher values will make the trend indication less sensitive.
+- `Heart rate float range` adjusts range of heart rate values for systems that tries to improve accuracy by reducing minimal and maximal value of heart rate. By default the float uses full range of 0 - 255 because 8 bit float [-1, 1] should be able to handle all the possible values.
+- `Heart rate trend range` adjusts Trend sensitivity to how fast heart rate is changing. Higher values will make the trend indication less sensitive.
+- `Heart rate offset` will add the offset value to heart rate affecting all parameters. This can be used as a simple way to partially obfuscate your real heart rate.
+- `Undesired heart rate values` is a list of values separated by ` ; `. When heart rate matches any of the listed values, it will be adjusted to other nearest value not in the list. This affects all parameters. This may not work as intended for floats with adjusted range and floats using [0, 1] range when networked thru just 8 bits.
+- `Random heart rate value` will completely replace heart rate for all parameters with a random number in range of 1 - 255.
+
 
 
 ## Used Libraries
