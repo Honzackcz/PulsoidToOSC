@@ -7,13 +7,23 @@ Also includes easy-to-use VRChat integration with automated configuration throug
 
 Requires [.NET 10.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-10.0.5-windows-x64-installer)
 
+
+
+## Installation
+
+1. Download latest version of `PulsoidToOSC.zip` from [Releases](https://github.com/Honzackcz/PulsoidToOSC/releases).
+2. Extract `PulsoidToOSC.zip` to your desired location.
+3. Open extracted `PulsoidToOSC` folder and launch `PulsoidToOSC.exe` - if required, install also [.NET 10.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-10.0.5-windows-x64-installer).
+
+
+
 ## Pulsoid Connection
 
 To connect this app to Pulsoid, you will need to obtain an authorization token:
-1. Click the "Get Pulsoid token" button - this will open the authorization page in your web browser.
+1. In options click the "Get Pulsoid token" button - this will open the authorization page in your web browser.
 2. Log in and confirm authorization on the page.
 3. Token will be automatically entered in the app and you can close the page.
-4. Green checkmark will indicate valid token.
+4. Green checkmark will indicate valid token and you can now start using PulsoidToOSC.
 
 If the token is invalid, repeat the steps above.
 
@@ -81,6 +91,7 @@ In the case of VRChat auto-configuration, the OSC path is defined as `/avatar/pa
 
 An example of a full path combined with a parameter might look like this: `/avatar/parameter/HeartRateInt`
 
+
 ### Default parameters are set up according to this table:
 
 | Parameter Name     | Value Type | Description                              |
@@ -121,6 +132,7 @@ All parameters can be easily edited.
 
 
 ## Heart rate adjustments
+
 In Heart rate options is possible to setup adjustments to how heart rate value is reported to the parameters.
 
 - `Heart rate float range` adjusts range of heart rate values for systems that tries to improve accuracy by reducing minimal and maximal value of heart rate. By default the float uses full range of 0 - 255 because 8 bit float [-1, 1] should be able to handle all the possible values.
