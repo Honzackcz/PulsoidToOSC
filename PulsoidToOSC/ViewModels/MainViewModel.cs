@@ -18,6 +18,10 @@ namespace PulsoidToOSC
 			{StartButtonType.Stop, "Stop"},
 		};
 
+		private readonly string[] indicatorsRunning = { "\xE95E  \xE915  \xE915", "\xE915  \xE95E  \xE915", "\xE915  \xE915  \xE95E" };
+		private readonly string[] indicatorsTesting = { "\xEC7A  \xE915  \xE915", "\xE915  \xEC7A  \xE915", "\xE915  \xE915  \xEC7A" };
+		private int indicatorState = 0;
+
 		private string _bpmText = string.Empty;
 		private string _measuredAtText = string.Empty;
 		private string _infoText = string.Empty;
@@ -28,15 +32,20 @@ namespace PulsoidToOSC
 		public StartButtonType StartButton
 		{
 			get => _startButton;
-			set { _startButton = value; OnPropertyChanged(nameof(StartButtonContent)); OnPropertyChanged(nameof(StartButtonEnabled)); }
+			set { 
+				_startButton = value;
+				OptionsViewModel.OptionsToolslViewModel.TestHeartRateButton = _startButton;
+				OnPropertyChanged(nameof(StartButtonContent));
+				OnPropertyChanged(nameof(StartButtonEnabled));
+			}
 		}
 		public string StartButtonContent
 		{
 			get => StartButtonContents[_startButton];
 		}
-		public string StartButtonEnabled
+		public bool StartButtonEnabled
 		{
-			get => _startButton == StartButtonType.Disabled ? "False" : "True";
+			get => _startButton != StartButtonType.Disabled;
 		}
 
 		public string BPMText
@@ -130,7 +139,6 @@ namespace PulsoidToOSC
 			IndicatorText = "\xE7BA";
 		}
 
-		private int runningIndicator = 0;
 		public void SetRunning(string bpmText, string measuredAtText)
 		{
 			if (ConfigData.UIColorUseCustom) TextColorType = "Custom";
@@ -139,15 +147,9 @@ namespace PulsoidToOSC
 			InfoText = string.Empty;
 			BPMText = bpmText;
 			MeasuredAtText = measuredAtText;
-			IndicatorText = runningIndicator switch
-			{
-				0 => "\xE95E  \xE915  \xE915",
-				1 => "\xE915  \xE95E  \xE915",
-				2 => "\xE915  \xE915  \xE95E",
-				_ => ""
-			};
-			runningIndicator++;
-			if (runningIndicator > 2) runningIndicator = 0;
+			IndicatorText = MainProgram.TestHeartRate.Running ? indicatorsTesting[indicatorState] : indicatorsRunning[indicatorState];
+			indicatorState++;
+			if (indicatorState > 2) indicatorState = 0;
 		}
 
 		public void ClearUI()
@@ -158,7 +160,7 @@ namespace PulsoidToOSC
 			BPMText = string.Empty;
 			MeasuredAtText = string.Empty;
 			IndicatorText = string.Empty;
-			runningIndicator = 0;
+			indicatorState = 0;
 		}
 	}
 }

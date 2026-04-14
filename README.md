@@ -143,6 +143,14 @@ In Heart rate options is possible to setup adjustments to how heart rate value i
 
 
 
+## Test heart rate mode
+
+Test heart rate mode allows you to simulate heart rate OSC data without connecting to Pulsoid. This is useful for testing your OSC setup or integrations without needing to have a heart rate monitor or a valid Pulsoid token.
+
+When test mode is running, the app will generate oscillating heart rate values based on Min, Max, Step and Interval values.
+
+
+
 ## Used Libraries
 
 [SharpOSC](https://github.com/ValdemarOrn/SharpOSC) is a small library designed to make interacting with Open Sound Control easy (OSC).

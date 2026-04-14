@@ -16,6 +16,7 @@ namespace PulsoidToOSC
 		public OptionsHeartrateViewModel OptionsHeartrateViewModel { get; }
 		public OptionsParametersViewModel OptionsParametersViewModel { get; }
 		public OptionsUIViewModel OptionsUIViewModel { get; }
+		public OptionsToolslViewModel OptionsToolslViewModel { get; }
 
 		public ICommand OptionsDoneCommand { get; }
 		public ICommand OptionsApplyCommand { get; }
@@ -29,6 +30,7 @@ namespace PulsoidToOSC
 			OptionsHeartrateViewModel = new OptionsHeartrateViewModel(this);
 			OptionsParametersViewModel = new OptionsParametersViewModel(this);
 			OptionsUIViewModel = new OptionsUIViewModel(this);
+			OptionsToolslViewModel = new OptionsToolslViewModel(this);
 
 			OptionsDoneCommand = new RelayCommand(OptionsDone);
 			OptionsApplyCommand = new RelayCommand(OptionsApply);
@@ -70,18 +72,22 @@ namespace PulsoidToOSC
 			OptionsHeartrateViewModel.HrUndesiredValuesText = string.Join(";", ConfigData.HrUndesiredValues);
 			OptionsHeartrateViewModel.HrRandomValueCheckmark = ConfigData.HrRandomValue;
 
-			// UI
-			OptionsUIViewModel.ColorUseCustomCheckmark = ConfigData.UIColorUseCustom;
-			OptionsUIViewModel.ColorErrorText = ConfigData.UIColorError;
-			OptionsUIViewModel.ColorWarningText = ConfigData.UIColorWarning;
-			OptionsUIViewModel.ColorRunningText = ConfigData.UIColorRunning;
-
 			// Parameters
 			OptionsParametersViewModel.Parameters.Clear();
 			foreach (OSCParameter oscParameter in ConfigData.OSCParameters)
 			{
 				OptionsParametersViewModel.Parameters.Add(new() { ParametersOptionsViewModel = OptionsParametersViewModel, Name = oscParameter.Name, Type = oscParameter.Type });
 			}
+
+			// UI
+			OptionsUIViewModel.ColorUseCustomCheckmark = ConfigData.UIColorUseCustom;
+			OptionsUIViewModel.ColorErrorText = ConfigData.UIColorError;
+			OptionsUIViewModel.ColorWarningText = ConfigData.UIColorWarning;
+			OptionsUIViewModel.ColorRunningText = ConfigData.UIColorRunning;
+
+			// Tools
+			OptionsToolslViewModel.TestHeartRateButton = _mainViewModel.StartButton;
+
 
 			// Open window
 			OptionsWindow = new()
@@ -102,8 +108,9 @@ namespace PulsoidToOSC
 			OptionsOscViewModel.OptionsApply();
 			OptionsVRChatViewModel.OptionsApply();
 			OptionsHeartrateViewModel.OptionsApply();
-			OptionsUIViewModel.OptionsApply();
 			OptionsParametersViewModel.OptionsApply();
+			OptionsUIViewModel.OptionsApply();
+			OptionsToolslViewModel.OptionsApply();
 			ConfigData.SaveConfig();
 		}
 
@@ -113,8 +120,9 @@ namespace PulsoidToOSC
 			OptionsOscViewModel.OptionsApply();
 			OptionsVRChatViewModel.OptionsApply();
 			OptionsHeartrateViewModel.OptionsApply();
-			OptionsUIViewModel.OptionsApply();
 			OptionsParametersViewModel.OptionsApply();
+			OptionsUIViewModel.OptionsApply();
+			OptionsToolslViewModel.OptionsApply();
 			ConfigData.SaveConfig();
 
 			OptionsWindow?.Close();

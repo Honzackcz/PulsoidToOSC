@@ -120,7 +120,8 @@ namespace PulsoidToOSC
 			_appSate = AppSates.Stopping;
 
 			_awaitWSConnectionLost.TrySetResult(false);
-			if(_heartRateDataTimeoutRunning) _heartRateDataTimeoutCts.Cancel();
+			if (_heartRateDataTimeoutRunning) _heartRateDataTimeoutCts.Cancel();
+			if (TestHeartRate.Running) TestHeartRate.Cts.Cancel();
 
 			MainViewModel.StartButton = MainViewModel.StartButtonType.Disabled;
 
@@ -238,6 +239,77 @@ namespace PulsoidToOSC
 
 			if (HeartRate.HRValue > 0 && hrSucceed) MainViewModel.SetRunning($"BPM: {HeartRate.HRValue}", measuredAt > 0 ? "Measured at: " + DateTimeOffset.FromUnixTimeMilliseconds(measuredAt).LocalDateTime.ToLongTimeString() : string.Empty);
 			else MainViewModel.SetError("Error at obtaining heart rate data!");
+		}
+
+
+		internal static class TestHeartRate
+		{
+			public static bool Running { get => _testHeartRateRunning; }
+			public static CancellationTokenSource Cts { get => _testHeartRateCts; }
+			public static int MinHeartRate { get => _minHeartRate; set => _minHeartRate = Math.Clamp(value, 1, _maxHeartRate); }
+			public static int MaxHeartRate { get => _maxHeartRate; set => _maxHeartRate = Math.Clamp(value, _minHeartRate, 255); }
+			public static int IncrementStep { get => _incrementStep; set => _incrementStep = Math.Clamp(value, 1, 10); }
+			public static int IncrementInterval { get => _incrementInterval; set => _incrementInterval = Math.Clamp(value, 1, 100); }
+
+			private static bool _testHeartRateRunning = false;
+			private static CancellationTokenSource _testHeartRateCts = new();
+			private static int _minHeartRate = 60;
+			private static int _maxHeartRate = 120;
+			private static int _incrementStep = 1;
+			private static int _incrementInterval = 10;
+
+			public static async void Start()
+			{
+				if (_appSate == AppSates.Running && _testHeartRateRunning)
+				{
+					_ = StopPulsoidToOSC();
+					return;
+				}
+				if (_appSate != AppSates.Stopped) return;
+
+				_appSate = AppSates.Starting;
+				MainViewModel.StartButton = MainViewModel.StartButtonType.Disabled;
+				MainViewModel.SetWarning("Starting heart rate test...");
+				HeartRate.Reset();
+				SetupOSC();
+				VRCOSC.Query.SetupQuery();
+
+				_testHeartRateCts = new();
+				_testHeartRateRunning = true;
+				_appSate = AppSates.Running;
+				MainViewModel.StartButton = MainViewModel.StartButtonType.Stop;
+
+				int heartRate = Math.Clamp(80, _minHeartRate, _maxHeartRate);
+				bool increasing = true;
+
+				while (_appSate == AppSates.Running && _testHeartRateRunning && !_testHeartRateCts.IsCancellationRequested)
+				{
+					//{"measured_at": 1625310655000, "data": {"heart_rate": 40}}"
+					OnWSMessage("{\"measured_at\": " + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + ", \"data\": {\"heart_rate\": " + heartRate + "}}");
+
+					if (increasing)
+					{
+						heartRate = Math.Clamp(heartRate + _incrementStep, _minHeartRate, _maxHeartRate);
+						if (heartRate >= _maxHeartRate) increasing = false;
+					}
+					else
+					{
+						heartRate = Math.Clamp(heartRate - _incrementStep, _minHeartRate, _maxHeartRate);
+						if (heartRate <= _minHeartRate) increasing = true;
+					}
+
+					try
+					{
+						await Task.Delay(_incrementInterval * 100, _testHeartRateCts.Token);
+					}
+					catch
+					{
+						break;
+					}
+				}
+
+				_testHeartRateRunning = false;
+			}
 		}
 	}
 }
