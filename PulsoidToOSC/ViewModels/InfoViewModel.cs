@@ -10,7 +10,6 @@ namespace PulsoidToOSC
 		public InfoWindow? InfoWindow { get; private set; }
 
 		private readonly MainViewModel _mainViewModel;
-		private readonly string _versionText = "Version: ";
 		private bool _isNewVersionAvailable = false;
 
 		public bool IsNewVersionAvailable
@@ -20,7 +19,7 @@ namespace PulsoidToOSC
 		}
 		public string VersionText
 		{
-			get => _versionText + MainProgram.AppVersion;
+			get => Locale.GetText(Locale.Keys.InfoWindow.Version, MainProgram.AppVersion);
 		}
 		public string NewVersionIndicator
 		{

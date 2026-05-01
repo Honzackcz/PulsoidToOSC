@@ -5,15 +5,18 @@ namespace PulsoidToOSC
 {
 	internal static class ConfigData
 	{
-		public static readonly System.Globalization.NumberStyles FloatStyle = System.Globalization.NumberStyles.AllowDecimalPoint | System.Globalization.NumberStyles.AllowLeadingWhite | System.Globalization.NumberStyles.AllowTrailingWhite;
-		public static readonly System.Globalization.CultureInfo FloatLocal = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
-
 		private const string FilePath = "config.txt";
+
+		// format of saved float data in config file
+		public static readonly System.Globalization.NumberStyles FloatStyle = System.Globalization.NumberStyles.AllowDecimalPoint | System.Globalization.NumberStyles.AllowLeadingWhite | System.Globalization.NumberStyles.AllowTrailingWhite;
+		public static readonly System.Globalization.CultureInfo FloatLocale = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+
 		// General
 		private static string _pulsoidToken = string.Empty;
 		private static bool _autoStart = true;
 		private static bool _startMinimized = false;
 		private static bool _minimizeToTray = false;
+		private static string _locale = string.Empty;
 		// OSC
 		private static bool _oscUseManualConfig = true;
 		private static IPAddress _oscIP = IPAddress.Parse("127.0.0.1");
@@ -30,7 +33,7 @@ namespace PulsoidToOSC
 		private static float _hrTrendMin = 2f;
 		private static float _hrTrendMax = 2f;
 		private static int _hrOffset = 0;
-		private static List<int> _hrUndesiredValues = new List<int>();
+		private static List<int> _hrUndesiredValues = [];
 		private static bool _hrRandomValue = false;
 		// UI
 		private static bool _uiColorUseCustom = false;
@@ -80,6 +83,12 @@ namespace PulsoidToOSC
 			get => _minimizeToTray;
 			set => _minimizeToTray = value;
 		}
+		public static string Locale
+		{
+			get => _locale;
+			set => _locale = value;
+		}
+
 		// OSC
 		public static bool OSCUseManualConfig
 		{
@@ -194,6 +203,7 @@ namespace PulsoidToOSC
 			writer.WriteLine($"autoStart={AutoStart}");
 			writer.WriteLine($"startMinimized={StartMinimized}");
 			writer.WriteLine($"minimizeToTray={MinimizeToTray}");
+			writer.WriteLine($"locale={Locale}");
 			// OSC
 			writer.WriteLine($"oscUseManualConfig={OSCUseManualConfig}");
 			writer.WriteLine($"oscIP={OSCIP}");
@@ -207,8 +217,8 @@ namespace PulsoidToOSC
 			// Heart rate
 			writer.WriteLine($"hrFloatMin={HrFloatMin}");
 			writer.WriteLine($"hrFloatMax={HrFloatMax}");
-			writer.WriteLine($"hrTrendMin={HrTrendMin.ToString(FloatLocal)}");
-			writer.WriteLine($"hrTrendMax={HrTrendMax.ToString(FloatLocal)}");
+			writer.WriteLine($"hrTrendMin={HrTrendMin.ToString(FloatLocale)}");
+			writer.WriteLine($"hrTrendMax={HrTrendMax.ToString(FloatLocale)}");
 			writer.WriteLine($"hrOffset={HrOffset}");
 			writer.WriteLine($"hrUndesiredValues={string.Join(";", HrUndesiredValues)}");
 			writer.WriteLine($"hrRandomValue={HrRandomValue}");
@@ -232,6 +242,7 @@ namespace PulsoidToOSC
 			string? autoStart = null;
 			string? startMinimized = null;
 			string? minimizeToTray = null;
+			string? locale = null;
 			// OSC
 			string? oscUseManualConfig = null;
 			string? oscIP = null;
@@ -284,6 +295,9 @@ namespace PulsoidToOSC
 								break;
 							case "minimizeToTray":
 								minimizeToTray = value;
+								break;
+							case "locale":
+								locale = value;
 								break;
 							// OSC
 							case "oscUseManualConfig":
@@ -372,6 +386,7 @@ namespace PulsoidToOSC
 			if (bool.TryParse(autoStart, out bool parsedAutoStart)) AutoStart = parsedAutoStart;
 			if (bool.TryParse(startMinimized, out bool parsedStartMinimized)) StartMinimized = parsedStartMinimized;
 			if (bool.TryParse(minimizeToTray, out bool parsedMinimizeToTray)) MinimizeToTray = parsedMinimizeToTray;
+			if (locale != null) Locale = locale;
 			// OSC
 			if (bool.TryParse(oscUseManualConfig, out bool parsedOSCUseManualConfig)) OSCUseManualConfig = parsedOSCUseManualConfig;
 			if (IPAddress.TryParse(oscIP, out IPAddress? parsedOSCIP)) OSCIP = parsedOSCIP;
@@ -390,8 +405,8 @@ namespace PulsoidToOSC
 			// Heart rate
 			if (int.TryParse(hrFloatMin, out int parsedHrFloatMin) && parsedHrFloatMin <= 255 && parsedHrFloatMin >= 0) HrFloatMin = parsedHrFloatMin;
 			if (int.TryParse(hrFloatMax, out int parsedHrFloatMax) && parsedHrFloatMax <= 255 && parsedHrFloatMax >= 0) HrFloatMax = parsedHrFloatMax;
-			if (float.TryParse(hrTrendMin, FloatStyle, FloatLocal, out float parsedHrTrendMin) && parsedHrTrendMin <= 255f && parsedHrTrendMin >= 0.1) HrTrendMin = parsedHrTrendMin;
-			if (float.TryParse(hrTrendMax, FloatStyle, FloatLocal, out float parsedHrTrendMax) && parsedHrTrendMax <= 255f && parsedHrTrendMax >= 0.1) HrTrendMax = parsedHrTrendMax;
+			if (float.TryParse(hrTrendMin, FloatStyle, FloatLocale, out float parsedHrTrendMin) && parsedHrTrendMin <= 255f && parsedHrTrendMin >= 0.1) HrTrendMin = parsedHrTrendMin;
+			if (float.TryParse(hrTrendMax, FloatStyle, FloatLocale, out float parsedHrTrendMax) && parsedHrTrendMax <= 255f && parsedHrTrendMax >= 0.1) HrTrendMax = parsedHrTrendMax;
 			if (int.TryParse(hrOffset, out int parsedHrOffset) && parsedHrOffset < 255 && parsedHrOffset > -255) HrOffset = parsedHrOffset;
 			if (hrUndesiredValues.Count > 0) HrUndesiredValues = hrUndesiredValues;
 			if (bool.TryParse(hrRandomValue, out bool parsedHrRandomValue)) HrRandomValue = parsedHrRandomValue;

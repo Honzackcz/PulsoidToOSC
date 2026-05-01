@@ -6,7 +6,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:PulsoidToOSC"
 	mc:Ignorable="d"
-	Title="PulsoidToOSC options" ResizeMode="CanResizeWithGrip" MinHeight="360" Height="360" MinWidth="570" Width="570"
+	Title="{Binding Source={StaticResource Locale}, Path=[OptionsWindow.Title]}" ResizeMode="CanResizeWithGrip" MinHeight="300" Height="500" MinWidth="600" Width="700"
 	d:DataContext="{d:DesignInstance Type=local:OptionsViewModel}">
 
 	<Window.Resources>
@@ -998,18 +998,17 @@
 			<Grid Width="200">
 				<Button
 					Margin="0,4,0,12"
-					HorizontalAlignment="Left"
 					Name="ApplyOptionsButton"
 					Command="{Binding OptionsApplyCommand}"
-					Content="Apply"
-					ToolTip="Apply and save changes"
+					Content="{Binding Source={StaticResource Locale}, Path=[General.Apply]}"
+					ToolTip="{Binding Source={StaticResource Locale}, Path=[General.Apply.Tooltip]}"
 				/>
 				<Button
+					Grid.Column="2"
 					Margin="0,4,0,12"
-					HorizontalAlignment="Right"
 					Command="{Binding OptionsDoneCommand}"
-					Content="Done"
-					ToolTip="Close options window, apply and save changes"
+					Content="{Binding Source={StaticResource Locale}, Path=[General.Done]}"
+					ToolTip="{Binding Source={StaticResource Locale}, Path=[General.Done.Tooltip]}"
 				/>
 			</Grid>
 		</Grid>

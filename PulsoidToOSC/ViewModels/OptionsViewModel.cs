@@ -147,5 +147,16 @@ namespace PulsoidToOSC
 			}
 			OptionsWindow = null;
 		}
+
+		public void RefreshLocale()
+		{
+			GeneralViewModel.RefreshLocale();
+			OscViewModel.RefreshLocale();
+			VRChatViewModel.RefreshLocale();
+			HeartRateViewModel.RefreshLocale();
+			ParametersViewModel.RefreshLocale();
+			UIViewModel.RefreshLocale();
+			ToolsViewModel.RefreshLocale();
+		}
 	}
 }

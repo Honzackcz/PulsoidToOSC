@@ -7,7 +7,7 @@
 	xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
 	xmlns:local="clr-namespace:PulsoidToOSC"
 	mc:Ignorable="d"
-	Title="PulsoidToOSC color picker" ResizeMode="NoResize" Height="490" Width="300"
+	Title="{Binding Source={StaticResource Locale}, Path=[ColorPickerWindow.Title]}" ResizeMode="NoResize" Height="490" Width="300"
     d:DataContext="{d:DesignInstance Type=local:OptionsUIViewModel}">
 
 	<Grid>
@@ -70,8 +70,8 @@
 			VerticalAlignment="Bottom"
 			HorizontalAlignment="Center"
 			Command="{Binding ColorPickerDoneCommand}"
-			Content="Done"
-			ToolTip="Close options window and apply changes"
+			Content="{Binding Source={StaticResource Locale}, Path=[General.Done]}"
+			ToolTip="{Binding Source={StaticResource Locale}, Path=[ColorPickerWindow.Done.Tooltip]}"
 		/>
 	</Grid>
 </Window>

@@ -6,7 +6,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:PulsoidToOSC"
 	mc:Ignorable="d"
-	Title="PulsoidToOSC info" ResizeMode="NoResize" Height="280" Width="410"
+	Title="{Binding Source={StaticResource Locale}, Path=[InfoWindow.Title]}" ResizeMode="NoResize" Height="280" Width="410"
     d:DataContext="{d:DesignInstance Type=local:InfoViewModel}">
 
 	<Window.Resources>
@@ -41,7 +41,7 @@
 				HorizontalAlignment="Center"
 				TextWrapping="Wrap"
 				TextAlignment="Center"
-				Text="Simple tool for streaming heart rate from Pulsoid to OSC, with extra support for VRChat."    
+				Text="{Binding Source={StaticResource Locale}, Path=[InfoWindow.AboutText]}"    
 			/>
 
 			<TextBlock
@@ -63,7 +63,7 @@
 				Margin="4"
 				HorizontalAlignment="Center"
 			>
-				<TextBlock Text="Project page on"/>
+				<TextBlock Text="{Binding Source={StaticResource Locale}, Path=[InfoWindow.GitHub]}"/>
 				<Hyperlink
 					Command="{Binding OpenGitHubCommand}"
 					ToolTip="https://github.com/Honzackcz/PulsoidToOSC"
@@ -85,7 +85,7 @@
 				>
 					<TextBlock
 						Visibility="{Binding NewVersionIndicator}"
-						Text="New version is available!"
+						Text="{Binding Source={StaticResource Locale}, Path=[InfoWindow.NewVersion]}"
 					/>
 				</Hyperlink>
 			</TextBlock>
@@ -94,7 +94,7 @@
 		<Grid Grid.Row="1">
 			<Button
 				Command="{Binding InfoOKCommand}"
-				Content="OK"
+				Content="{Binding Source={StaticResource Locale}, Path=[General.OK]}"
 				Margin="0,0,0,12"
 				HorizontalAlignment="Center"
 			/>

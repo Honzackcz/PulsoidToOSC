@@ -11,15 +11,9 @@ namespace PulsoidToOSC
 		public enum StartButtonType { Disabled, Start, Stop }
 
 		private StartButtonType _startButton = StartButtonType.Start;
-		private readonly Dictionary<StartButtonType, string> StartButtonContents = new()
-		{
-			{StartButtonType.Disabled, string.Empty},
-			{StartButtonType.Start, "Start"},
-			{StartButtonType.Stop, "Stop"},
-		};
 
-		private readonly string[] indicatorsRunning = { "\xE95E  \xE915  \xE915", "\xE915  \xE95E  \xE915", "\xE915  \xE915  \xE95E" };
-		private readonly string[] indicatorsTesting = { "\xEC7A  \xE915  \xE915", "\xE915  \xEC7A  \xE915", "\xE915  \xE915  \xEC7A" };
+		private readonly string[] indicatorsRunning = ["\xE95E  \xE915  \xE915", "\xE915  \xE95E  \xE915", "\xE915  \xE915  \xE95E"];
+		private readonly string[] indicatorsTesting = ["\xEC7A  \xE915  \xE915", "\xE915  \xEC7A  \xE915", "\xE915  \xE915  \xEC7A"];
 		private int indicatorState = 0;
 
 		private string _bpmText = string.Empty;
@@ -42,7 +36,7 @@ namespace PulsoidToOSC
 		}
 		public string StartButtonContent
 		{
-			get => StartButtonContents[_startButton];
+			get => StartButtonContents(_startButton);
 		}
 		public bool StartButtonEnabled
 		{
@@ -167,7 +161,7 @@ namespace PulsoidToOSC
 			IndicatorText = "\xE7BA";
 		}
 
-		public void SetRunning(string bpmText, string measuredAtText)
+		public void SetRunning(string bpmText, string measuredAtText, bool testing = false)
 		{
 			if (ConfigData.UIColorUseCustom) TextColorType = "Custom";
 			else TextColorType = "Running";
@@ -175,7 +169,7 @@ namespace PulsoidToOSC
 			InfoText = string.Empty;
 			BPMText = bpmText;
 			MeasuredAtText = measuredAtText;
-			IndicatorText = MainProgram.TestHeartRate.Running ? indicatorsTesting[indicatorState] : indicatorsRunning[indicatorState];
+			IndicatorText = testing ? indicatorsTesting[indicatorState] : indicatorsRunning[indicatorState];
 			indicatorState++;
 			if (indicatorState > 2) indicatorState = 0;
 		}
@@ -189,6 +183,93 @@ namespace PulsoidToOSC
 			MeasuredAtText = string.Empty;
 			IndicatorText = string.Empty;
 			indicatorState = 0;
+		}
+
+		private static string StartButtonContents(StartButtonType type)
+		{
+			return type switch
+			{
+				StartButtonType.Disabled => string.Empty,
+				StartButtonType.Start => Locale.GetText(Locale.Keys.General.Start),
+				StartButtonType.Stop => Locale.GetText(Locale.Keys.General.Stop),
+				_ => string.Empty,
+			};
+		}
+
+		public enum StatusType { None, Running, RunningTest, AutoStart, TestStart, Connecting, Waiting, Closing, InvalidToken, ConnectionError, ConnectionRetry, DataError }
+		private StatusType _currentStatus = StatusType.None;
+		private int _currentBpm = 0;
+		private DateTime _currentMeasuredAt = DateTime.MinValue;
+		private int _currentRetryAttempt = 0;
+		private void SetStatus(StatusType status, int bpm, DateTime measuredAt, int retryAttempt)
+		{
+			_currentStatus = status;
+			_currentBpm = bpm;
+			_currentMeasuredAt = measuredAt;
+			_currentRetryAttempt = retryAttempt;
+
+			switch (status)
+			{
+				//running
+				case StatusType.Running:
+					SetRunning(Locale.GetText(Locale.Keys.MainWindow.Status.BPM, bpm), measuredAt > DateTime.MinValue ? Locale.GetText(Locale.Keys.MainWindow.Status.MeasuredAt, measuredAt.ToLongTimeString()) : string.Empty, false);
+					break;
+				case StatusType.RunningTest:
+					SetRunning(Locale.GetText(Locale.Keys.MainWindow.Status.BPM, bpm), measuredAt > DateTime.MinValue ? Locale.GetText(Locale.Keys.MainWindow.Status.MeasuredAt, measuredAt.ToLongTimeString()) : string.Empty, true);
+					break;
+
+				//warning
+				case StatusType.AutoStart:
+					SetWarning(Locale.GetText(Locale.Keys.MainWindow.Status.AutoStart));
+					break;
+				case StatusType.TestStart:
+					SetWarning(Locale.GetText(Locale.Keys.MainWindow.Status.TestStart));
+					break;
+				case StatusType.Connecting:
+					SetWarning(Locale.GetText(Locale.Keys.MainWindow.Status.Connecting));
+					break;
+				case StatusType.Waiting:
+					SetWarning(Locale.GetText(Locale.Keys.MainWindow.Status.Waiting));
+					break;
+				case StatusType.Closing:
+					SetWarning(Locale.GetText(Locale.Keys.MainWindow.Status.Closing));
+					break;
+
+				//error
+				case StatusType.InvalidToken:
+					SetError(Locale.GetText(Locale.Keys.MainWindow.Status.InvalidToken));
+					break;
+				case StatusType.ConnectionError:
+					SetError(Locale.GetText(Locale.Keys.MainWindow.Status.ConnectionError));
+					break;
+				case StatusType.ConnectionRetry:
+					SetError(Locale.GetText(Locale.Keys.MainWindow.Status.RetryConnection, retryAttempt));
+					break;
+				case StatusType.DataError:
+					SetError(Locale.GetText(Locale.Keys.MainWindow.Status.DataError));
+					break;
+
+				default:
+					ClearUI();
+					return;
+			}
+		}
+		public void SetStatus(StatusType status)
+		{
+			SetStatus(status, 0, DateTime.MinValue, 0);
+		}
+		public void SetStatus(StatusType status, int bpm, DateTime measuredAt)
+		{
+			SetStatus(status, bpm, measuredAt, 0);
+		}
+		public void SetStatus(StatusType status, int retryAttempt)
+		{
+			SetStatus(status, 0, DateTime.MinValue, retryAttempt);
+		}
+		public void RefreshLocale()
+		{
+			StartButton = _startButton;
+			SetStatus(_currentStatus, _currentBpm, _currentMeasuredAt, _currentRetryAttempt);
 		}
 	}
 }

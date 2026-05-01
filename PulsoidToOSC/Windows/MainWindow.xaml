@@ -203,7 +203,7 @@
 								HorizontalContentAlignment="Center"
 								VerticalContentAlignment="Center"
 								Command="{Binding OpenInfoCommand}"
-								ToolTip="Informations"
+								ToolTip="{Binding Source={StaticResource Locale}, Path=[General.Informations]}"
 								Width="32"
 								Height="32"
 							>
@@ -241,7 +241,7 @@
 							Content="&#xE713;"
 							FontFamily="{StaticResource SymbolThemeFontFamily}"
 							FontSize="20"
-							ToolTip="Options"
+							ToolTip="{Binding Source={StaticResource Locale}, Path=[General.Options]}"
 							Width="32"
 							Height="32"
 						/>

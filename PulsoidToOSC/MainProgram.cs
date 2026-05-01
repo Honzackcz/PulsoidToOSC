@@ -26,6 +26,10 @@ namespace PulsoidToOSC
 		{
 			ConfigData.LoadConfig();
 
+			Locale.FetchLocaleFiles();
+			Locale.LoadDefaultLocale();
+			Locale.LoadCurrentLocale(ConfigData.Locale);
+
 			if (!MyRegex.GUID().IsMatch(ConfigData.PulsoidToken)) PulsoidApi.TokenValidity = PulsoidApi.TokenValidityStatus.Invalid;
 
 			MainViewModel.OpenMainWindow();
@@ -35,7 +39,7 @@ namespace PulsoidToOSC
 
 			if (ConfigData.AutoStart && PulsoidApi.TokenValidity != PulsoidApi.TokenValidityStatus.Invalid)
 			{
-				MainViewModel.SetWarning("Auto start...");
+				MainViewModel.SetStatus(MainViewModel.StatusType.AutoStart);
 
 				_ = Task.Run(async () =>
 				{
@@ -68,13 +72,13 @@ namespace PulsoidToOSC
 
 				if (PulsoidApi.TokenValidity == PulsoidApi.TokenValidityStatus.Invalid)
 				{
-					MainViewModel.SetError("Invalid Pulsoid token!\nIn options setup valid token.");
+					MainViewModel.SetStatus(MainViewModel.StatusType.InvalidToken);
 					return;
 				}
 
 				_appSate = AppSates.Starting;
 				MainViewModel.StartButton = MainViewModel.StartButtonType.Disabled;
-				MainViewModel.SetWarning("Connecting to Pulsoid...");
+				MainViewModel.SetStatus(MainViewModel.StatusType.Connecting);
 				HeartRate.Reset();
 				SetupOSC();
 				VRCOSC.Query.SetupQuery();
@@ -89,7 +93,7 @@ namespace PulsoidToOSC
 
 					if (_failedWSConnectionAttempts <= 20)
 					{
-						MainViewModel.SetError($"Error: Connection to Pulsoid!\nRetrying connection... ({_failedWSConnectionAttempts})");
+						MainViewModel.SetStatus(MainViewModel.StatusType.ConnectionRetry, _failedWSConnectionAttempts);
 
 						_delayedStartTaskCts = new();
 						try
@@ -127,7 +131,7 @@ namespace PulsoidToOSC
 
 			if (SimpleWSClient.ClientState == WebSocketState.Open)
 			{
-				MainViewModel.SetWarning("Closing connection to Pulsoid...");
+				MainViewModel.SetStatus(MainViewModel.StatusType.Closing);
 				await SimpleWSClient.CloseConnectionAsync();
 			}
 
@@ -136,7 +140,7 @@ namespace PulsoidToOSC
 
 			_appSate = AppSates.Stopped;
 			MainViewModel.StartButton = MainViewModel.StartButtonType.Start;
-			MainViewModel.ClearUI();
+			MainViewModel.SetStatus(MainViewModel.StatusType.None);
 		}
 
 		public static async void RestartPulsoidToOSC()
@@ -179,7 +183,7 @@ namespace PulsoidToOSC
 					_wsMessageTimeout = true;
 					HeartRate.Send();
 
-					MainViewModel.SetWarning("Waiting for heart rate...");
+					MainViewModel.SetStatus(MainViewModel.StatusType.Waiting);
 				}
 
 				try
@@ -200,7 +204,7 @@ namespace PulsoidToOSC
 			PulsoidApi.TokenValidity = PulsoidApi.TokenValidityStatus.Valid;
 			_failedWSConnectionAttempts = 0;
 
-			MainViewModel.SetWarning("Waiting for heart rate...");
+			MainViewModel.SetStatus(MainViewModel.StatusType.Waiting);
 
 			HeartRateDataTimeout();
 		}
@@ -214,11 +218,11 @@ namespace PulsoidToOSC
 
 				PulsoidApi.TokenValidity = PulsoidApi.TokenValidityStatus.Invalid;
 
-				MainViewModel.SetError("Invalid Pulsoid token!\nIn options setup valid token.");
+				MainViewModel.SetStatus(MainViewModel.StatusType.InvalidToken);
 			}
 			else if (response.WebSocketCloseStatusCode > 1000 && SimpleWSClient.ClientState != WebSocketState.Open && SimpleWSClient.ClientState != WebSocketState.Connecting) //Connection lost
 			{
-				MainViewModel.SetError("Error: Connection to Pulsoid!");
+				MainViewModel.SetStatus(MainViewModel.StatusType.ConnectionError);
 
 				_awaitWSConnectionLost.TrySetResult(true);
 			}
@@ -237,8 +241,8 @@ namespace PulsoidToOSC
 
 			HeartRate.Send(heartRate);
 
-			if (HeartRate.HRValue > 0 && hrSucceed) MainViewModel.SetRunning($"BPM: {HeartRate.HRValue}", measuredAt > 0 ? "Measured at: " + DateTimeOffset.FromUnixTimeMilliseconds(measuredAt).LocalDateTime.ToLongTimeString() : string.Empty);
-			else MainViewModel.SetError("Error at obtaining heart rate data!");
+			if (HeartRate.HRValue > 0 && hrSucceed) MainViewModel.SetStatus(TestHeartRate.Running ? MainViewModel.StatusType.RunningTest : MainViewModel.StatusType.Running, HeartRate.HRValue, DateTimeOffset.FromUnixTimeMilliseconds(measuredAt).LocalDateTime);
+			else MainViewModel.SetStatus(MainViewModel.StatusType.DataError);
 		}
 
 
@@ -269,7 +273,7 @@ namespace PulsoidToOSC
 
 				_appSate = AppSates.Starting;
 				MainViewModel.StartButton = MainViewModel.StartButtonType.Disabled;
-				MainViewModel.SetWarning("Starting heart rate test...");
+				MainViewModel.SetStatus(MainViewModel.StatusType.TestStart);
 				HeartRate.Reset();
 				SetupOSC();
 				VRCOSC.Query.SetupQuery();
