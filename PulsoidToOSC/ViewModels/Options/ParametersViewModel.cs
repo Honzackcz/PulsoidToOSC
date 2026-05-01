@@ -1,17 +1,20 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 
-namespace PulsoidToOSC
+namespace PulsoidToOSC.ViewModels.Options
 {
-	internal class OptionsParametersViewModel : ViewModelBase
+	internal class ParametersViewModel : ViewModelBase
 	{
 		private readonly OptionsViewModel _optionsViewModel;
+		public string Title => Locale.GetText(Locale.Keys.OptionsWindow.Parameters.Title);
+		public string Icon => "\xF2C7";
+
 
 		public ObservableCollection<ParameterItem> Parameters { get; set; } = [];
 
 		public class ParameterItem : ViewModelBase
 		{
-			public OptionsParametersViewModel? ParametersOptionsViewModel { get; set; }
+			public ParametersViewModel? ParametersOptionsViewModel { get; set; }
 			private static readonly Dictionary<OSCParameter.Types, string> ParameterTypeNames = new()
 			{
 				{OSCParameter.Types.Integer, "HR Integer" },
@@ -113,7 +116,7 @@ namespace PulsoidToOSC
 		public ICommand OptionsParametersApplyCommand { get; }
 
 
-		public OptionsParametersViewModel(OptionsViewModel optionsViewModel)
+		public ParametersViewModel(OptionsViewModel optionsViewModel)
 		{
 			_optionsViewModel = optionsViewModel;
 			AddNewParameterCommand = new RelayCommand(AddNewParameter);
@@ -147,6 +150,11 @@ namespace PulsoidToOSC
 			ConfigData.OSCParameters = parameters;
 
 			if (canSaveConfig) ConfigData.SaveConfig();
+		}
+
+		public void RefreshLocale()
+		{
+			OnPropertyChanged(nameof(Title));
 		}
 	}
 }

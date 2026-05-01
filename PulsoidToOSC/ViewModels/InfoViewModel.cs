@@ -2,8 +2,9 @@
 using System.Windows;
 using System.ComponentModel;
 using System.Diagnostics;
+using PulsoidToOSC.Windows;
 
-namespace PulsoidToOSC
+namespace PulsoidToOSC.ViewModels
 {
 	internal class InfoViewModel : ViewModelBase
 	{
@@ -47,7 +48,7 @@ namespace PulsoidToOSC
 			{
 				DataContext = this,
 				Owner = _mainViewModel.MainWindow,
-				WindowStartupLocation = WindowStartupLocation.CenterOwner
+				WindowStartupLocation = _mainViewModel.MainWindow?.IsVisible ?? false ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen
 			};
 			InfoWindow.Closing += InfoWindowClosing;
 			InfoWindow.ShowDialog();

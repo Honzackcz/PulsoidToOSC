@@ -1,10 +1,13 @@
 ﻿using System.Windows.Input;
 
-namespace PulsoidToOSC
+namespace PulsoidToOSC.ViewModels.Options
 {
-	internal class OptionsVRChatViewModel : ViewModelBase
+	internal class VRChatViewModel : ViewModelBase
 	{
 		private readonly OptionsViewModel _optionsViewModel;
+		public string Title => Locale.GetText(Locale.Keys.OptionsWindow.VRChat.Title);
+		public string Icon => "\xE90A";
+
 
 		private bool _vrcAutoConfigCheckmark = false;
 		private bool _vrcClinetsOnLANCheckmark = false;
@@ -34,7 +37,7 @@ namespace PulsoidToOSC
 
 		public ICommand OptionsVRChatApplyCommand { get; }
 
-		public OptionsVRChatViewModel(OptionsViewModel optionsViewModel)
+		public VRChatViewModel(OptionsViewModel optionsViewModel)
 		{
 			_optionsViewModel = optionsViewModel;
 			OptionsVRChatApplyCommand = new RelayCommand(_optionsViewModel.OptionsApply);
@@ -71,6 +74,11 @@ namespace PulsoidToOSC
 			if (ConfigData.VRCChatboxMessage == VRCChatboxMessageText) return;
 			ConfigData.VRCChatboxMessage = VRCChatboxMessageText;
 			if (canSaveConfig) ConfigData.SaveConfig();
+		}
+
+		public void RefreshLocale()
+		{
+			OnPropertyChanged(nameof(Title));
 		}
 	}
 }

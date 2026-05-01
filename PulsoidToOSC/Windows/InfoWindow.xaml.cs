@@ -1,10 +1,7 @@
 ﻿using System.Windows;
 
-namespace PulsoidToOSC
+namespace PulsoidToOSC.Windows
 {
-	/// <summary>
-	/// Interakční logika pro InfoWindow.xaml
-	/// </summary>
 	public partial class InfoWindow : Window
 	{
 		public InfoWindow()

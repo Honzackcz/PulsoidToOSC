@@ -1,11 +1,12 @@
 ﻿<Window
-	x:Class="PulsoidToOSC.MainWindow"
+	x:Class="PulsoidToOSC.Windows.MainWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:tb="http://www.hardcodet.net/taskbar"
+	xmlns:local="clr-namespace:PulsoidToOSC.ViewModels"
 	mc:Ignorable="d"
 	Title="PulsoidToOSC" ResizeMode="CanMinimize" Height="200" Width="400"
 	d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
@@ -73,19 +74,19 @@
 			</Style.Triggers>
 		</Style>
 
-        <Style x:Key="DynamicTextColorStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding TextColorType}" Value="Running">
-                    <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding TextColorType}" Value="Warning">
-                    <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding TextColorType}" Value="Error">
-                    <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding TextColorType}" Value="Custom">
+		<Style x:Key="DynamicTextColorStyle" TargetType="TextBlock">
+			<Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding TextColorType}" Value="Running">
+					<Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+				</DataTrigger>
+				<DataTrigger Binding="{Binding TextColorType}" Value="Warning">
+					<Setter Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}"/>
+				</DataTrigger>
+				<DataTrigger Binding="{Binding TextColorType}" Value="Error">
+					<Setter Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}"/>
+				</DataTrigger>
+				<DataTrigger Binding="{Binding TextColorType}" Value="Custom">
 					<Setter Property="Foreground" Value="{Binding TextColor}"/>
 				</DataTrigger>
 			</Style.Triggers>

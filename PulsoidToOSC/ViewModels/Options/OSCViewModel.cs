@@ -1,11 +1,14 @@
 ﻿using System.Net;
 using System.Windows.Input;
 
-namespace PulsoidToOSC
+namespace PulsoidToOSC.ViewModels.Options
 {
-	internal class OptionsOscViewModel : ViewModelBase
+	internal class OSCViewModel : ViewModelBase
 	{
 		private readonly OptionsViewModel _optionsViewModel;
+		public string Title => Locale.GetText(Locale.Keys.OptionsWindow.OSC.Title);
+		public string Icon => "\xEDA3";
+
 
 		private bool _oscManualConfigCheckmark = false;
 		private string _oscIpText = string.Empty;
@@ -49,7 +52,7 @@ namespace PulsoidToOSC
 
 		public ICommand OptionsOSCApplyCommand { get; }
 
-		public OptionsOscViewModel(OptionsViewModel optionsViewModel)
+		public OSCViewModel(OptionsViewModel optionsViewModel)
 		{
 			_optionsViewModel = optionsViewModel;
 			OptionsOSCApplyCommand = new RelayCommand(_optionsViewModel.OptionsApply);
@@ -77,7 +80,7 @@ namespace PulsoidToOSC
 			{
 				ConfigData.OSCIP = parsedIp;
 				saveConfig = true;
-				if (_optionsViewModel != null) _optionsViewModel.RestartToApplyOptions = true;
+				_optionsViewModel?.RestartToApplyOptions = true;
 			}
 
 			// OSC Port
@@ -85,7 +88,7 @@ namespace PulsoidToOSC
 			{
 				ConfigData.OSCPort = parsedPort;
 				saveConfig = true;
-				if (_optionsViewModel != null) _optionsViewModel.RestartToApplyOptions = true;
+				_optionsViewModel?.RestartToApplyOptions = true;
 			}
 
 			//OSC Path
@@ -103,6 +106,11 @@ namespace PulsoidToOSC
 			OSCIPText = ConfigData.OSCIP.ToString();
 			OSCPortText = ConfigData.OSCPort.ToString();
 			OSCPathText = ConfigData.OSCPath;
+		}
+
+		public void RefreshLocale()
+		{
+			OnPropertyChanged(nameof(Title));
 		}
 	}
 }

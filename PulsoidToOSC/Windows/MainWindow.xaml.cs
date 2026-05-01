@@ -1,15 +1,13 @@
-﻿using System.IO;
+﻿using Hardcodet.Wpf.TaskbarNotification;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 
-namespace PulsoidToOSC
+namespace PulsoidToOSC.Windows
 {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
 	public partial class MainWindow : Window
 	{
 		public MainWindow()
@@ -52,8 +50,8 @@ namespace PulsoidToOSC
 			}
 			else
 			{
-			WindowState = WindowState.Minimized;
-		}
+				WindowState = WindowState.Minimized;
+			}
 		}
 
 		private void Close_Click(object sender, RoutedEventArgs e)

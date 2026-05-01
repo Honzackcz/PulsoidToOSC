@@ -1,8 +1,11 @@
-﻿using System.ComponentModel;
+﻿using PulsoidToOSC.ViewModels.Options;
+using PulsoidToOSC.Windows;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 
-namespace PulsoidToOSC
+namespace PulsoidToOSC.ViewModels
 {
 	internal class OptionsViewModel : ViewModelBase
 	{
@@ -10,13 +13,13 @@ namespace PulsoidToOSC
 		public OptionsWindow? OptionsWindow { get; private set; }
 		public bool RestartToApplyOptions { get; set; } = false;
 
-		public OptionsGeneralViewModel OptionsGeneralViewModel { get; }
-		public OptionsOscViewModel OptionsOscViewModel { get; }
-		public OptionsVRChatViewModel OptionsVRChatViewModel { get; }
-		public OptionsHeartrateViewModel OptionsHeartrateViewModel { get; }
-		public OptionsParametersViewModel OptionsParametersViewModel { get; }
-		public OptionsUIViewModel OptionsUIViewModel { get; }
-		public OptionsToolslViewModel OptionsToolslViewModel { get; }
+		public GeneralViewModel GeneralViewModel { get; }
+		public OSCViewModel OscViewModel { get; }
+		public VRChatViewModel VRChatViewModel { get; }
+		public HeartRateViewModel HeartRateViewModel { get; }
+		public ParametersViewModel ParametersViewModel { get; }
+		public UIViewModel UIViewModel { get; }
+		public ToolsViewModel ToolsViewModel { get; }
 
 		public ICommand OptionsDoneCommand { get; }
 		public ICommand OptionsApplyCommand { get; }
@@ -24,16 +27,42 @@ namespace PulsoidToOSC
 		public OptionsViewModel(MainViewModel mainViewModel)
 		{
 			_mainViewModel = mainViewModel;
-			OptionsGeneralViewModel = new OptionsGeneralViewModel(this);
-			OptionsOscViewModel = new OptionsOscViewModel(this);
-			OptionsVRChatViewModel = new OptionsVRChatViewModel(this);
-			OptionsHeartrateViewModel = new OptionsHeartrateViewModel(this);
-			OptionsParametersViewModel = new OptionsParametersViewModel(this);
-			OptionsUIViewModel = new OptionsUIViewModel(this);
-			OptionsToolslViewModel = new OptionsToolslViewModel(this);
+			GeneralViewModel = new GeneralViewModel(this);
+			OscViewModel = new OSCViewModel(this);
+			VRChatViewModel = new VRChatViewModel(this);
+			HeartRateViewModel = new HeartRateViewModel(this);
+			ParametersViewModel = new ParametersViewModel(this);
+			UIViewModel = new UIViewModel(this);
+			ToolsViewModel = new ToolsViewModel(this);
 
 			OptionsDoneCommand = new RelayCommand(OptionsDone);
 			OptionsApplyCommand = new RelayCommand(OptionsApply);
+
+			OptionCategories =
+			[
+				GeneralViewModel,
+				OscViewModel,
+				VRChatViewModel,
+				HeartRateViewModel,
+				ParametersViewModel,
+				UIViewModel,
+				ToolsViewModel
+			];
+
+			SelectedCategory = OptionCategories.First();
+		}
+
+		public ObservableCollection<object> OptionCategories { get; }
+
+		private object? _selectedCategory;
+		public object? SelectedCategory
+		{
+			get => _selectedCategory;
+			set
+			{
+				_selectedCategory = value;
+				OnPropertyChanged();
+			}
 		}
 
 		public void OpenOptionsWindow()
@@ -45,56 +74,57 @@ namespace PulsoidToOSC
 			}
 
 			// General
-			OptionsGeneralViewModel.TokenText = ConfigData.PulsoidToken;
-			OptionsGeneralViewModel.TokenValidity = PulsoidApi.TokenValidity;
+			GeneralViewModel.TokenText = ConfigData.PulsoidToken;
+			GeneralViewModel.TokenValidity = PulsoidApi.TokenValidity;
 			if (PulsoidApi.TokenValidity == PulsoidApi.TokenValidityStatus.Unknown)
 			{
 				Task.Run(async () =>
 				{
 					await PulsoidApi.ValidateToken();
-					OptionsGeneralViewModel.TokenValidity = PulsoidApi.TokenValidity;
+					GeneralViewModel.TokenValidity = PulsoidApi.TokenValidity;
 				});
 			}
-			OptionsGeneralViewModel.AutoStartCheckmark = ConfigData.AutoStart;
+			GeneralViewModel.AutoStartCheckmark = ConfigData.AutoStart;
 			GeneralViewModel.StartMinimizedCheckmark = ConfigData.StartMinimized;
 			GeneralViewModel.MinimizeToTrayCheckmark = ConfigData.MinimizeToTray;
+			GeneralViewModel.SelectedLocale = Locale.CurrentLocale;
 
 			// OSC
-			OptionsOscViewModel.OSCManualConfigCheckmark = ConfigData.OSCUseManualConfig;
-			OptionsOscViewModel.OSCIPText = ConfigData.OSCIP.ToString();
-			OptionsOscViewModel.OSCPortText = ConfigData.OSCPort.ToString();
-			OptionsOscViewModel.OSCPathText = ConfigData.OSCPath;
+			OscViewModel.OSCManualConfigCheckmark = ConfigData.OSCUseManualConfig;
+			OscViewModel.OSCIPText = ConfigData.OSCIP.ToString();
+			OscViewModel.OSCPortText = ConfigData.OSCPort.ToString();
+			OscViewModel.OSCPathText = ConfigData.OSCPath;
 
 			// VRChat
-			OptionsVRChatViewModel.VRCAutoConfigCheckmark = ConfigData.VRCUseAutoConfig;
-			OptionsVRChatViewModel.VRCClinetsOnLANCheckmark = ConfigData.VRCSendToAllClinetsOnLAN;
-			OptionsVRChatViewModel.VRCChatboxCheckmark = ConfigData.VRCSendBPMToChatbox;
-			OptionsVRChatViewModel.VRCChatboxMessageText = ConfigData.VRCChatboxMessage;
+			VRChatViewModel.VRCAutoConfigCheckmark = ConfigData.VRCUseAutoConfig;
+			VRChatViewModel.VRCClinetsOnLANCheckmark = ConfigData.VRCSendToAllClinetsOnLAN;
+			VRChatViewModel.VRCChatboxCheckmark = ConfigData.VRCSendBPMToChatbox;
+			VRChatViewModel.VRCChatboxMessageText = ConfigData.VRCChatboxMessage;
 
 			// Heart rate
-			OptionsHeartrateViewModel.HrFloatMinText = ConfigData.HrFloatMin.ToString();
-			OptionsHeartrateViewModel.HrFloatMaxText = ConfigData.HrFloatMax.ToString();
-			OptionsHeartrateViewModel.HrTrendMinText = ConfigData.HrTrendMin.ToString(ConfigData.FloatLocal);
-			OptionsHeartrateViewModel.HrTrendMaxText = ConfigData.HrTrendMax.ToString(ConfigData.FloatLocal);
-			OptionsHeartrateViewModel.HrOffsetText = ConfigData.HrOffset.ToString();
-			OptionsHeartrateViewModel.HrUndesiredValuesText = string.Join(";", ConfigData.HrUndesiredValues);
-			OptionsHeartrateViewModel.HrRandomValueCheckmark = ConfigData.HrRandomValue;
+			HeartRateViewModel.HrFloatMinText = ConfigData.HrFloatMin.ToString();
+			HeartRateViewModel.HrFloatMaxText = ConfigData.HrFloatMax.ToString();
+			HeartRateViewModel.HrTrendMinText = ConfigData.HrTrendMin.ToString(ConfigData.FloatLocale);
+			HeartRateViewModel.HrTrendMaxText = ConfigData.HrTrendMax.ToString(ConfigData.FloatLocale);
+			HeartRateViewModel.HrOffsetText = ConfigData.HrOffset.ToString();
+			HeartRateViewModel.HrUndesiredValuesText = string.Join(";", ConfigData.HrUndesiredValues);
+			HeartRateViewModel.HrRandomValueCheckmark = ConfigData.HrRandomValue;
 
 			// Parameters
-			OptionsParametersViewModel.Parameters.Clear();
+			ParametersViewModel.Parameters.Clear();
 			foreach (OSCParameter oscParameter in ConfigData.OSCParameters)
 			{
-				OptionsParametersViewModel.Parameters.Add(new() { ParametersOptionsViewModel = OptionsParametersViewModel, Name = oscParameter.Name, Type = oscParameter.Type });
+				ParametersViewModel.Parameters.Add(new() { ParametersOptionsViewModel = ParametersViewModel, Name = oscParameter.Name, Type = oscParameter.Type });
 			}
 
 			// UI
-			OptionsUIViewModel.ColorUseCustomCheckmark = ConfigData.UIColorUseCustom;
-			OptionsUIViewModel.ColorErrorText = ConfigData.UIColorError;
-			OptionsUIViewModel.ColorWarningText = ConfigData.UIColorWarning;
-			OptionsUIViewModel.ColorRunningText = ConfigData.UIColorRunning;
+			UIViewModel.ColorUseCustomCheckmark = ConfigData.UIColorUseCustom;
+			UIViewModel.ColorErrorText = ConfigData.UIColorError;
+			UIViewModel.ColorWarningText = ConfigData.UIColorWarning;
+			UIViewModel.ColorRunningText = ConfigData.UIColorRunning;
 
 			// Tools
-			OptionsToolslViewModel.TestHeartRateButton = _mainViewModel.StartButton;
+			ToolsViewModel.TestHeartRateButton = _mainViewModel.StartButton;
 
 
 			// Open window
@@ -113,25 +143,25 @@ namespace PulsoidToOSC
 		{
 			(OptionsWindow?.FindName("ApplyOptionsButton") as UIElement)?.Focus();
 
-			OptionsGeneralViewModel.OptionsApply();
-			OptionsOscViewModel.OptionsApply();
-			OptionsVRChatViewModel.OptionsApply();
-			OptionsHeartrateViewModel.OptionsApply();
-			OptionsParametersViewModel.OptionsApply();
-			OptionsUIViewModel.OptionsApply();
-			OptionsToolslViewModel.OptionsApply();
+			GeneralViewModel.OptionsApply();
+			OscViewModel.OptionsApply();
+			VRChatViewModel.OptionsApply();
+			HeartRateViewModel.OptionsApply();
+			ParametersViewModel.OptionsApply();
+			UIViewModel.OptionsApply();
+			ToolsViewModel.OptionsApply();
 			ConfigData.SaveConfig();
 		}
 
 		private void OptionsDone()
 		{
-			OptionsGeneralViewModel.OptionsApply(true);
-			OptionsOscViewModel.OptionsApply();
-			OptionsVRChatViewModel.OptionsApply();
-			OptionsHeartrateViewModel.OptionsApply();
-			OptionsParametersViewModel.OptionsApply();
-			OptionsUIViewModel.OptionsApply();
-			OptionsToolslViewModel.OptionsApply();
+			GeneralViewModel.OptionsApply(true);
+			OscViewModel.OptionsApply();
+			VRChatViewModel.OptionsApply();
+			HeartRateViewModel.OptionsApply();
+			ParametersViewModel.OptionsApply();
+			UIViewModel.OptionsApply();
+			ToolsViewModel.OptionsApply();
 			ConfigData.SaveConfig();
 
 			OptionsWindow?.Close();

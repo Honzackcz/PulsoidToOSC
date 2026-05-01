@@ -1,18 +1,13 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
-namespace PulsoidToOSC
+namespace PulsoidToOSC.ViewModels.Options
 {
-	internal class OptionsToolslViewModel : ViewModelBase
+	internal class ToolsViewModel : ViewModelBase
 	{
 		private readonly OptionsViewModel _optionsViewModel;
+		public string Title => Locale.GetText(Locale.Keys.OptionsWindow.Tools.Title);
+		public string Icon => "\xEC7A";
 
-		private readonly Dictionary<MainViewModel.StartButtonType, string> TestHeartRateButtonContents = new()
-		{
-			{MainViewModel.StartButtonType.Disabled, "Test heart rate"},
-			{MainViewModel.StartButtonType.Start, "Test heart rate"},
-			{MainViewModel.StartButtonType.Stop, "Stop testing"},
-		};
 
 		private MainViewModel.StartButtonType _testHeartRateButton = MainViewModel.StartButtonType.Start;
 		private string _minHeartRate = MainProgram.TestHeartRate.MinHeartRate.ToString();
@@ -39,7 +34,7 @@ namespace PulsoidToOSC
 		}
 		public string TestHeartRateButtonContent
 		{
-			get => TestHeartRateButtonContents[_testHeartRateButton];
+			get => TestHeartRateButtonContents(_testHeartRateButton);
 		}
 		public bool TestHeartRateButtonEnabled
 		{
@@ -136,7 +131,7 @@ namespace PulsoidToOSC
 		public ICommand OptionsToolsApplyCommand { get; }
 
 
-		public OptionsToolslViewModel(OptionsViewModel optionsViewModel)
+		public ToolsViewModel(OptionsViewModel optionsViewModel)
 		{
 			_optionsViewModel = optionsViewModel;
 			TestHeartRateCommand = new RelayCommand(TestHeartRate);
@@ -155,6 +150,22 @@ namespace PulsoidToOSC
 			MaxHeartRate = MainProgram.TestHeartRate.MaxHeartRate.ToString();
 			IncrementStep = MainProgram.TestHeartRate.IncrementStep.ToString();
 			IncrementInterval = MainProgram.TestHeartRate.IncrementInterval.ToString();
+		}
+
+		private static string TestHeartRateButtonContents(MainViewModel.StartButtonType type)
+		{
+			return type switch
+			{
+				MainViewModel.StartButtonType.Disabled => Locale.GetText(Locale.Keys.OptionsWindow.Tools.HeartRateTesting_Test),
+				MainViewModel.StartButtonType.Start => Locale.GetText(Locale.Keys.OptionsWindow.Tools.HeartRateTesting_Test),
+				MainViewModel.StartButtonType.Stop => Locale.GetText(Locale.Keys.OptionsWindow.Tools.HeartRateTesting_Stop),
+				_ => string.Empty,
+			};
+		}
+
+		public void RefreshLocale()
+		{
+			OnPropertyChanged(nameof(Title));
 		}
 	}
 }

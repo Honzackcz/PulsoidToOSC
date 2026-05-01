@@ -17,15 +17,16 @@ Requires [.NET 10.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download
 
 
 
-## Pulsoid Connection
+## Pulsoid Account Linking
 
-To connect this app to Pulsoid, you will need to obtain an authorization token:
-1. In options click the "Get Pulsoid token" button - this will open the authorization page in your web browser.
+To link your Pulsoid account, you will need to authorize this app:
+1. In options click the "Link account" button - this will open the Pulsoid authorization page in your web browser.
 2. Log in and confirm authorization on the page.
-3. Token will be automatically entered in the app and you can close the page.
-4. Green checkmark will indicate valid token and you can now start using PulsoidToOSC.
+3. Now you can close the authorization page, the account will be linked shortly in the app.
+4. Green checkmark will indicate succesful link and you can now start using PulsoidToOSC.
 
-If the token is invalid, repeat the steps above.
+If the account is not linked, repeat the steps above.
+In case it still does not work, you can enter Pulsoid token manually.
 
 **Disclaimer**: Anyone with access to the token can read real-time heart rate data from Pulsoid.
 

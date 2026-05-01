@@ -1,6 +1,8 @@
-﻿using System.Windows.Input;
+﻿using PulsoidToOSC.Windows;
+using System.Windows;
+using System.Windows.Input;
 
-namespace PulsoidToOSC
+namespace PulsoidToOSC.ViewModels
 {
 	internal class MainViewModel : ViewModelBase
 	{
@@ -29,7 +31,7 @@ namespace PulsoidToOSC
 			get => _startButton;
 			set { 
 				_startButton = value;
-				OptionsViewModel.OptionsToolslViewModel.TestHeartRateButton = _startButton;
+				OptionsViewModel.ToolsViewModel.TestHeartRateButton = _startButton;
 				OnPropertyChanged(nameof(StartButtonContent));
 				OnPropertyChanged(nameof(StartButtonEnabled));
 			}
@@ -115,8 +117,8 @@ namespace PulsoidToOSC
 				else
 				{
 					MainWindow.WindowState = WindowState.Minimized;
-			MainWindow.Show();
-		}
+					MainWindow.Show();
+				}
 			}
 			else
 			{

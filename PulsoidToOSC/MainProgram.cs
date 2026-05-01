@@ -1,4 +1,5 @@
-﻿using SharpOSC;
+﻿using PulsoidToOSC.ViewModels;
+using SharpOSC;
 using System.Net.WebSockets;
 
 namespace PulsoidToOSC

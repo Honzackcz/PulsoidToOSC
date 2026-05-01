@@ -1,17 +1,14 @@
 ﻿<Window
-	x:Class="PulsoidToOSC.InfoWindow"
+	x:Class="PulsoidToOSC.Windows.InfoWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:local="clr-namespace:PulsoidToOSC"
+	xmlns:local="clr-namespace:PulsoidToOSC.ViewModels"
 	mc:Ignorable="d"
 	Title="{Binding Source={StaticResource Locale}, Path=[InfoWindow.Title]}" ResizeMode="NoResize" Height="280" Width="410"
-    d:DataContext="{d:DesignInstance Type=local:InfoViewModel}">
+	d:DataContext="{d:DesignInstance Type=local:InfoViewModel}">
 
-	<Window.Resources>
-	</Window.Resources>
-	
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
@@ -57,7 +54,7 @@
 					<TextBlock Text="MIT License"/>
 				</Hyperlink>
 			</TextBlock>
-			
+
 			<TextBlock
 				Grid.Row="3"
 				Margin="4"

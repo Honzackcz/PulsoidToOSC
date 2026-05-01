@@ -1,12 +1,16 @@
 ﻿using System.Windows.Input;
 using System.Windows;
 using System.Windows.Media;
+using PulsoidToOSC.Windows;
 
-namespace PulsoidToOSC
+namespace PulsoidToOSC.ViewModels.Options
 {
-	internal class OptionsUIViewModel : ViewModelBase
+	internal class UIViewModel : ViewModelBase
 	{
 		private readonly OptionsViewModel _optionsViewModel;
+		public string Title => Locale.GetText(Locale.Keys.OptionsWindow.UI.Title);
+		public string Icon => "\xE771";
+
 
 		private ColorPickerWindow? ColorPickerWindow { get; set; }
 		private enum ColorPickerEditingColor { None, Error, Warning, Running}
@@ -57,7 +61,7 @@ namespace PulsoidToOSC
 		public ICommand ColorPickerDoneCommand { get; }
 		public ICommand OptionsUIApplyCommand { get; }
 
-		public OptionsUIViewModel(OptionsViewModel optionsViewModel)
+		public UIViewModel(OptionsViewModel optionsViewModel)
 		{
 			_optionsViewModel = optionsViewModel;
 
@@ -73,11 +77,14 @@ namespace PulsoidToOSC
 			if (ConfigData.UIColorUseCustom == ColorUseCustomCheckmark) return;
 			ConfigData.UIColorUseCustom = ColorUseCustomCheckmark;
 			ConfigData.SaveConfig();
+
+			MainProgram.MainViewModel.RefreshLocale();
 		}
 
 		public void OptionsApply()
 		{
 			SetColors(false);
+			MainProgram.MainViewModel.RefreshLocale();
 		}
 
 		private void SetColors(bool canSaveConfig)
@@ -160,6 +167,11 @@ namespace PulsoidToOSC
 
 			_colorPickerEditingColor = ColorPickerEditingColor.None;
 			ColorPickerWindow.Close();
+		}
+
+		public void RefreshLocale()
+		{
+			OnPropertyChanged(nameof(Title));
 		}
 	}
 }

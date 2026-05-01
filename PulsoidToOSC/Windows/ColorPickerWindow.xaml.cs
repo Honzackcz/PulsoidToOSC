@@ -5,7 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace PulsoidToOSC
+namespace PulsoidToOSC.Windows
 {
 	public partial class ColorPickerWindow : Window
 	{

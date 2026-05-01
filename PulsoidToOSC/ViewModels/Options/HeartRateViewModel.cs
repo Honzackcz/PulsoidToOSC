@@ -1,10 +1,13 @@
 ﻿using System.Windows.Input;
 
-namespace PulsoidToOSC
+namespace PulsoidToOSC.ViewModels.Options
 {
-	internal class OptionsHeartrateViewModel : ViewModelBase
+	internal class HeartRateViewModel : ViewModelBase
 	{
 		private readonly OptionsViewModel _optionsViewModel;
+		public string Title => Locale.GetText(Locale.Keys.OptionsWindow.HeartRate.Title);
+		public string Icon => "\xE95E";
+
 
 		private string _hrFloatMinText = string.Empty;
 		private string _hrFloatMaxText = string.Empty;
@@ -64,7 +67,7 @@ namespace PulsoidToOSC
 				{
 					_hrTrendMinText = newText;
 				}
-				else if (float.TryParse(newText, ConfigData.FloatStyle, ConfigData.FloatLocal, out float result))
+				else if (float.TryParse(newText, ConfigData.FloatStyle, ConfigData.FloatLocale, out float result))
 				{
 					if (newText.EndsWith('.') && result <= 255f)
 					{
@@ -72,7 +75,7 @@ namespace PulsoidToOSC
 					}
 					else
 					{
-						_hrTrendMinText = Math.Clamp(result, 0.1f, 255f).ToString("0.##", ConfigData.FloatLocal);
+						_hrTrendMinText = Math.Clamp(result, 0.1f, 255f).ToString("0.##", ConfigData.FloatLocale);
 					}
 				}
 
@@ -91,7 +94,7 @@ namespace PulsoidToOSC
 				{
 					_hrTrendMaxText = newText;
 				}
-				else if (float.TryParse(newText, ConfigData.FloatStyle, ConfigData.FloatLocal, out float result))
+				else if (float.TryParse(newText, ConfigData.FloatStyle, ConfigData.FloatLocale, out float result))
 				{
 					if (newText.EndsWith('.') && result <= 255f)
 					{
@@ -99,7 +102,7 @@ namespace PulsoidToOSC
 					}
 					else
 					{
-						_hrTrendMaxText = Math.Clamp(result, 0.1f, 255f).ToString("0.##", ConfigData.FloatLocal);
+						_hrTrendMaxText = Math.Clamp(result, 0.1f, 255f).ToString("0.##", ConfigData.FloatLocale);
 					}
 				}
 
@@ -159,7 +162,7 @@ namespace PulsoidToOSC
 
 		public ICommand OptionsHrApplyCommand { get; }
 
-		public OptionsHeartrateViewModel(OptionsViewModel optionsViewModel)
+		public HeartRateViewModel(OptionsViewModel optionsViewModel)
 		{
 			_optionsViewModel = optionsViewModel;
 
@@ -200,13 +203,13 @@ namespace PulsoidToOSC
 		{
 			bool saveConfig = false;
 
-			if (float.TryParse(HrTrendMinText, ConfigData.FloatStyle, ConfigData.FloatLocal, out float parsedHrTrendMin) && parsedHrTrendMin <= 255f && parsedHrTrendMin >= 0.1f && parsedHrTrendMin != ConfigData.HrTrendMin)
+			if (float.TryParse(HrTrendMinText, ConfigData.FloatStyle, ConfigData.FloatLocale, out float parsedHrTrendMin) && parsedHrTrendMin <= 255f && parsedHrTrendMin >= 0.1f && parsedHrTrendMin != ConfigData.HrTrendMin)
 			{
 				ConfigData.HrTrendMin = parsedHrTrendMin;
 				saveConfig = true;
 			}
 
-			if (float.TryParse(HrTrendMaxText, ConfigData.FloatStyle, ConfigData.FloatLocal, out float parsedHrTrendMax) && parsedHrTrendMax <= 255f && parsedHrTrendMax >= 0.1f && parsedHrTrendMax != ConfigData.HrTrendMax)
+			if (float.TryParse(HrTrendMaxText, ConfigData.FloatStyle, ConfigData.FloatLocale, out float parsedHrTrendMax) && parsedHrTrendMax <= 255f && parsedHrTrendMax >= 0.1f && parsedHrTrendMax != ConfigData.HrTrendMax)
 			{
 				ConfigData.HrTrendMax = parsedHrTrendMax;
 				saveConfig = true;
@@ -214,8 +217,8 @@ namespace PulsoidToOSC
 
 			if (saveConfig && canSaveConfig) ConfigData.SaveConfig();
 
-			HrTrendMinText = ConfigData.HrTrendMin.ToString(ConfigData.FloatLocal);
-			HrTrendMaxText = ConfigData.HrTrendMax.ToString(ConfigData.FloatLocal);
+			HrTrendMinText = ConfigData.HrTrendMin.ToString(ConfigData.FloatLocale);
+			HrTrendMaxText = ConfigData.HrTrendMax.ToString(ConfigData.FloatLocale);
 		}
 
 		private void SetOffset(bool canSaveConfig)
@@ -237,7 +240,7 @@ namespace PulsoidToOSC
 		{
 			bool saveConfig = false;
 
-			List<int> parsedValues = new List<int>();
+			List<int> parsedValues = [];
 			string[] undesiredValuesParts = HrUndesiredValuesText.Split(';');
 			foreach (string part in undesiredValuesParts)
 			{
@@ -262,6 +265,11 @@ namespace PulsoidToOSC
 			if (ConfigData.HrRandomValue == HrRandomValueCheckmark) return;
 			ConfigData.HrRandomValue = HrRandomValueCheckmark;
 			ConfigData.SaveConfig();
+		}
+
+		public void RefreshLocale()
+		{
+			OnPropertyChanged(nameof(Title));
 		}
 	}
 }

@@ -1,0 +1,186 @@
+﻿<UserControl x:Class="PulsoidToOSC.Windows.Options.UI"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 xmlns:local="clr-namespace:PulsoidToOSC.ViewModels.Options"
+			 mc:Ignorable="d" 
+			 d:DesignHeight="450" d:DesignWidth="400"
+			 d:DataContext="{d:DesignInstance Type=local:UIViewModel}">
+	<Grid>
+		<ScrollViewer>
+			<StackPanel Margin="4,4,12,4">
+				<TextBlock
+					Margin="16"
+					VerticalAlignment="Center"
+					TextWrapping="Wrap"
+					Text="{Binding Source={StaticResource Locale}, Path=[OptionsWindow.UI.Title]}"
+					Style="{StaticResource TitleTextBlockStyle}"
+				/>
+
+				<Border Margin="4,4,4,0" Padding="4" CornerRadius="4,4,0,0" BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
+					<CheckBox
+						Margin="4"
+						IsChecked="{Binding ColorUseCustomCheckmark, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						Content="{Binding Source={StaticResource Locale}, Path=[OptionsWindow.UI.UseCustomColors]}"
+						ToolTip="{Binding Source={StaticResource Locale}, Path=[OptionsWindow.UI.UseCustomColors.Tooltip]}"
+					/>
+				</Border>
+				<Border Margin="4,0,4,4" Padding="4" CornerRadius="0,0,4,4" BorderThickness="1,0,1,1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
+					<StackPanel>
+						<TextBlock
+							Margin="8"
+							VerticalAlignment="Center"
+							IsEnabled="{Binding ColorUseCustomCheckmark}"
+							Text="{Binding Source={StaticResource Locale}, Path=[OptionsWindow.UI.TextColors]}"
+						/>
+						
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="140"/>
+								<ColumnDefinition Width="40"/>
+								<ColumnDefinition Width="40"/>
+							</Grid.ColumnDefinitions>
+
+							<TextBlock
+								Grid.Row="0"
+								Grid.Column="0"
+								Margin="8"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Right"
+								IsEnabled="{Binding ColorUseCustomCheckmark}"
+								Text="{Binding Source={StaticResource Locale}, Path=[OptionsWindow.UI.ErrorColor]}"
+							/>
+							<TextBox
+								Grid.Row="0"
+								Grid.Column="1"
+								Margin="4"
+								IsEnabled="{Binding ColorUseCustomCheckmark, UpdateSourceTrigger=PropertyChanged}"
+								Text="{Binding ColorErrorText, UpdateSourceTrigger=PropertyChanged}"
+								ToolTip="{Binding Source={StaticResource Locale}, Path=[OptionsWindow.UI.ErrorColor.Tooltip]}"
+							>
+								<TextBox.InputBindings>
+									<KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
+								</TextBox.InputBindings>
+							</TextBox>
+							<Rectangle
+								Grid.Row="0"
+								Grid.Column="2"
+								Height="30" Width="30"
+								Fill="{Binding ColorErrorIndicator}"
+								RadiusX="4"
+								RadiusY="4"
+							/>
+							<Button
+								Grid.Row="0"
+								Grid.Column="3"
+								Height="32" Width="32"
+								Margin="4"
+								Padding="0"
+								VerticalAlignment="Center"
+								HorizontalContentAlignment="Center"
+								IsEnabled="{Binding ColorUseCustomCheckmark}"
+								Command="{Binding OpenColorPickerErrorCommand}"
+								Content="&#xEF3C;"
+								FontFamily="{StaticResource SymbolThemeFontFamily}"
+							/>
+
+							<TextBlock
+								Grid.Row="1"
+								Grid.Column="0"
+								Margin="8"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Right"
+								IsEnabled="{Binding ColorUseCustomCheckmark}"
+								Text="{Binding Source={StaticResource Locale}, Path=[OptionsWindow.UI.WarningColor]}"
+							/>
+							<TextBox
+								Grid.Row="1"
+								Grid.Column="1"
+								Margin="4"
+								IsEnabled="{Binding ColorUseCustomCheckmark}"
+								Text="{Binding ColorWarningText, UpdateSourceTrigger=PropertyChanged}"
+								ToolTip="{Binding Source={StaticResource Locale}, Path=[OptionsWindow.UI.WarningColor.Tooltip]}"
+							>
+								<TextBox.InputBindings>
+									<KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
+								</TextBox.InputBindings>
+							</TextBox>
+							<Rectangle
+								Grid.Row="1"
+								Grid.Column="2"
+								Height="30" Width="30"
+								Fill="{Binding ColorWarningIndicator}"
+								RadiusX="4"
+								RadiusY="4"
+							/>
+							<Button
+								Grid.Row="1"
+								Grid.Column="3"
+								Height="32" Width="32"
+								Margin="4"
+								Padding="0"
+								VerticalAlignment="Center"
+								HorizontalContentAlignment="Center"
+								IsEnabled="{Binding ColorUseCustomCheckmark}"
+								Command="{Binding OpenColorPickerWarningCommand}"
+								Content="&#xEF3C;"
+								FontFamily="{StaticResource SymbolThemeFontFamily}"
+							/>
+
+							<TextBlock
+								Grid.Row="2"
+								Grid.Column="0"
+								Margin="8"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Right"
+								IsEnabled="{Binding ColorUseCustomCheckmark}"
+								Text="{Binding Source={StaticResource Locale}, Path=[OptionsWindow.UI.RunningColor]}"
+							/>
+							<TextBox
+								Grid.Row="2"
+								Grid.Column="1"
+								Margin="4"
+								IsEnabled="{Binding ColorUseCustomCheckmark}"
+								Text="{Binding ColorRunningText, UpdateSourceTrigger=PropertyChanged}"
+								ToolTip="{Binding Source={StaticResource Locale}, Path=[OptionsWindow.UI.RunningColor.Tooltip]}"
+							>
+								<TextBox.InputBindings>
+									<KeyBinding Key="Enter" Command="{Binding OptionsUIApplyCommand}"/>
+								</TextBox.InputBindings>
+							</TextBox>
+							<Rectangle
+								Grid.Row="2"
+								Grid.Column="2"
+								Height="30" Width="30"
+								Fill="{Binding ColorRunningIndicator}"
+								RadiusX="4"
+								RadiusY="4"
+							/>
+							<Button
+								Grid.Row="2"
+								Grid.Column="3"
+								Height="32" Width="32"
+								Margin="4"
+								Padding="0"
+								VerticalAlignment="Center"
+								HorizontalContentAlignment="Center"
+								IsEnabled="{Binding ColorUseCustomCheckmark}"
+								Command="{Binding OpenColorPickerRunningCommand}"
+								Content="&#xEF3C;"
+								FontFamily="{StaticResource SymbolThemeFontFamily}"
+							/>
+						</Grid>
+					</StackPanel>
+				</Border>
+
+			</StackPanel>
+		</ScrollViewer>
+	</Grid>
+</UserControl>
