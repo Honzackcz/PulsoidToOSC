@@ -45,12 +45,34 @@ namespace PulsoidToOSC
 
 		private void Minimize_Click(object sender, RoutedEventArgs e)
 		{
+			if (ConfigData.MinimizeToTray)
+			{
+				Hide();
+				MainProgram.MainViewModel.TrayIconVisible = true;
+			}
+			else
+			{
 			WindowState = WindowState.Minimized;
+		}
 		}
 
 		private void Close_Click(object sender, RoutedEventArgs e)
 		{
 			Close();
+		}
+
+		private void Tray_Show_Click(object sender, RoutedEventArgs e)
+		{
+			Show();
+			WindowState = WindowState.Normal;
+			Activate();
+			MainProgram.MainViewModel.TrayIconVisible = false;
+		}
+
+		private void Tray_Exit_Click(object sender, RoutedEventArgs e)
+		{
+			((TaskbarIcon)FindName("TrayIcon"))?.Dispose();
+			Application.Current.Shutdown();
 		}
 
 		[DllImport("dwmapi.dll")]
@@ -79,6 +101,7 @@ namespace PulsoidToOSC
 		{
 			SaveWindowSettings();
 
+			((TaskbarIcon)FindName("TrayIcon"))?.Dispose();
 			base.OnClosing(e);
 		}
 

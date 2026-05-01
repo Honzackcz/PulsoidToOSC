@@ -5,7 +5,7 @@
     <TargetFramework>net10.0-windows7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <UseWindowsForms>False</UseWindowsForms>
+    <UseWindowsForms>false</UseWindowsForms> <!-- Note to my future self: do not bother with this again, there have to be better way -->
     <Nullable>enable</Nullable>
     <ApplicationIcon>PulsoidToOSC.ico</ApplicationIcon>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
@@ -34,7 +34,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="PulsoidToOSC.ico" />
+    <Resource Include="PulsoidToOSC.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,6 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
     <PackageReference Include="Makaretu.Dns.Multicast" Version="0.27.0" />
   </ItemGroup>
 

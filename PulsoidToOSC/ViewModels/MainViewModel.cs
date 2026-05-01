@@ -28,6 +28,7 @@ namespace PulsoidToOSC
 		private string _indicatorText = string.Empty;
 		private string _textColorType = string.Empty;
 		private string _textColor = "#00000000";
+		private bool _trayIconVisible = false;
 
 		public StartButtonType StartButton
 		{
@@ -79,6 +80,16 @@ namespace PulsoidToOSC
 			set { _textColor = value; OnPropertyChanged(); }
 		}
 
+		public string TrayIconVisibility
+		{
+			get => _trayIconVisible ? "Visible" : "Hidden";
+		}
+		public bool TrayIconVisible
+		{
+			get => _trayIconVisible;
+			set { _trayIconVisible = value; OnPropertyChanged(); OnPropertyChanged(nameof(TrayIconVisibility)); }
+		}
+
 		public ICommand StartCommand { get; }
 		public ICommand OpenOptionsCommand { get; }
 		public ICommand OpenInfoCommand { get; }
@@ -99,7 +110,24 @@ namespace PulsoidToOSC
 			{
 				DataContext = this
 			};
+
+			if (ConfigData.StartMinimized && ConfigData.AutoStart)
+			{
+				if (ConfigData.MinimizeToTray)
+				{
+					MainWindow.Hide();
+					MainProgram.MainViewModel.TrayIconVisible = true;
+				}
+				else
+				{
+					MainWindow.WindowState = WindowState.Minimized;
 			MainWindow.Show();
+		}
+			}
+			else
+			{
+				MainWindow.Show();
+			}
 		}
 
 		private void Start()

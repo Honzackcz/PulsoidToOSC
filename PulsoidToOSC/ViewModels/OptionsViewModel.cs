@@ -38,6 +38,12 @@ namespace PulsoidToOSC
 
 		public void OpenOptionsWindow()
 		{
+			if (OptionsWindow != null)
+			{
+				OptionsWindow.Focus();
+				return;
+			}
+
 			// General
 			OptionsGeneralViewModel.TokenText = ConfigData.PulsoidToken;
 			OptionsGeneralViewModel.TokenValidity = PulsoidApi.TokenValidity;
@@ -50,6 +56,8 @@ namespace PulsoidToOSC
 				});
 			}
 			OptionsGeneralViewModel.AutoStartCheckmark = ConfigData.AutoStart;
+			GeneralViewModel.StartMinimizedCheckmark = ConfigData.StartMinimized;
+			GeneralViewModel.MinimizeToTrayCheckmark = ConfigData.MinimizeToTray;
 
 			// OSC
 			OptionsOscViewModel.OSCManualConfigCheckmark = ConfigData.OSCUseManualConfig;
@@ -94,10 +102,11 @@ namespace PulsoidToOSC
 			{
 				DataContext = this,
 				Owner = _mainViewModel.MainWindow,
-				WindowStartupLocation = WindowStartupLocation.CenterOwner
+				
+				WindowStartupLocation = _mainViewModel.MainWindow?.IsVisible ?? false ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen
 			};
 			OptionsWindow.Closing += OptionsWindowClosing;
-			OptionsWindow.ShowDialog();
+			OptionsWindow.Show();
 		}
 
 		public void OptionsApply()
@@ -136,6 +145,7 @@ namespace PulsoidToOSC
 				RestartToApplyOptions = false;
 				MainProgram.RestartPulsoidToOSC();
 			}
+			OptionsWindow = null;
 		}
 	}
 }

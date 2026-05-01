@@ -156,3 +156,5 @@ When test mode is running, the app will generate oscillating heart rate values b
 [SharpOSC](https://github.com/ValdemarOrn/SharpOSC) is a small library designed to make interacting with Open Sound Control easy (OSC).
 
 [net-mdns](https://github.com/richardschneider/net-mdns) - A simple Multicast Domain Name Service.
+
+[wpf-notifyicon](https://github.com/hardcodet/wpf-notifyicon) - NotifyIcon (aka system tray icon or taskbar icon) for the WPF platform.

@@ -12,6 +12,8 @@ namespace PulsoidToOSC
 		// General
 		private static string _pulsoidToken = string.Empty;
 		private static bool _autoStart = true;
+		private static bool _startMinimized = false;
+		private static bool _minimizeToTray = false;
 		// OSC
 		private static bool _oscUseManualConfig = true;
 		private static IPAddress _oscIP = IPAddress.Parse("127.0.0.1");
@@ -67,6 +69,16 @@ namespace PulsoidToOSC
 		{
 			get => _autoStart;
 			set => _autoStart = value;
+		}
+		public static bool StartMinimized
+		{
+			get => _startMinimized;
+			set => _startMinimized = value;
+		}
+		public static bool MinimizeToTray
+		{
+			get => _minimizeToTray;
+			set => _minimizeToTray = value;
 		}
 		// OSC
 		public static bool OSCUseManualConfig
@@ -180,6 +192,8 @@ namespace PulsoidToOSC
 			// General
 			writer.WriteLine($"pulsoidToken={PulsoidToken.ReplaceLineEndings("\\n").Replace("=", string.Empty)}");
 			writer.WriteLine($"autoStart={AutoStart}");
+			writer.WriteLine($"startMinimized={StartMinimized}");
+			writer.WriteLine($"minimizeToTray={MinimizeToTray}");
 			// OSC
 			writer.WriteLine($"oscUseManualConfig={OSCUseManualConfig}");
 			writer.WriteLine($"oscIP={OSCIP}");
@@ -216,6 +230,8 @@ namespace PulsoidToOSC
 			// General
 			string? pulsoidToken = null;
 			string? autoStart = null;
+			string? startMinimized = null;
+			string? minimizeToTray = null;
 			// OSC
 			string? oscUseManualConfig = null;
 			string? oscIP = null;
@@ -262,6 +278,12 @@ namespace PulsoidToOSC
 								break;
 							case "autoStart":
 								autoStart = value;
+								break;
+							case "startMinimized":
+								startMinimized = value;
+								break;
+							case "minimizeToTray":
+								minimizeToTray = value;
 								break;
 							// OSC
 							case "oscUseManualConfig":
@@ -348,6 +370,8 @@ namespace PulsoidToOSC
 			// General
 			if (pulsoidToken != null && MyRegex.GUID().IsMatch(pulsoidToken)) PulsoidToken = pulsoidToken;
 			if (bool.TryParse(autoStart, out bool parsedAutoStart)) AutoStart = parsedAutoStart;
+			if (bool.TryParse(startMinimized, out bool parsedStartMinimized)) StartMinimized = parsedStartMinimized;
+			if (bool.TryParse(minimizeToTray, out bool parsedMinimizeToTray)) MinimizeToTray = parsedMinimizeToTray;
 			// OSC
 			if (bool.TryParse(oscUseManualConfig, out bool parsedOSCUseManualConfig)) OSCUseManualConfig = parsedOSCUseManualConfig;
 			if (IPAddress.TryParse(oscIP, out IPAddress? parsedOSCIP)) OSCIP = parsedOSCIP;
