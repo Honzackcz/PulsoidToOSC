@@ -15,30 +15,30 @@ namespace PulsoidToOSC
 			public class WSMessage
 			{
 				[JsonPropertyName("measured_at")]
-				public long? MeasuredAt { get; set; }
+				public long MeasuredAt { get; set; } = 0L;
 
 				[JsonPropertyName("data")]
-				public WSMessage_Data? Data { get; set; }
+				public WSMessage_Data Data { get; set; } = new();
 			}
 			public class WSMessage_Data
 			{
 				[JsonPropertyName("heart_rate")]
-				public int? HeartRate { get; set; }
+				public int HeartRate { get; set; } = 0;
 			}
 
 			public class ValidateTokenResponse
 			{
 				[JsonPropertyName("client_id")]
-				public string? ClientId { get; set; }
+				public string ClientId { get; set; } = string.Empty;
 
 				[JsonPropertyName("expires_in")]
-				public int? ExpiresIn { get; set; }
+				public int ExpiresIn { get; set; } = 0;
 
 				[JsonPropertyName("profile_id")]
-				public string? ProfileId { get; set; }
+				public string ProfileId { get; set; } = string.Empty;
 
 				[JsonPropertyName("scopes")]
-				public List<string>? Scopes { get; set; }
+				public List<string> Scopes { get; set; } = [];
 			}
 
 			public class DeviceAuthorizationFlow
@@ -46,41 +46,41 @@ namespace PulsoidToOSC
 				public class InitialResponse
 				{
 					[JsonPropertyName("device_code")]
-					public string? DeviceCode { get; set; }
+					public string DeviceCode { get; set; } = string.Empty;
 
 					[JsonPropertyName("user_code")]
-					public string? UserCode { get; set; }
+					public string UserCode { get; set; } = string.Empty;
 
 					[JsonPropertyName("verification_uri")]
-					public string? VerificationUri { get; set; }
+					public string VerificationUri { get; set; } = string.Empty;
 
 					[JsonPropertyName("verification_uri_complete")]
-					public string? VerificationUriComplete { get; set; }
+					public string VerificationUriComplete { get; set; } = string.Empty;
 
 					[JsonPropertyName("expires_in")]
-					public int ExpiresIn { get; set; }
+					public int ExpiresIn { get; set; } = 0;
 
 					[JsonPropertyName("interval")]
-					public int Interval { get; set; }
+					public int Interval { get; set; } = 3; // Default to 3 seconds based on Pulsoid's documentation
 				}
 				public class TokenOKResponse
 				{
 					[JsonPropertyName("access_token")]
-					public string? AccessToken { get; set; }
+					public string AccessToken { get; set; } = string.Empty;
 
 					[JsonPropertyName("expires_in")]
-					public int ExpiresIn { get; set; }
+					public int ExpiresIn { get; set; } = 0;
 
 					[JsonPropertyName("token_type")]
-					public string? TokenType { get; set; }
+					public string TokenType { get; set; } = string.Empty;
 				}
 				public class TokenErrorResponse
 				{
 					[JsonPropertyName("error")]
-					public string? Error { get; set; }
+					public string Error { get; set; } = string.Empty;
 
 					[JsonPropertyName("error_description")]
-					public string? ErrorDescription { get; set; }
+					public string ErrorDescription { get; set; } = string.Empty;
 				}
 			}
 		}
@@ -92,15 +92,9 @@ namespace PulsoidToOSC
 
 			try
 			{
-				Json.WSMessage? messageJson = JsonSerializer.Deserialize<Json.WSMessage>(message);
-				if (messageJson != null)
-				{
-					measuredAt = messageJson.MeasuredAt ?? 0L;
-					if (messageJson.Data != null)
-					{
-						heartRate = messageJson.Data.HeartRate ?? 0;
-					}
-				}
+				Json.WSMessage messageJson = JsonSerializer.Deserialize<Json.WSMessage>(message) ?? throw new JsonException("Failed to deserialize WS message");
+				measuredAt = messageJson.MeasuredAt;
+				heartRate = messageJson.Data.HeartRate;
 				return true;
 			}
 			catch
@@ -151,26 +145,32 @@ namespace PulsoidToOSC
 				}
 			}
 
-			bool invalidVerificationUri = initialResponse == null || string.IsNullOrEmpty(initialResponse.VerificationUriComplete);
+			if (initialResponse == null || string.IsNullOrEmpty(initialResponse.VerificationUriComplete))
+			{
+				Process.Start(new ProcessStartInfo
+				{
+					FileName = GetManualAuthorizationUri(),
+					UseShellExecute = true
+				});
+				return;
+			}
 
 			Process.Start(new ProcessStartInfo
 			{
-				FileName = invalidVerificationUri ? GetManualAuthorizationUri() : initialResponse?.VerificationUriComplete,
+				FileName = initialResponse.VerificationUriComplete,
 				UseShellExecute = true
 			});
 
-			if (invalidVerificationUri) return;
-
 			TokenValidity = TokenValidityStatus.Unknown;
-			MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenValidity = TokenValidity;
+			MainProgram.MainViewModel.OptionsViewModel.GeneralViewModel.TokenValidity = TokenValidity;
 
-			DateTime expireTime = DateTime.UtcNow.AddSeconds(initialResponse?.ExpiresIn ?? 0);
+			DateTime expireTime = DateTime.UtcNow.AddSeconds(initialResponse.ExpiresIn);
 			const string pollingUri = "https://pulsoid.net/oauth2/token";
 			using HttpClient httpClient = new();
 			FormUrlEncodedContent formData = new(
 			[
 				new KeyValuePair<string, string>("grant_type", "urn:ietf:params:oauth:grant-type:device_code"),
-				new KeyValuePair<string, string>("device_code", initialResponse?.DeviceCode ?? ""),
+				new KeyValuePair<string, string>("device_code", initialResponse.DeviceCode),
 				new KeyValuePair<string, string>("client_id", Encoding.UTF8.GetString(Convert.FromBase64String(PublicClientID)))
 			]);
 
@@ -178,7 +178,7 @@ namespace PulsoidToOSC
 			{
 				try
 				{
-					await Task.Delay(1000 * (initialResponse?.Interval ?? 3), GetPulsoidToken_Cts.Token);
+					await Task.Delay(1000 * (initialResponse.Interval), GetPulsoidToken_Cts.Token);
 				}
 				catch
 				{
@@ -210,19 +210,16 @@ namespace PulsoidToOSC
 				{
 					try
 					{
-						Json.DeviceAuthorizationFlow.TokenOKResponse? tokenOKResponse = JsonSerializer.Deserialize<Json.DeviceAuthorizationFlow.TokenOKResponse>(httpResponseBody);
-						if (tokenOKResponse == null) break;
-						if (MyRegex.GUID().IsMatch(tokenOKResponse.AccessToken ?? "") && tokenOKResponse.ExpiresIn > 0)
+						Json.DeviceAuthorizationFlow.TokenOKResponse tokenOKResponse = JsonSerializer.Deserialize<Json.DeviceAuthorizationFlow.TokenOKResponse>(httpResponseBody) ?? throw new JsonException("Failed to deserialize token OK response");
+
+						if (MyRegex.GUID().IsMatch(tokenOKResponse.AccessToken) && tokenOKResponse.ExpiresIn > 0)
 						{
 							SetPulsoidToken(tokenOKResponse.AccessToken);
-							MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenText = ConfigData.PulsoidToken;
-							MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenValidity = TokenValidity;
+							MainProgram.MainViewModel.OptionsViewModel.GeneralViewModel.TokenText = ConfigData.PulsoidToken;
+							MainProgram.MainViewModel.OptionsViewModel.GeneralViewModel.TokenValidity = TokenValidity;
 						}
 					}
-					catch
-					{
-						
-					}
+					catch { }
 					break;
 				}
 				else if (httpResponse.StatusCode == HttpStatusCode.BadRequest)
@@ -244,7 +241,7 @@ namespace PulsoidToOSC
 
 			GetPulsoidToken_IsRunning = false;
 			await ValidateToken();
-			MainProgram.MainViewModel.OptionsViewModel.OptionsGeneralViewModel.TokenValidity = TokenValidity;
+			MainProgram.MainViewModel.OptionsViewModel.GeneralViewModel.TokenValidity = TokenValidity;
 		}
 
 		private static async Task<Json.DeviceAuthorizationFlow.InitialResponse?> InitiateDeviceAuthorizationSession(CancellationToken cancellationToken)
@@ -261,7 +258,7 @@ namespace PulsoidToOSC
 			{
 				HttpResponseMessage httpResponse = await httpClient.PostAsync(initiateUri, formData, cancellationToken);
 				httpResponse.EnsureSuccessStatusCode();
-				string responseBody = await httpResponse.Content.ReadAsStringAsync();
+				string responseBody = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
 				return JsonSerializer.Deserialize<Json.DeviceAuthorizationFlow.InitialResponse>(responseBody);
 			}
 			catch (TaskCanceledException ex)
@@ -292,10 +289,10 @@ namespace PulsoidToOSC
 				Json.ValidateTokenResponse? resultJson = JsonSerializer.Deserialize<Json.ValidateTokenResponse>(resultBody);
 
 				if (resultJson == null) return;
-				string client_id = resultJson.ClientId ?? string.Empty;
-				int expires_in = resultJson.ExpiresIn ?? 0;
-				string profile_id = resultJson.ProfileId ?? string.Empty;
-				List<string> scopes = resultJson.Scopes ?? [];
+				string client_id = resultJson.ClientId;
+				int expires_in = resultJson.ExpiresIn;
+				string profile_id = resultJson.ProfileId;
+				List<string> scopes = resultJson.Scopes;
 
 				if (scopes.Contains("data:heart_rate:read") && expires_in > 0) TokenValidity = TokenValidityStatus.Valid;
 				else TokenValidity = TokenValidityStatus.Invalid;
