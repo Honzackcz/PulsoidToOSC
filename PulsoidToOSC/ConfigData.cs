@@ -5,8 +5,7 @@ namespace PulsoidToOSC
 {
 	internal static class ConfigData
 	{
-		private const string FilePath = "config.txt";
-
+		private static readonly string FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.txt");
 		// format of saved float data in config file
 		public static readonly System.Globalization.NumberStyles FloatStyle = System.Globalization.NumberStyles.AllowDecimalPoint | System.Globalization.NumberStyles.AllowLeadingWhite | System.Globalization.NumberStyles.AllowTrailingWhite;
 		public static readonly System.Globalization.CultureInfo FloatLocale = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
@@ -197,40 +196,47 @@ namespace PulsoidToOSC
 
 		public static void SaveConfig()
 		{
-			using StreamWriter writer = new(FilePath);
-			// General
-			writer.WriteLine($"pulsoidToken={PulsoidToken.ReplaceLineEndings("\\n").Replace("=", string.Empty)}");
-			writer.WriteLine($"autoStart={AutoStart}");
-			writer.WriteLine($"startMinimized={StartMinimized}");
-			writer.WriteLine($"minimizeToTray={MinimizeToTray}");
-			writer.WriteLine($"locale={Locale}");
-			// OSC
-			writer.WriteLine($"oscUseManualConfig={OSCUseManualConfig}");
-			writer.WriteLine($"oscIP={OSCIP}");
-			writer.WriteLine($"oscPort={OSCPort}");
-			writer.WriteLine($"oscPath={OSCPath.ReplaceLineEndings("\\n").Replace("=", string.Empty)}");
-			// VRChat
-			writer.WriteLine($"vrcUseAutoConfig={VRCUseAutoConfig}");
-			writer.WriteLine($"vrcSendToAllClinetsOnLAN={VRCSendToAllClinetsOnLAN}");
-			writer.WriteLine($"vrcSendBPMToChatbox={VRCSendBPMToChatbox}");
-			writer.WriteLine($"vrcChatboxMessage={VRCChatboxMessage.ReplaceLineEndings("\\n").Replace("=", string.Empty)}");
-			// Heart rate
-			writer.WriteLine($"hrFloatMin={HrFloatMin}");
-			writer.WriteLine($"hrFloatMax={HrFloatMax}");
-			writer.WriteLine($"hrTrendMin={HrTrendMin.ToString(FloatLocale)}");
-			writer.WriteLine($"hrTrendMax={HrTrendMax.ToString(FloatLocale)}");
-			writer.WriteLine($"hrOffset={HrOffset}");
-			writer.WriteLine($"hrUndesiredValues={string.Join(";", HrUndesiredValues)}");
-			writer.WriteLine($"hrRandomValue={HrRandomValue}");
-			// UI
-			writer.WriteLine($"uiColorUseCustom={UIColorUseCustom}");
-			writer.WriteLine($"uiColorError={UIColorError}");
-			writer.WriteLine($"uiColorWarning={UIColorWarning}");
-			writer.WriteLine($"uiColorRunning={UIColorRunning}");
-			// Parameters
-			foreach (OSCParameter parameter in OSCParameters)
+			try
 			{
-				writer.WriteLine($"oscParameter={parameter.Type};{parameter.Name.ReplaceLineEndings("\\n").Replace("=", string.Empty).Replace(";", string.Empty)}");
+				using StreamWriter writer = new(FilePath);
+				// General
+				writer.WriteLine($"pulsoidToken={PulsoidToken.ReplaceLineEndings("\\n").Replace("=", string.Empty)}");
+				writer.WriteLine($"autoStart={AutoStart}");
+				writer.WriteLine($"startMinimized={StartMinimized}");
+				writer.WriteLine($"minimizeToTray={MinimizeToTray}");
+				writer.WriteLine($"locale={Locale}");
+				// OSC
+				writer.WriteLine($"oscUseManualConfig={OSCUseManualConfig}");
+				writer.WriteLine($"oscIP={OSCIP}");
+				writer.WriteLine($"oscPort={OSCPort}");
+				writer.WriteLine($"oscPath={OSCPath.ReplaceLineEndings("\\n").Replace("=", string.Empty)}");
+				// VRChat
+				writer.WriteLine($"vrcUseAutoConfig={VRCUseAutoConfig}");
+				writer.WriteLine($"vrcSendToAllClinetsOnLAN={VRCSendToAllClinetsOnLAN}");
+				writer.WriteLine($"vrcSendBPMToChatbox={VRCSendBPMToChatbox}");
+				writer.WriteLine($"vrcChatboxMessage={VRCChatboxMessage.ReplaceLineEndings("\\n").Replace("=", string.Empty)}");
+				// Heart rate
+				writer.WriteLine($"hrFloatMin={HrFloatMin}");
+				writer.WriteLine($"hrFloatMax={HrFloatMax}");
+				writer.WriteLine($"hrTrendMin={HrTrendMin.ToString(FloatLocale)}");
+				writer.WriteLine($"hrTrendMax={HrTrendMax.ToString(FloatLocale)}");
+				writer.WriteLine($"hrOffset={HrOffset}");
+				writer.WriteLine($"hrUndesiredValues={string.Join(";", HrUndesiredValues)}");
+				writer.WriteLine($"hrRandomValue={HrRandomValue}");
+				// UI
+				writer.WriteLine($"uiColorUseCustom={UIColorUseCustom}");
+				writer.WriteLine($"uiColorError={UIColorError}");
+				writer.WriteLine($"uiColorWarning={UIColorWarning}");
+				writer.WriteLine($"uiColorRunning={UIColorRunning}");
+				// Parameters
+				foreach (OSCParameter parameter in OSCParameters)
+				{
+					writer.WriteLine($"oscParameter={parameter.Type};{parameter.Name.ReplaceLineEndings("\\n").Replace("=", string.Empty).Replace(";", string.Empty)}");
+				}
+			}
+			catch
+			{
+				return;
 			}
 		}
 
