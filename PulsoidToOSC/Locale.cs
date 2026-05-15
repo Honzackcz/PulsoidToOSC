@@ -64,7 +64,7 @@ namespace PulsoidToOSC
 					}
 					catch
 					{
-						continue;
+						continue; // skipping unreadable or invalid files
 					}
 				}
 			}
@@ -103,7 +103,10 @@ namespace PulsoidToOSC
 							}
 						}
 					}
-					catch { }
+					catch
+					{
+						// skipping unreadable or invalid files, will return null when no locale can be loaded
+					}
 				}
 
 				int i = locale.LastIndexOf('-');

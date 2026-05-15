@@ -182,7 +182,7 @@ namespace PulsoidToOSC
 				}
 				catch
 				{
-					 break;
+					break;
 				}
 
 				if (DateTime.UtcNow > expireTime) break;
@@ -218,9 +218,13 @@ namespace PulsoidToOSC
 							MainProgram.MainViewModel.OptionsViewModel.GeneralViewModel.TokenText = ConfigData.PulsoidToken;
 							MainProgram.MainViewModel.OptionsViewModel.GeneralViewModel.TokenValidity = TokenValidity;
 						}
+
+						break;
 					}
-					catch { }
-					break;
+					catch
+					{
+						break;
+					}
 				}
 				else if (httpResponse.StatusCode == HttpStatusCode.BadRequest)
 				{
@@ -265,6 +269,7 @@ namespace PulsoidToOSC
 			{
 				if (ex.CancellationToken.IsCancellationRequested) throw;
 			}
+
 			return null;
 		}
 

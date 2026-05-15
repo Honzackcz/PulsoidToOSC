@@ -32,12 +32,10 @@ namespace PulsoidToOSC
 					return VersionStatus.UpToDate;
 				}
 			}
-			catch (Exception)
+			catch
 			{
-				
+				return VersionStatus.None;
 			}
-
-			return VersionStatus.None;
 		}
 	}
 }
